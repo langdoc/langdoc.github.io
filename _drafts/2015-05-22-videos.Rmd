@@ -1,0 +1,30 @@
+---
+layout: post
+title:  "Video in language documentation"
+date:   2015-05-22 23:55:14
+tags: [methodology]
+excerpt_separator: <!--more-->
+---
+
+I assume that nowadays recording both in audio and video has quite largely became a standard in the language documentation. Yet the actual role of video is probably still under-theoriziced. In my opinion there are two main aspects of video which are inherently conflicting.
+
+- Video as an artistic / aesthetic device
+- Video as a scientific record
+
+<!--more-->
+
+These two are mutually exclusible. As an example, the most pleasant and interesting placement for a videocamera may not capture the extra-linguistic information there is. As an example, it may miss some gestures because of the angle or some participants may not fit to the frame.
+
+Let's consider video as an artistic device. We have some guidelines for what is an aesthetically pleasant way to frame a video, as an example. Naturally this all depends from the situation, and there can never be an absolute set of rules how to do it. However, framing our videos in a smart way is also something we can't just assume to know how to do without trying to learn a bit about this.
+
+So let's say you want to frame a speaker nicely. Let's say he/she is looking to the left, so we frame a bit more space to the left. From below we can frame it somewhere around the chest, and have it quite narrow above the head. This can make a pleasant video.
+
+With this kind of composition we don't have the gestures and the other speaker, but these are decisions we just have to make.
+
+We can also consider camera as a scientific recorder which exactly captures the extra-linguistic information we want to associate with our audio recordings. However, this raises another question. What is the theory of this scientific record? What are the things it is supposed to capture? Gestures? Faces? Directions participants look into? Again, these all probably will not be captured with one camera.
+
+We can add there more cameras, that changes several things, but still doesn't automatically solve the issues I just brought up.
+
+## Relation of video and audio
+
+Naturally good audio quality is extremely important for us for our linguistic research. The relationship of video and audio is in my opinion quite straightforward. There is no good video with bad audio, because video is a composition of both video and audio streams. 

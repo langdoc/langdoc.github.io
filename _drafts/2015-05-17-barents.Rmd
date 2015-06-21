@@ -1,0 +1,34 @@
+---
+layout: post
+title:  "Barents region"
+date:   2015-05-17 23:55:14
+---
+
+With different language documentation projects that are loosely connected with common research groups and infrastructure; those with Pite Saami, Kola Saami, Komi and Karelian, Barents region can be seen as something that at least a bit unites them. This demands expanding the concept of *Barents* a bit, but that is probably the least problematic areal denominator.
+
+Geographic regions are a bit tricky when they always combine with one another. Or maybe this is their best aspect. They blend with one another and are never very exact to define. This allows us to be quite flexible when we work with them.
+
+```{r barents_map, echo=FALSE, fig.align='center', comment=F, warning=F}
+library(ggmap)
+library(ggplot2)
+library(maptools)
+
+places <- c("Arjeplogg", "Sevettijärvi", "Ловозеро", "Олонец", "Сыктывкар", "Нарьян-Мар, Россия")
+langs <- c("Pite Saami", "Skolt Saami", "Kildin Saami", "Olonets Karelian", "Komi", "Izhva-Komi")
+doc_points <- data.frame(place = places, lang = langs, geocode(places))
+doc_points
+
+barents <- get_map("Murmansk", zoom = 4)
+ggmap(barents) +
+  geom_point(data = doc_points,
+               aes(x = lon,
+                   y = lat),
+               colour = "red",
+             size = 3) +
+  geom_text(data = doc_points,
+            aes(x = lon, y = lat, label = lang), 
+          size = 3, vjust = 0, hjust = 0)
+
+```
+
+I work primarily with Komi nowadays, though I have also quite continuous relationship with Olonets Karelian. Michael Rießler has specialized to Eastern Saami and Joshua Wilbur works with Pite Saami.

@@ -1,0 +1,32 @@
+---
+layout: post
+title:  "New function in FRelan package"
+date:   2015-05-16 23:55:14
+tags: [R]
+excerpt_separator: <!--more-->
+---
+
+I've written recently a small R package called FRelan. It can be used to work with ELAN files in R. For a long time I've been unsatisfied with the way it handles the errors. Or, with the way how it doesn't handle them. <!--more--> It is very easy to have some structural inconsistencies in ELAN files, as while using ELAN and searching in ELAN does not really let you know that something is wrong. I mean small things just as typos in tier names, missing participants, forgotten tokenization etc. I suppose we all may think that something like this doesn't occur in our own files. Well, my files are full of mistakes! And now I have a new tool to detect those errors.
+
+Function `test_eaf()` works so that it takes only very few arguments. Basically it works like this. Let's say my working directory is full of ELAN files:
+
+    test_eaf(path = ".", tier = "wordT")
+
+Bang! It prints out possible inconsistencies related to that linguistic type in the tier structures in any of those files.
+
+One can install and use FRelan with the following commands in R:
+
+    install.packages(devtools)
+    install_github(langdoc/FRelan)
+    library(FRelan)
+
+It is advisable to update it often as it keeps changing fast.
+
+## Demonstration
+
+```{r}
+library(FRelan)
+test_eaf(path = "/Volumes/langdoc/langs/kpv/", pattern = ".+izva1966.+eaf$", tier = "wordT", recursive = TRUE)
+```
+
+Maybe the message could be better formulated, maybe the way to print error messages out like this is not the best way, but I think the idea is rather obvious. If you have 200 ELAN files and you know some of them don't have tokenization it will not be easy to know which ones those are. And we need tokenization, it is something we can assume every ELAN file always has, if it is one of the files that contribute into our documentary corpus.

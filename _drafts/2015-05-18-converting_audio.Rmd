@@ -1,0 +1,38 @@
+---
+layout: post
+title:  "Converting audio files from Mac Terminal"
+date:   2015-05-18 23:55:14
+---
+
+It is a relatively common that we receive files in different formats and then have to convert those into WAV in order to work with them in ELAN. Some archives tend to share their files primarily as mp3. For basic transcription it of course doesn't really make a difference in which format our files are, as long as we keep association with the right archive records.
+
+It is easy to use Audacity's **Chain** mode to do this, but it seems to demand that all files into which the chain is applied on are in the same folder. Often this is not the case, but the files are in different folders sorted by sessions.
+
+One very good alternative is [Sox](sox.sourceforge.net). It looks like a very useful program, but at first we have to install it. I tried it on Linux and it was very easy:
+
+    sudo apt-get install sox
+    sudo apt-get install lame
+
+On Mac there must be many ways to do it, but I found it was easiest with MacPorts.
+
+    sudo port install sox
+    sudo port install lame
+
+Now when we type `sox` into Terminal we get, among other stuff, a list of supported file formats:
+
+    AUDIO FILE FORMATS: 8svx aif aifc aiff aiffc al amb amr-nb amr-wb anb au avr awb caf cdda cdr cvs cvsd cvu dat dvms f32 f4 f64 f8 fap flac fssd gsm gsrt hcom htk ima ircam la lpc lpc10 lu mat mat4 mat5 maud mp2 mp3 nist ogg paf prc pvf raw s1 s16 s2 s24 s3 s32 s4 s8 sb sd2 sds sf sl sln smp snd sndfile sndr sndt sou sox sph sw txw u1 u16 u2 u24 u3 u32 u4 u8 ub ul uw vms voc vorbis vox w64 wav wavpcm wv wve xa xi
+
+That should be enough! So, what do we want to do with SoX. I had a bunch of Karelian mp3 files and just as a data maintenance task wanted to have WAV files for each one of them. If we would need to transcribe some piece, I think the step would be easier to take with ready files. It is also possible to convert metadata into empty ELAN files, but this will be covered later.
+
+We could get into it with the following command:
+
+    for i in *.mp3
+    do
+    sox -t wav $i $(basename $i)
+    done
+
+We could also wrap this into more complex script, as an example, into R function into which we could give parameters as function arguments.
+
+With **SoX** and **ffmpeg** we can do quite large part of our audio and video file management task. They don't really help with actual editing, but in moving and converting files around they are irreplaceable. 
+
+This doesn't mean that the fight would be over. There are still some hideous file formats, such as DSS, in which there happens to be very important data. Alright, the quality is bad, it is very unpleasant to listen, but it is better than nothing. If it is all we have, then it is irreplaceable.

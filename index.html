@@ -1,1 +1,29 @@
-Hello World
+---
+layout: default
+---
+
+<figure>
+<img src="media/headers/sordla_2012.jpg" alt="At Nina Pigulina's in Syordla, 2012" style="width:1100px">
+</br>
+<figcaption>Fig. – Interview with Paš Kolya, a resident of Syordla village, who passed away on 8.6.2015.</figcaption>
+</figure>
+
+</br>
+
+<div class="home">
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+	{{ post.excerpt }}
+      </li>
+    {% endfor %}
+  </ul>
+
+</div>
+

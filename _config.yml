@@ -1,0 +1,12 @@
+# Site settings
+title: Language Documentation
+email: barentsdoc@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+baseurl: "" # the subpath of your site, e.g. /blog/
+excerpt_separator: <!--more-->
+url: "http://langdoc.github.io" # the base hostname & protocol for your site
+twitter_username: nikopartanen
+github_username:  langdoc
+
+# Build settings
+markdown: kramdown
