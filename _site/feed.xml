@@ -5,8 +5,8 @@
     <description></description>
     <link>http://langdoc.github.io/</link>
     <atom:link href="http://langdoc.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 25 Jul 2015 10:49:52 +0400</pubDate>
-    <lastBuildDate>Sat, 25 Jul 2015 10:49:52 +0400</lastBuildDate>
+    <pubDate>Sat, 25 Jul 2015 11:03:09 +0400</pubDate>
+    <lastBuildDate>Sat, 25 Jul 2015 11:03:09 +0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -18,8 +18,8 @@
 &lt;p&gt;It must be mentioned that this map is heavily biased to the work done by West-European scholars. Naturally, native Komi researchers have been working enormously for decades with different Komi varieties. This bias is simply result of situation where data stored in the Western archives is more accessible for us than what is stored in local Russian archives.&lt;/p&gt;
 
 &lt;!--html_preserve--&gt;
-&lt;div id=&quot;htmlwidget-3746&quot; style=&quot;width:612px;height:378px;&quot; class=&quot;leaflet&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;application/json&quot; data-for=&quot;htmlwidget-3746&quot;&gt;{ &quot;x&quot;: {
+&lt;div id=&quot;htmlwidget-3747&quot; style=&quot;width:612px;height:378px;&quot; class=&quot;leaflet&quot;&gt;&lt;/div&gt;
+&lt;script type=&quot;application/json&quot; data-for=&quot;htmlwidget-3747&quot;&gt;{ &quot;x&quot;: {
  &quot;calls&quot;: [
  {
  &quot;method&quot;: &quot;addTiles&quot;,
