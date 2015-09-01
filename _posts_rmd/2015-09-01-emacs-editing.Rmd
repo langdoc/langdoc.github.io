@@ -1,14 +1,14 @@
 ---
 layout: post
-title:  "Google Docs and Markdown"
-date:   2015-06-21 23:55:14
-tags: [R, workflows]
+title:  "Editing text blocks in Emacs"
+date:   2015-09-01 11:06:13
+tags: [emacs, digitalization]
 excerpt_separator: <!--more-->
 ---
 
 Often when we digitalize some text collections we end up with text blocks in one language, and the translations on some other language in similar blocks. However, in our modern language collections the text is divided into utterances, which often more or less do match with sentences.
 
-There is no automatic way to match the sentences, because there isn't always exact correspondence at the sentence level. One can start with some regular expressions such as these.
+There is no automatic way to match the sentences, because there isn't always exact correspondence at the sentence level. However, some ways to work with this data are more difficult than the others. <!--more--> One can start with some regular expressions such as these.
 
 The point of this is to mark paragraph breaks with the hash character.
 
