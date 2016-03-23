@@ -16,7 +16,7 @@ It must be mentioned that this map is heavily biased to the work done by West-Eu
 
 At the moment the shows only Komi-Zyrian dialects, Iźva marked with red! I'm on my way to connect it to our database and get some markers from there.
 
-<iframe id="map_id" width=700 height=500 src="/media/maps/kpv_dial.html"></iframe>
+<iframe id="map_id" width=700 height=500 src="https://github.com/langdoc/langdoc.github.io/blob/master/media/maps/kpv_dial.html"></iframe>
 
 
 
