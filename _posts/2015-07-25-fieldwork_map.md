@@ -4,8 +4,6 @@ title:  "Fieldwork map"
 date:   2015-07-25 23:55:14
 tags: [fieldwork, R]
 excerpt_separator: <!--more-->
-self_contained: no
-maps: true
 ---
 
 Doing language documentation with a language like Komi is in many ways different from working with actually non-documented languages. With Komi there is a long research history and collection of data has been ongoing for about 170 years. The data varies and is uneven, but the new data collected now can only be observed and used in connection to the old. In no village can we ever be the first fieldworkers. This of course opens up the question of how many villages there are and where exactly they are located.<!--more-->
