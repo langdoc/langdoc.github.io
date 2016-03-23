@@ -5,9 +5,267 @@
     <description></description>
     <link>http://langdoc.github.io/</link>
     <atom:link href="http://langdoc.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 25 Jul 2015 11:55:57 +0400</pubDate>
-    <lastBuildDate>Sat, 25 Jul 2015 11:55:57 +0400</lastBuildDate>
-    <generator>Jekyll v2.5.3</generator>
+    <pubDate>Wed, 23 Mar 2016 18:40:23 +0100</pubDate>
+    <lastBuildDate>Wed, 23 Mar 2016 18:40:23 +0100</lastBuildDate>
+    <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Adding shadows to images</title>
+        <description>&lt;p&gt;I’m not certain if this is something anyone needs often, but at least I was surprised to learn this can also be done from the command line. So I needed to overlay something on a map as a marker, and already had fired up Gimp and started to edit a shadow file to be used in JavaScript. Little I knew that ImageMagick was able to do that as well!  &lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;So if one would start with a file like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload.wikimedia.org/wikipedia/commons/2/29/Icon256x256.png&quot; alt=&quot;example&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;With command like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;convert Icon256x256.png &#39;(&#39; +clone -background black -shadow 80x100+100+100 &#39;)&#39; +swap -background none -layers merge +repage cat_shadowed.png
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We get a one with background shadow!&lt;/p&gt;
+
+&lt;p&gt;![shadow_example(media/figures/cat_shadowed.png)]&lt;/p&gt;
+
+&lt;p&gt;You have to play with the numbers to get the direction, size and distance of the shadow right. I think the main potential use for this is in map icons.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 23 Mar 2016 10:56:00 +0100</pubDate>
+        <link>http://langdoc.github.io/2016/03/23/shadows-to-images.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2016/03/23/shadows-to-images.html</guid>
+        
+        <category>Terminal</category>
+        
+        <category>maps</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Generating sine-waves with R</title>
+        <description>&lt;p&gt;This topic may not be immediately relevant, but can still be interesting for somebody. So the question is: How to generate sound files with R, which just play sine wave at one specific frequency. One immediate reason is to test the frequencies you are yourself able to hear. I’m now lost somewhere after 17250 hz, which sounds horrendously low, but maybe should not be so unusual for someone in my age (soon 29). &lt;!--more--&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# I load the packages explicitly here, and also refer to them 
+# with their namespaces in individual functions.
+# I understand this is somewhat redundant, but I hope it makes 
+# it more obvious which function is from which package.
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuneR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;seewave&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plyr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# I needed to do this on Mac to get it work.
+# But please install Sox anyway, it is useful!
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;tuneR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;setWavPlayer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;sox&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# These are the frequencies we want
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;rates&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;800&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1600&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1800&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;4000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;6000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;8000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;12000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;14000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;15000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;15250&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;15500&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;15750&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;16000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;16250&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;16500&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;16750&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;17000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;17250&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;17500&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;17750&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;18000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;20000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# This is a tiny function that in principle could also just be inside llply itself.
+# I find it easier to read this way when it is on its own and named.
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;write_sines&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;seewave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;savewav&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuneR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; 
+                &lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;paste0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;~/sounds/sound_&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;_hz.wav&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# llply just repeats the function write_sines to all elements in rates character vector
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plyr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;llply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rates&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;write_sines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;So basically this just fills the folder &lt;code&gt;sounds&lt;/code&gt; with the files like &lt;code&gt;sound_100_hz.wav&lt;/code&gt; and so on, as specified in the &lt;code&gt;rates&lt;/code&gt; vector. Just modify the values and overwrite the old files. In principle one of course could had generated those numbers more automatically, but I think in this case some manual adjustment is good to be there, as you never know exactly which ones you or your ears need.&lt;/p&gt;
+
+&lt;p&gt;Possible applications:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Have fun with your cats and high sounds&lt;/li&gt;
+  &lt;li&gt;Your recording device usually would capture something up to 24 khz. This leaves us the range of 20-24 khz which is not really used as we humans can’t hear it. Is there anything on these higher frequencies one could do something with?&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sun, 01 Nov 2015 14:56:00 +0100</pubDate>
+        <link>http://langdoc.github.io/2015/11/01/sine-waves-with-r.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/11/01/sine-waves-with-r.html</guid>
+        
+        <category>R</category>
+        
+        <category>data</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Data workflow for linguistic fieldwork</title>
+        <description>&lt;p&gt;I think quite a lot has been written about the data management workflows in documentary linguistics. Lots of this is about the whole workflow from field to the archive. I want to document here the workflow I’ve personally found very good for the immediate work on the field, and also desire to use later. This doesn’t even touch the issues of annotating, archiving, publishing or disseminating. &lt;strong&gt;I want to stress that this all is something that in my opinion should be done already at the field. Period. Don’t delay it, the consequences are heavy.&lt;/strong&gt;&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;I’ve encountered occasionally an idea that taking part into a workflow such as presented here would be a sort of a choice. However, you are already there &lt;strong&gt;if&lt;/strong&gt; you decide to involve both video and audio into your working practices. The moment you decide to bring a videocamera on the field dictates some aspects from your further workflow as well, as it has to take into account the existence of both audio and video data streams. Naturally it is possible to ignore the video, but in that case one could also ask what was it worth to do it in the first place.&lt;/p&gt;
+
+&lt;p&gt;As if the situation would be just about the video. Several modern audio recorders, such as Edirol R-26, automatically produce as a number of audio files from different microphones. In order to work with this data in the most effective way we must somehow take this into account, as an example, by remixing the audio in way that brings up the best aspects of these distinct audio tracks, and recording in such a manner that we actually get the benefit that is there.&lt;/p&gt;
+
+&lt;p&gt;The days of having just one track of audio are over. Are we winning or losing with these changes, that is to be seen. But not taking them into account is an ignorance we cannot afford.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;I assume that each part in the presented workflow will change in some point. The technology changes always, and there is no reason to stick into old if some better solution is around. This said, we should not end up using any solutions which we are not thoroughly familiar with. At the same time, it remains the fact that many of our tools are used the most while we are doing fieldwork, which also means that we learn very much about them on the field.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-raw-data&quot;&gt;The raw data&lt;/h2&gt;
+
+&lt;p&gt;As mentioned, the session raw data is getting wilder and wilder. Often we use several microphones, i.e. some lapel mics + one in a boompole to capture the overall sound. Also the camera makes its own audio track, which may be very usable in many cases. With many cameras this audio is also 6 channel surround, with which we have to consider are all those tracks containing what we want in the best possible constellation. Another thing to note is that many video cameras store their audio in Dolby Digital format which is not particularly transparent. Similarly, the video may be captured in AVCHD format, which also contains it’s own particularities.&lt;/p&gt;
+
+&lt;p&gt;Generally speaking in documentary linguistics it has been getting more and more common to capture also video. This also turns it into something one is expected to produce. In principle using two cameras is not out of the question, as it solves many problems there inherently are with the camera angle. One can be used to capture the general overview of the setting, and this gives to the other one more freedom to move around and get experimental. This is where the human component comes in. When we start to zoom camera into something that could be interesting, there is always the danger that &lt;strong&gt;the interesting&lt;/strong&gt; takes place somewhere else. If we use only one camera we have to be careful, but with two there is already more freedom.&lt;/p&gt;
+
+&lt;p&gt;So a normal recording session contains very often at least the several files:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;few audio files&lt;/li&gt;
+  &lt;li&gt;few video files&lt;/li&gt;
+  &lt;li&gt;scan from fieldnotes&lt;/li&gt;
+  &lt;li&gt;metadata files&lt;/li&gt;
+  &lt;li&gt;photographs of the informants&lt;/li&gt;
+  &lt;li&gt;general photograph or screenshot from the recording setting itself&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In practise the metadata can often be in a database and not in the actual folder with the session raw data, but this is not really the point here.&lt;/p&gt;
+
+&lt;p&gt;However, there are many steps before we actually can start to work with this data.&lt;/p&gt;
+
+&lt;h2 id=&quot;data-processing&quot;&gt;Data processing&lt;/h2&gt;
+
+&lt;p&gt;There are few steps one has to take with the raw data.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;synchronization&lt;/li&gt;
+  &lt;li&gt;mixing&lt;/li&gt;
+  &lt;li&gt;cutting&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is sort of a post-production phase which has not existed traditionally, but nowadays is there all the time. I’ve been using &lt;strong&gt;PluralEyes&lt;/strong&gt; and &lt;strong&gt;Final Cut Pro X&lt;/strong&gt; to do this. There are certainly other alternatives, but as far as I know there aren’t really open source solutions for this.&lt;/p&gt;
+
+&lt;h3 id=&quot;pluraleyes&quot;&gt;PluralEyes&lt;/h3&gt;
+
+&lt;p&gt;What PluralEyes does is to take all the audio and video files and to look for matching segments in the audio spectrograms. This must be very similar to audio fingerprinting tools, used i.e. with Python library DejaVu. However, good side of PluralEyes is that it is easy and fast. It also exports the synchronization metadata as an XML file.&lt;/p&gt;
+
+&lt;h3 id=&quot;final-cut-pro&quot;&gt;Final Cut Pro&lt;/h3&gt;
+
+&lt;p&gt;Final Cut Pro is a commercial video editing software, used widely by different video professionals and amateurs alike. I guess Adobe Premiere does more or less the same job equally well. Also Final Cut Pro allows us to import and export session data as an XML file, by the way.&lt;/p&gt;
+
+&lt;p&gt;In PluralEyes we don’t really do anything for the files, but in Final Cut Pro we can start to play more with them. Naturally, the question of cutting is very acute. Are we supposed to cut? What kind of videos are we doing as documentary linguists? Well, I guess the answer is that we are doing different videos for different uses. As an example, for a DVD that is sent to informant I may do different cuts than I do for the one that will be transcribed.&lt;/p&gt;
+
+&lt;p&gt;At least we have good rationale to cut something away from the beginning and the end, as this often has some noise from setting up the tools and preparing for the session. The main reason to cut, in my opinion, is that often this part is captured by one of the devices, i.e. there is an audio track, but the video camera is just being set up. So it just makes it nicer if we leave that hassle out. On the other hand, this often contains very critical information about how the aims and goals of the session are explained to the informant, how the linguists negotiated among each others who stays where, how the room was rearranged to make recording work better etc. These things do influence the recording quite a lot, so it is very good if that part of the work is also documented. However, should that be part of the transcribed session? Maybe. Should that be sent to the informant who maybe just wants to have a nice DVD with the actual interview?&lt;/p&gt;
+
+&lt;p&gt;Another example is that often the recording is interrupted and the technology is turned off for some time. As an example, we may turn camera and recorder off during a phone call or if someone has to leave for some personal errands. However, it is very important question can we just glue these two pieces together, or should we split these two into two different sessions? I’ve always split them into two, since I think the idea of a session is to represent one temporally consecutive situation. However, if the breaks are somehow very well indicated, I believe there is very little reason not to play around with these things if there is the need. One need would be to make an actually nice video from shorter video and audio recordings which are somehow topically interrelated. This is also nicer to transcribe and watch than treating each little file as their own session.&lt;/p&gt;
+
+&lt;p&gt;Of course the Final Cut Pro XML files contain data about the ways how files are rearranged and cut.&lt;/p&gt;
+
+&lt;h3 id=&quot;note-about-xml-files&quot;&gt;Note about XML files&lt;/h3&gt;
+
+&lt;p&gt;Naturally it is one thing to archive the XML files produced by these programs and actually do something useful with them. Understanding their structure and actually getting information out from them is not always trivial either. There are no real applications at the moment that would really use this data, similarly, I don’t think it has been very common practise to archive XML files like these. However, I think the only way we can excuse the use of commercial software is to make certain that the data is not locked into these systems. In any points. Certainly, the most comfortable way to work with fcpxml files is to open them in Final Cut Pro. But we have to make sure that is not the only option.&lt;/p&gt;
+
+&lt;h2 id=&quot;audio-mixing&quot;&gt;Audio mixing&lt;/h2&gt;
+
+&lt;p&gt;I must admit that I have no education about this topic. Maybe I should, as I’m a linguist who works with this stuff all the time, but I think there are very few instances of linguistic departments which include audio engineering as a part of their curricula.&lt;/p&gt;
+
+&lt;p&gt;I sort of thought I had got it already work nicely, but then one musician friend of mine was listening some ELAN sessions and complained about an echo. Yes, indeed, several audio tracks played simultaneously make sort of a nice sound where everyone can be heard well, but there was indeed some small echo. I remixed the tracks differently, putting some more quiet, some louder, and the echo disappeared. Not that I would understand anything about the process, but clearly this is an enormous field someone should understand about.&lt;/p&gt;
+
+&lt;p&gt;The situation is even more acute when it comes to work with old recordings. The sound quality is often quite bad, and there are certainly things we can do. I’ve used often ReaFir effect in REAPER to mute some frequencies, though there has been no way to include any audio editing software into the current workflow I have with documentary linguistic sessions. As our modern recordings are almost always very decent there is maybe little space for this, but still the question remains that mixing these audio channels from different devices is not trivial task at all.&lt;/p&gt;
+
+&lt;p&gt;This also means that it has to be very well indicated which are the actual raw data files and which are mixed for actual session. Naturally for phonetic analysis one should consult the raw data, but what you get into ELAN is usually a mix of several audio files, I see no other alternative.&lt;/p&gt;
+
+&lt;h2 id=&quot;processed-data&quot;&gt;Processed data&lt;/h2&gt;
+
+&lt;p&gt;So now the session folder actually contains already these files:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;few audio files&lt;/li&gt;
+  &lt;li&gt;few video files&lt;/li&gt;
+  &lt;li&gt;scan from fieldnotes&lt;/li&gt;
+  &lt;li&gt;metadata files&lt;/li&gt;
+  &lt;li&gt;photograhps of the informants&lt;/li&gt;
+  &lt;li&gt;general photograph or screenshot about the recording setting itself&lt;/li&gt;
+  &lt;li&gt;PluralEyes XML&lt;/li&gt;
+  &lt;li&gt;Final Cut Pro XML&lt;/li&gt;
+  &lt;li&gt;audio file for ELAN&lt;/li&gt;
+  &lt;li&gt;video file for ELAN&lt;/li&gt;
+  &lt;li&gt;ELAN file&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;What I have been doing now is to create new folders for different outputs, i.e. I have folder called session_name-i for the file version that has been sent for the informant, that often contains just a DVD disc image. Then there are folders marked with a, b, and c etc. for distinct subsessions if they exist. Usually they do. One problem is that the session can be understood to work out so that if the beginning hassle counts as something of its own, then that’s the part a. Then the actual recording, if uninterrupted, gets the symbol b, and the end hassle is c. So then there is a very large amount of sessions with the symbol b in their name, which feels bit stupid at times, but doesn’t really matter so much. Maybe there are better ways to arrange these files.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-the-point&quot;&gt;What’s the point?&lt;/h2&gt;
+
+&lt;p&gt;My idea about this workflow is such, that this would be ready for every session when we leave the fieldsite. If we have several video files, this version can be done with the most simple and general video there is. Don’t worry about nice video for the informants, that can be polished and sent back later. Quality wins over speed in that. For the later use it is possible to remix the video with different angles, this doesn’t influence the ELAN file of course in any way, unless there is actual mixing of the content, problems of which I already discussed briefly.&lt;/p&gt;
+
+&lt;p&gt;I already keep track from all metadata on the field, and make sure that everything is arranged into their own folders and metadata is filled up, if possible, at the same evening. More days pass more difficult it gets to actually reconstruct what has happened. I think actually taking it as far as even exporting the media for ELAN files and creating those dummy ELAN files does make sense. If this video management workflow is not taken care of instantly, it will become an enormous burden for someone (I’ve been that someone for several times). Running through this workflow is not very slow in the end, the only slow part is exporting. So process the session data at the evening with a beer or the local mildly alcoholic beverage of choice, leave the computer export and backup over night, repeat. If you have a research assistant or someone else doing this, make sure they are unstressed and have the beverage they deserve, this is not easy work, but it is worth doing on the spot.&lt;/p&gt;
+
+&lt;p&gt;I understand this workflow probably doesn’t work in locations where electricity is scarce. I work mainly in the Northern Russia, and there the villages are often very good locations for using computer at the evenings. I understand this is not always possible also time-wise, but my advice would be not to let this kind of work accumulate. I’ve spent months working with video and audio files from few weeks long fieldtrip, and very big part of that could had been ready even before I got back home.&lt;/p&gt;
+
+&lt;h2 id=&quot;is-anything-going-to-change&quot;&gt;Is anything going to change?&lt;/h2&gt;
+
+&lt;p&gt;Maybe when the computers get faster also video exporting gets faster, though this is unlikely as the video probably gets larger at the same rate. Maybe in some point it gets convenient enough to make notes straight away in digital format. This would change a lot, if one could, as an example, timestamp the notes and associate them with the raw data.&lt;/p&gt;
+
+&lt;p&gt;There has been this development that there is more and more fieldwork equipment. Two cameras means two tripods, and so on. However, there are some interesting developments. As an example, there have been lately more and more camera models which have a high quality objective in very small body. Naturally, one could assume that cameras like these are very good in video, as modern DSLR’s tend to be, and the small size makes them much more user-friendly. Now there are lots of hipstery retro models out there, but in some point we probably start to see products that could be immediately useful for documentary linguists as well. Just a note, in this workflow the video needs only some audio, it can be really bad even, just enough that it can be synchronized with the audio files.&lt;/p&gt;
+
+&lt;p&gt;The majority of events we record tend to be interviews of some sort. They are in many ways near conversations, but there is often the setting that one tells and another asks. Even when there are multiple participants it is normal that someone takes a very central role and does the most of the speaking. It isn’t fully solved how to record more naturally occurring speech events, usually luck has something to do with that. I think one change in the thinking would be to realize that now we basically record people when they are supposed to say something. Instead we maybe should record people when they do something, and if we are lucky, they say something. This means that we would end up recording much more situations where no one actually says a thing. I’m not currently certain how to move forward with that, but I’m sure the coming years will be interesting.&lt;/p&gt;
+
+&lt;p&gt;Of course it is very interesting if we would have recordings that last many hours and contain only few utterances. Why not. Hard disk space is cheap. These languages being used naturally is priceless.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 16 Sep 2015 12:45:13 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/09/16/session-workflow.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/09/16/session-workflow.html</guid>
+        
+        <category>fieldwork</category>
+        
+        <category>data</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Editing text blocks in Emacs</title>
+        <description>&lt;p&gt;Often when we digitalize some text collections we end up with text blocks in one language, and the translations on some other language in similar blocks. However, in our modern language collections the text is divided into utterances, which often more or less do match with sentences.&lt;/p&gt;
+
+&lt;p&gt;There is no automatic way to match the sentences, because there isn’t always exact correspondence at the sentence level. However, some ways to work with this data are more difficult than the others. &lt;!--more--&gt; One can start with some regular expressions such as these.&lt;/p&gt;
+
+&lt;p&gt;The point of this is to mark paragraph breaks with the hash character.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&quot;\n&quot; &amp;gt; &quot;\n#\n&quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we can try to separate the sentences into their own lines.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&quot;(\.|\,|\?|\!|\:) &quot; &amp;gt; &quot;$1\n&quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This works quite well. But there is still mismatch, almost always, at least when we have a longer text. I do this often in TextMate, but any text editor can handle this simple things.&lt;/p&gt;
+
+&lt;h2 id=&quot;editing-with-emacs&quot;&gt;Editing with Emacs&lt;/h2&gt;
+
+&lt;p&gt;I don’t use Emacs that often, though there are some situations where it is irreplaceable. One situation is this. We can open the two text blocks in two diagonally split buffers, and make our editing way easier with following commands in both buffers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;M-x toggle-truncate-lines
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now each line contains one string we want to match. Then let’s have line numbers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;M-x linum-mode
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then the last one, which actually makes all this effort worthwhile:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;M-x scroll-all-mode
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now the both buffers are scrolling down and up simultaneously. With &lt;code&gt;C-x-o&lt;/code&gt; we can move between the buffers, and by moving sideways between the lines it is easy to keep two trackers matching.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 01 Sep 2015 13:06:13 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/09/01/emacs-editing.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/09/01/emacs-editing.html</guid>
+        
+        <category>emacs</category>
+        
+        <category>digitalization</category>
+        
+        
+      </item>
     
       <item>
         <title>Fieldwork map</title>
@@ -18,461 +276,14 @@
 &lt;p&gt;It must be mentioned that this map is heavily biased to the work done by West-European scholars. Naturally, native Komi researchers have been working enormously for decades with different Komi varieties. This bias is simply result of situation where data stored in the Western archives is more accessible for us than what is stored in local Russian archives.&lt;/p&gt;
 
 &lt;!--html_preserve--&gt;
-&lt;div id=&quot;htmlwidget-3747&quot; style=&quot;width:612px;height:378px;&quot; class=&quot;leaflet&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;application/json&quot; data-for=&quot;htmlwidget-3747&quot;&gt;{ &quot;x&quot;: {
- &quot;calls&quot;: [
- {
- &quot;method&quot;: &quot;addTiles&quot;,
-&quot;args&quot;: [
- &quot;http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
-null,
-{
- &quot;minZoom&quot;:                 0,
-&quot;maxZoom&quot;:                18,
-&quot;maxNativeZoom&quot;: null,
-&quot;tileSize&quot;:               256,
-&quot;subdomains&quot;: &quot;abc&quot;,
-&quot;errorTileUrl&quot;: &quot;&quot;,
-&quot;tms&quot;: false,
-&quot;continuousWorld&quot;: false,
-&quot;noWrap&quot;: false,
-&quot;zoomOffset&quot;:                 0,
-&quot;zoomReverse&quot;: false,
-&quot;opacity&quot;:                 1,
-&quot;zIndex&quot;: null,
-&quot;unloadInvisibleTiles&quot;: null,
-&quot;updateWhenIdle&quot;: null,
-&quot;detectRetina&quot;: false,
-&quot;reuseTiles&quot;: false,
-&quot;attribution&quot;: &quot;Niko Partanen, work funded by Kone Foundation&quot; 
-} 
-] 
-},
-{
- &quot;method&quot;: &quot;addPolygons&quot;,
-&quot;args&quot;: [
- [
- [
- {
- &quot;lng&quot;: [ 49.98489310254492, 49.98568244933999, 50.05920004299836, 50.09840942628281, 50.08370590755114,  50.0199906597139,  49.9268683744133, 49.83211236480919,  49.6622050372432, 49.53356373735767,        49.3227317,        49.3347087,        49.8908952,        50.2462492, 50.57881347634918, 50.52644519380483, 50.74733093900367,        50.8079081,           50.7715,         50.744747,        50.7309267, 50.68266272742703, 50.57218947430337,  50.4300554598972, 50.28792144549104, 50.27485165106288,  50.2671999404529,         50.185386, 50.03803240987317, 49.98489310254492 ],
-&quot;lat&quot;: [ 61.81810671424165, 61.88046511105207, 61.91804077003301, 61.95398270471043, 62.07651202747437, 62.12715748088346,   62.087948097599, 62.00952933103009, 61.96541877483507, 61.94463825716125,        62.0259838,        62.1059506,        62.4346942,         62.439891, 62.19120649531555,  62.0961167191166, 62.06519271478876,        62.0198944,        61.9337967,        61.8819411,        61.8620633, 61.84711910207257, 61.90660469990838, 61.90497097560486, 61.88209883535559, 61.78734282575148, 61.71847743026159,         61.693145, 61.74999858794769, 61.81810671424165 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 48.58488142428756,        48.5769983,        48.9904844,        49.3940098,        49.6587993,        49.7149265, 49.73346812760481, 49.78293557029487, 49.80025474089072, 49.85580136721037, 49.81985943253295, 49.71856852571477, 49.54866119814879, 49.38855621640391,  49.3331572578161,        48.7007866, 48.66058811829971, 48.70565945753276, 48.89190402813394, 49.07488115012809, 49.20557909440962, 49.35588173033338, 49.44410284272342, 49.41469580526007, 49.40816090804599, 49.34607938451227, 49.21864888883778, 49.06181135569994, 48.94418320584656,  48.7514037380313, 48.58488142428756 ],
-&quot;lat&quot;: [ 60.33130922156794,         60.415457,        60.7645146,        60.6455192,        60.4524071,        60.2122546, 59.97446414409177, 59.74103964889805, 59.68964082003293, 59.42824493146988, 59.26813994972501, 59.19625608037017, 59.24853525808278, 59.40537279122061, 59.49202244439643,          59.90289, 59.95679063290671, 60.00331588630857, 60.01965312934376, 59.98697864327337, 59.90529242809742, 59.83340855874258,   59.954304157203,  60.0653974098423, 60.19609535412383, 60.35620033586871, 60.44442144825874, 60.45422379407985, 60.39540971915316, 60.33659564422647, 60.33130922156794 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 50.22931572110938, 50.22623184751636, 50.16702584703075, 50.15068860399555, 50.12291529083573, 50.08697335615831, 50.03142672983866, 49.94320561744863, 49.85008333214805, 49.76839711697209, 49.73977508611524, 49.72265283647356, 49.61972820535185, 49.49883260689144, 49.44001853196475, 49.41714639171548,  49.4530883263929, 49.53150709296182, 49.61646075674481, 49.67364110736798, 49.73082145799115, 49.77814618917461, 49.78146691140024, 49.85335078075508, 49.92686837441344, 50.01672321110699,  50.1114792207111, 50.19479916019057, 50.30262496422283, 50.37287510927415, 50.43985780571843, 50.48396836191345, 50.51027041947722,        50.5781517,        50.6066229, 50.62695093424747,  50.6424396193548, 50.66204431099703, 50.66204431099703, 50.63753844644425, 50.60559464909737, 50.60323023607035, 50.51174167507327,  50.4627299459677, 50.42678801129028, 50.40881704395157, 50.39738097382694, 50.39574724952342, 50.39850112233222, 50.40718331964806, 50.39084607661286, 50.33529945029321, 50.28955516979468, 50.28909531398285, 50.24299402714439, 50.22931572110938 ],
-&quot;lat&quot;: [ 60.70847759433392, 60.70944090420097, 60.77116630896257, 60.82671293528222,  60.8936956317265, 60.94760853374263, 60.99008536563413, 61.00315516006228, 60.97211439829542, 60.89206190742298, 60.86139544579065, 60.84305017831741, 60.82671293528222, 60.86102114565612, 60.90349797754762, 60.94760853374263, 61.01132378157988, 61.12078330991565, 61.21063814660921, 61.24167890837607, 61.24004518407255, 61.20873805421272, 61.20737069800217, 61.18123110914586, 61.15835896889659, 61.14365545016492, 61.14528917446844, 61.15182407168252, 61.19756835218105, 61.24658008128662, 61.30866160482035, 61.37891174987167, 61.42587970980698,        61.4448401,        61.3791315,  61.2364633287728, 61.22370794103735, 61.19756835218105, 61.16326014180715, 61.13221938004029, 61.12613484721231, 61.12568448282621,  61.1077135154875, 61.07177158081008, 60.98681791702709, 60.90513170185113, 60.82834665958574, 60.76626513605201, 60.74934848879795, 60.69601499100069,  60.6535381591092, 60.65190443480567, 60.67314285075143, 60.67363237468015, 60.69274754239366, 60.70847759433392 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 57.02621733535623, 57.36929943909475,  57.6633698137282, 57.82708808208042, 57.75159092611823, 57.52286952362555, 57.29414812113288,  57.0654267186402, 56.98047305485721, 57.10463610192466, 57.22879914899211, 57.24513639202742, 57.68297450537042, 57.84356393533135, 58.13750007447241, 58.32992932956399, 58.35474885185685,        57.9841998,        57.2461643,        56.8236969,        56.0709016,         55.823164,        55.7909617,        55.8344326, 55.94802845415084, 56.20282028638211, 56.34658802509179,  56.5099604554437, 56.85501306916209, 57.09810120471058, 57.43138096262848, 57.52940442083963,  57.5359393180537,  57.5359393180537, 57.47059034591294, 57.42951463676978,        57.5812654,        57.8434022, 58.07118738945625, 58.06199854378686, 57.76139327193934, 57.29741556973991, 57.11243832089381, 56.87591469943198, 56.72561206350822, 56.64065839972523, 56.62758860529707, 56.68640268022376, 56.87591469943198, 57.02621733535623 ],
-&quot;lat&quot;: [ 62.85579852025297, 62.85579852025297, 62.81658913696851, 62.60533975844951, 62.47023958462244,  62.4244953041239, 62.41142550969575, 62.39182081805352, 62.34607653755499, 62.16963431277492,  62.0650759573497,  62.0650759573497,  61.9866571907808, 61.99510926604191,  61.9554774270566, 61.83635455485705, 61.77678770135419,         61.609628,        61.6850252,        61.8232003,         62.654964,          63.19114,        63.4075691,        63.5179323, 63.61056762195916, 63.56810231658729, 63.69226536365473, 63.94712635500372, 64.00390716485612, 63.99940553271632, 64.01247532714449,  64.1170336825697, 64.28040611292161, 64.46991813212983, 64.67903484298027,   64.818692254067,        64.9424422, 64.83302740000001, 64.36961330794757, 63.99287063550227,  63.6791955692266, 63.60077680265768, 63.53526402702469, 63.48314865280429, 63.37859029737906, 63.21521786702715, 63.04531053946116, 62.92768238960779, 62.84926362303887, 62.85579852025297 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 48.40801563991072, 48.45348945872833, 48.59293248059011,  48.7185690829117, 48.83472367751094, 48.91967734129393, 48.91846363333448, 48.91314244407985, 48.89680520104466, 48.90660754686578, 48.97522396761358, 49.09938701468103, 49.10056400754888, 49.13206150075142,  49.2496896506048, 49.32484096856668, 49.39672483792152, 49.55029492245232, 49.71693480141126, 49.82609379092995, 49.88684212897725, 49.97833068997432, 49.93258640947578,  49.7985754853337, 49.64505093205642, 49.44573656702709, 49.26929434224703,  49.2474572506308, 49.05522853267095, 48.93649682825005, 48.89680520104467,  48.7105606304435, 48.54065330287751, 48.31846679759891,  48.2970874533586, 48.28252486292148, 48.10608263814142, 48.00527579778353, 47.95034018995911, 47.80220991768687,  47.7107213566898, 47.62250024429976, 47.51794188887455, 47.38255610829178,        47.3316204, 47.23709254563379, 47.28760967857325, 47.38397649598598, 47.50160464583936, 47.54734892633789, 47.55388382355196, 47.55328139667973,   47.557151272159,  47.4199184306634, 47.19119702817073, 47.00495245756955, 46.82524278418245, 46.57691669004755, 46.52650964962538, 46.37760232501822, 46.33839294173376,  46.4102768110886,  46.6235963088878, 46.85464982164579, 47.18139468234961, 47.39704629041412, 47.61269789847865, 47.80220991768687, 48.04400111460769, 48.12612036514129, 48.25965272267222, 48.36747852670448, 48.42956005023821, 48.40801563991072 ],
-&quot;lat&quot;: [ 63.88516813141744,  64.1002942742854,  64.2444641782442, 64.35824827091281, 64.36535977670459, 64.29674335595679, 64.27004178084898, 64.15297561724711, 63.97326594386001,  63.7837539246518, 63.65632342897731, 63.59097445683654, 63.60013818702196,  63.5779046624084, 63.58443955962248, 63.60404425126471,  63.7314747469392, 63.76088178440254, 63.66939322340547, 63.62530978533062, 63.60077680265767, 63.47988120419726,   63.372055400165, 63.37053254875429, 63.36878795155796, 63.35898560573684, 63.30670642802423, 63.29196639118327, 63.28966425084842, 63.30861079942622, 63.32631111966646, 63.38839264320018, 63.38839264320018, 63.36552050295092, 63.36084377139835, 63.36225305434388, 63.33611346548757, 63.28056683916792, 63.25029619812181, 63.14986889488639,  62.9276823896078, 62.70876333293624, 62.48984427626468,  62.3924615218104,        62.3835426, 62.57720735260073, 62.74860476793107, 62.87540321189518, 63.13026420324416, 63.30343897941719, 63.41779968066352, 63.41802057051667,  63.4243345778776, 63.61384659708582, 63.74781198997438, 63.85563779400664, 63.94385890639667, 64.02227767296559, 64.03302015698998, 64.06475450485709, 64.19871989774565, 64.30654570177791, 64.33757399236688, 64.28040611292161, 64.18238265471045, 64.07455685067819, 63.95039380361074, 63.83276565375737, 63.71840495251104, 63.70667363100623,  63.6628583261914, 63.67266067201251, 63.78702137325885, 63.88516813141744 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [  53.3897104081526, 53.58886140075153,  53.7489663824964, 53.93847840170461, 54.14432766394803, 54.24888601937324, 54.39265375808293,  54.5527587398278,  54.6899915813234, 54.76841034789232, 54.71939861878675, 54.59196812311226, 54.44820038440258, 54.27829305683659, 54.21621153330287, 54.09858338344949, 53.96135054195388, 53.79829281903096, 53.79716124945016, 53.66973075377568, 53.66563631197504, 53.73507972591644,   53.869045118805, 53.96380112840911, 54.09449907269064, 54.20020419288638, 54.27747619468477, 54.39883857151762, 54.44738352225075, 54.46229752080067, 54.54867442906894, 54.55757084677159, 54.59633432216096, 54.63990181334672, 54.68050465752122,  54.7315011018356,  54.7265169889663, 54.71609389433637, 54.70103807103713, 54.60830536614745, 54.50374701072223, 54.50570204922394, 54.49721211350815, 54.49721211350815, 54.58543322589819, 54.71286372157267, 54.85336401167532, 55.03634113366945, 55.12843126328673, 55.25771077679622, 55.25771077679622, 55.25442812064912, 55.15070183491579, 55.03718133473983, 55.02980623645538, 55.02865760010295, 54.75534055346417, 54.75403558167027, 54.75207310485713,  54.5809572097747, 54.32319373523954, 54.21539467115105, 54.17291783925955, 54.28727854050589,  54.4767905597141, 54.50946504578448, 54.27548731292399, 54.01608030612172, 53.87231256741204, 53.85045470934124, 53.79062635223608, 53.61745157606306,  53.5521026039223, 53.56476430528219, 53.58477708999268, 53.65339351074048, 53.65012606213344, 53.54883515531526, 53.35932313610705, 53.34843548933519, 53.34693363066333, 53.40506741660558, 53.57497474417157, 53.72200993148829, 53.75468441755866, 53.61418412745603, 53.48899171710426, 53.45081169710412, 53.40098310584679, 53.39357678201502, 53.38209010097199, 53.38021329734232, 53.32828237434019, 53.24006126195016, 53.18941580854107,  53.1665436682918, 53.16191617706779, 53.16000877107773,   53.097927247544, 53.10446214475807, 53.06641593088067, 53.05871786425953, 52.99454630307941, 52.79659962436527, 52.77444983544722, 52.78748951514167, 52.88554308808652, 52.93782226579913, 52.86593839644429, 52.70256596609239, 52.54246098434751, 52.38562345120968, 52.22878591807186, 52.07194838493403, 51.97065747811584, 52.06541348771995, 52.22878591807186, 52.31047213324781, 52.31047213324781, 52.24839060971409, 52.09136087371701,   51.898773608761, 51.83713123676632, 51.76154076726539, 51.60470323412757, 51.51974957034457,  51.4889001563257,        51.4393105,        51.4675672, 51.88282481789884, 52.16016949732406, 52.29413489021262, 52.32652366071893,  52.5611422666008, 52.74831024659092, 52.93128736858505, 53.09465979893696, 53.11562191394886, 53.15674132247069, 53.08485745311585, 52.85613605062318, 52.78751962987538, 53.02931082679621, 53.22862519182553, 53.37239293053521,  53.3897104081526 ],
-&quot;lat&quot;: [  61.9580670154692, 61.91477332142595, 61.89843607839077, 61.88536628396261, 61.85269179789223, 61.78734282575147, 61.71545895639662, 61.70238916196847, 61.70238916196847, 61.74813344246701, 61.78734282575147, 61.78734282575147, 61.81674986321481, 61.89843607839077,  61.9703199477456, 62.08468064899194, 62.17943665859605, 62.26514648731195, 62.26847463313782, 62.35996319413488, 62.40807288529245, 62.47105644677418, 62.47432389538122, 62.41550982045453, 62.34035850249266, 62.37918895480946,   62.369765539956,  62.3230877027126, 62.30441656781524, 62.31884946963774, 62.40244002602638, 62.41835993138902, 62.44763031076467, 62.48052821227228, 62.48212048067128, 62.44466996687791, 62.38236855601172, 62.36152236675186, 62.33141072015336, 62.27419266820016, 62.17290176138197, 62.17173804798809,  62.1663668641679, 62.03566891988637, 61.97358739635264, 61.94744780749634, 61.92130821864003, 61.95398270471041, 62.00212072701035, 61.94499722104104, 61.85350866004397, 61.72712639838065, 61.63377274122067, 61.52921438579545, 61.52921438579545, 61.52538559795403, 61.52267948858137, 61.52192912979987, 61.52267948858137, 61.49362207243529, 61.49075803382935,   61.513694004912, 61.44834503277124, 61.26863535938415, 61.21962363027858, 61.14773976092373, 61.05241549938798, 61.03991395689148, 60.95169284450145, 60.91934321455667, 60.83079724604104, 60.81446000300585,  60.8700066293255, 60.90672556326918, 60.96476263892961,  61.1183327234604,  61.1869491442082,  61.1869491442082, 61.19021659281524, 61.19542372822787, 61.28853896588317, 61.36992626620233, 61.44507758416421, 61.41893799530791, 61.50062421048386, 61.53983359376831, 61.57249248342529, 61.59211277148093, 61.60436570375732, 61.60459359064445, 61.60731412036517, 61.60775862648799, 61.61335118742667, 61.60518256590908, 61.58966218502565, 61.57087435553517, 61.56002867297889, 61.55943828541054, 61.40260075227272, 61.30130984545453, 61.11379636277302, 61.08892568599705, 61.04458897099988, 61.07632088132809, 61.27843770520526, 61.40666122220066, 61.48428696744867,  61.6149849117302, 61.68033388387096,  61.7358805101906, 61.75875265043987,  61.7783573420821, 61.76202009904691, 61.70647347272726, 61.55290338819647, 61.41567054670087, 61.31111219127565, 61.20328638724339, 61.12160017206744, 61.07258844296187, 61.04519953552052, 61.15754210674486, 61.21747219062857, 61.25883301356304, 61.36992626620233, 61.50715910769794, 61.71025108332218,        61.8309104,        61.8513024, 62.01781029568523, 62.03321833343108, 62.10510220278591, 62.16679509898842,  62.3593594264575, 62.41550982045454, 62.47105644677418, 62.46452154956011, 62.44355943454821, 62.40244002602638, 62.25540483870967,  62.1214394458211, 62.05935792228738, 62.02995088482403, 61.96786936129031,  61.9580670154692,  61.9580670154692 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 50.98553292526255, 50.95545375186995, 50.94304489120221, 50.92670764816702, 50.84654866969306, 50.84738279426922, 51.00266342528269, 51.12265635699186,   51.126270045701, 51.11446569773853, 51.07129224902847, 51.09559785060211, 50.98553292526255 ],
-&quot;lat&quot;: [ 60.37705518955339, 60.40361445967664, 60.43788655104466, 60.50813669609597, 60.54758000296412, 60.59053741863592, 60.62159439151788, 60.54313747463111,  60.5090655525164, 60.47522642169067, 60.44605517256225, 60.39845670281385, 60.37705518955339 ] 
-},
-{
- &quot;lng&quot;: [ 50.81643125767948, 50.85400691666042,  50.8605418138745, 50.85564064096393, 50.81643125767948,  50.7674195285739, 50.74781483693167, 50.81643125767948 ],
-&quot;lat&quot;: [ 60.07193230705636, 60.05069389111061, 60.01638568073671, 59.98697864327337, 59.96900767593466, 59.97881002175577,  60.0408915452895, 60.07193230705636 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 50.51651971541783, 50.52425500445469, 50.61956747910542, 50.68155978902528, 50.81071322261716, 50.91853902664943, 51.02963227928873, 51.07047538687671, 51.13909180762451, 51.21914429849695, 51.29592934076235,  51.3857841774559, 51.41274062846397, 51.41334800013775, 51.42335983643684, 51.38584486703479, 51.34167362126089, 51.21424312558639, 51.12275456458932, 51.02636483068169, 51.00512641473594, 51.01499390392549, 51.02309738207465, 50.97735310157611, 50.91527157804239, 50.86879378867289, 50.83358536286643, 50.78868042584841,        50.6472031,        50.4726029,  50.4981619726719, 50.60649768467727, 50.63590472214061,  50.6522419651758,  50.7453642504764, 50.72085838592361, 50.63753844644413, 50.56852520699894, 50.51651971541783 ],
-&quot;lat&quot;: [ 62.77696883866595, 62.80882002881774, 62.88030438480579, 62.94411999795859, 63.02407212351547, 63.05511288528233, 63.01263605339084, 62.97015922149934, 62.91788004378672, 62.89827535214449, 62.90481024935857, 62.89174045493042, 62.87540321189523, 62.87306716699607, 62.83456010430725, 62.79779543429323, 62.75450761343481, 62.70876333293627,  62.5911351830829, 62.53885600537028, 62.46207096310489, 62.37954287170142, 62.31176832718112, 62.27092521959314, 62.27255894389666, 62.32243754712246, 62.33790791603742, 62.29869515413436,        62.2733134,        62.2469016, 62.34182130668575, 62.36078005628669, 62.43266392564153, 62.49474544917526, 62.53395483245973, 62.61400732333217, 62.61890849624272, 62.64758932302514, 62.77696883866595 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 50.75000623478213,  50.6678337223639, 50.61793375480205,  50.5460498854472, 50.60792637109854, 50.79764342818914, 50.97081820436216, 51.11458594307184, 51.24059879417145, 51.36291203720674, 51.41403263752482, 51.39885397188416, 51.37997229014646, 51.18320236381964, 51.02309738207477, 50.91200412943547, 50.75000623478213 ],
-&quot;lat&quot;: [ 61.31696149282499, 61.32620590047203, 61.39606585505863, 61.60191511730203, 61.69552313405662,  61.7783573420821, 61.80122948233137, 61.86657845447213, 61.87839215926272, 61.84370631422286, 61.71712197057808, 61.66399664083576,  61.6478401502767,   61.598647668695,  61.4875544160557, 61.39933330366567, 61.31696149282499 ] 
-} 
-] 
-],
-null,
-{
- &quot;lineCap&quot;: null,
-&quot;lineJoin&quot;: null,
-&quot;clickable&quot;: true,
-&quot;pointerEvents&quot;: null,
-&quot;className&quot;: &quot;&quot;,
-&quot;stroke&quot;: true,
-&quot;color&quot;: &quot;#BDBDC3&quot;,
-&quot;weight&quot;:                 1,
-&quot;opacity&quot;:               0.5,
-&quot;fill&quot;: true,
-&quot;fillColor&quot;: &quot;#BDBDC3&quot;,
-&quot;fillOpacity&quot;:               0.4,
-&quot;dashArray&quot;: null,
-&quot;smoothFactor&quot;:                 1,
-&quot;noClip&quot;: false 
-},
-null 
-] 
-},
-{
- &quot;method&quot;: &quot;addPolygons&quot;,
-&quot;args&quot;: [
- [
- [
- {
- &quot;lng&quot;: [  38.6133253230991, 38.72150178242631, 38.55561416237052, 38.21605317236261, 38.04547705328166, 38.35122402001686,  38.6133253230991 ],
-&quot;lat&quot;: [ 67.19870241333243, 67.11763426865637, 67.02110493727466, 66.98567851294416, 67.11212619125463, 67.22074246979771, 67.19870241333243 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 61.13279451118908, 60.78142504422821, 60.64208129346606, 60.58362046749605, 60.57907870599586, 60.73853199955627, 60.86035045237443, 61.07862910410896, 61.23737659255434, 61.30147314295392, 61.30354881239349, 61.24118385172587, 61.13279451118908 ],
-&quot;lat&quot;: [ 64.13590180450588, 64.13371977622847, 64.18735056138355, 64.23208826936578, 64.33579182361994, 64.40183807238584,  64.4219889171938, 64.42446886979558, 64.37574232561924, 64.30788046517702, 64.22526882148195, 64.17046079486107, 64.13590180450588 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 68.14254183960352, 68.01687123722863, 67.91178712148191, 67.91407008608429, 68.07183626973701, 68.30795754267166, 68.44412429659052, 68.45237619425031, 68.40215835504057, 68.32173517734144, 68.14254183960352 ],
-&quot;lat&quot;: [ 63.69533519171319, 63.71062076727944, 63.76151363734466, 63.88707669047614, 63.94605642691673, 63.93222044276308, 63.85683871044694, 63.75286479993357, 63.71301685742445, 63.68862409258708, 63.69533519171319 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 48.51433269187889, 48.44142335461404, 48.37841455714344, 48.37135106179163, 48.42125959143912, 48.56571572870164, 48.82229143304426, 48.91455321593752, 49.01856820930809, 49.03891927471154, 48.95731198160296, 48.89708509508254, 48.66861820713239, 48.51433269187889 ],
-&quot;lat&quot;: [ 66.34201444658049, 66.35860468510569, 66.39981405183472, 66.48575324528178,  66.5424993056542, 66.59917350993111, 66.60862018039535, 66.58837855537698, 66.52357168868107, 66.40727988637568, 66.34246842251743, 66.32896204221601, 66.32046739360635, 66.34201444658049 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 53.13650168418943, 53.24534147062089, 53.28933715577774, 53.28273547242983, 53.13571619011623, 52.90989338363865, 52.76734769009713, 52.79249392574556,  52.9842797190312, 53.11379018549047, 53.13650168418943 ],
-&quot;lat&quot;: [ 67.74035006896599, 67.69391740443055, 67.60592603411686, 67.58582090755735, 67.52438369935054, 67.52512154718106, 67.57655448445543, 67.67449245487566, 67.74065736389963, 67.74065736389963, 67.74035006896599 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 44.88113532942014, 44.81622321404057, 44.62320313998174, 44.55818853368228, 44.55714155358998, 44.58209055034508,  44.6607313793574, 44.72556472188067, 44.82793496880003, 44.91609979625697, 44.93473478320873, 44.93533805352259, 44.88113532942014 ],
-&quot;lat&quot;: [ 66.52197116983045, 66.50832228727585, 66.51585365028434,  66.5458935460149, 66.59614859044564, 66.62091093518882, 66.64407136867101, 66.64997502582288, 66.64680503558317, 66.60709161814485, 66.59281838073557, 66.54757310719637, 66.52197116983045 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 65.71992419232593, 65.53369514114856, 65.47200999930837, 65.47311254011019, 65.59177569876999, 65.72301548058719, 65.87801572732391, 65.90849990307923, 65.86306977812812, 65.71992419232593 ],
-&quot;lat&quot;: [ 66.05680658918617, 66.06592896195258,    66.13506336761, 66.21444630534161, 66.28378384378445, 66.29489069890316, 66.24976787083492,  66.1459568939384,  66.0945491209674, 66.05680658918617 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 66.32784635402936, 66.57236485598575, 66.67018526701669, 66.63566378459468, 66.51663290713776,  66.2736717003545,   66.192113276673, 66.21511801894209, 66.32784635402936 ],
-&quot;lat&quot;: [ 66.65861242528392, 66.65747262737366, 66.59974049494033, 66.50259864905513, 66.44922574513052, 66.45691441846834, 66.52082991527533, 66.61180321424855, 66.65861242528392 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 64.54854309149488, 64.52869504109754, 64.55548839432682,  64.6817956736415, 64.92436286185308, 64.99661522767897, 65.02961410138241, 65.00819916927247, 64.87582809971089, 64.64490128249601, 64.54854309149488 ],
-&quot;lat&quot;: [ 65.38758646703681, 65.46956754476498, 65.50095404426214, 65.52997964512592, 65.52074582721063, 65.48781038197676, 65.42387506417636, 65.37033773390151, 65.34022419727441, 65.35031192911842, 65.38758646703681 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 63.82148153753047, 63.63750924358689, 63.52796264032349, 63.54428122116361, 63.60834555861539, 63.73763941518236, 63.91599107729693,  64.1054294678775,  64.1600991885809, 64.15513710408473,  64.0028105026263, 63.82148153753047 ],
-&quot;lat&quot;: [ 64.75732660486966, 64.77875159827751,   64.844443908011,  64.9423553930517, 65.00046025725216, 65.04155061348138, 65.04607363162991, 64.99733974138991, 64.92171329441686, 64.81552468619886, 64.77044144137851, 64.75732660486966 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 35.07786036040918, 35.33661264924812, 35.35840231567667, 35.32844152433743, 35.12143969326627, 34.85451627951662, 34.74284423907034, 34.74284423907034, 34.85996369612376, 35.07786036040918 ],
-&quot;lat&quot;: [ 68.12790611976357, 68.09439733116403, 68.02621413269749, 67.97213531971272, 67.92612009362063, 67.95987351236884, 68.00888185849664, 68.08220021938325, 68.12892077632196, 68.12790611976357 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 55.46985003627342, 55.38587674490486,  55.1701983437991, 54.95011834267077, 54.67721914127165, 54.41704244723341, 54.34269753955659, 54.13802313850724,  53.9465535375256, 53.74628073649883, 53.93554953746919,  54.0521919380672, 54.01477833787538, 53.89661441231355, 53.83473690843113, 53.67136447807921, 53.73344600161295, 53.85434160007336, 53.81839966539594,  53.9000858805719, 53.98830699296194,  54.2038625645302,  54.2880954026577, 54.31554197095682, 54.20741089203537, 54.13125786951986, 53.83065259767234, 53.50390773696851, 53.41241917597144, 53.44275924192417, 53.53004732582482, 53.49737283975444, 53.43202386761367,  53.3405353066166, 53.24123044645327, 53.19904017880955,  53.2612996778959, 53.43216562657073, 53.55210260392231, 53.39526507078448, 53.18288091132698, 52.95415950883429, 52.78238602511566, 53.01933710179448, 53.46258393459765, 53.76388713658909, 54.03238473796565, 54.26346873915039,  54.4197255399515,  54.4521011861821, 54.75644794167785, 54.96332314273847, 55.10952427341066, 55.16377162934394, 55.52319097611815,    55.53633765169, 55.94609133347083, 56.69663003630232, 56.89782635265647, 56.97485435305138, 57.04527995341245, 57.10067570003793, 57.18309856141011,  57.1601827282443, 57.16609993897443, 57.23339814345752, 57.36439826618418, 57.48202641603756, 57.63668565010403, 57.64213139778243,  57.5539102853924, 57.55283036593754, 57.50653228059034, 57.47891762307154, 57.44118330844957,  57.4085088223792, 57.44118330844957, 57.53920676666073, 57.63195723884398,  57.6993117484056, 57.70774179839456, 58.02534899089525, 58.19759766097894, 58.40998182043643, 58.64197067153614, 58.93930849477663, 59.11575071955669, 59.18302257074497, 59.33140232762122, 59.57972842175612, 59.77250788957139, 60.02736888092037, 60.24628793759193, 60.48670644278471,  60.6873934995421, 61.01413836024593, 61.37355770702014, 61.39612206485469, 61.73297705379434,  62.0107101853926, 62.34725739191754, 62.62172307490875, 62.77529315943955, 62.85697937461551,  63.0105494591463, 63.08535898003001, 63.23372099587592, 63.27945062409213, 63.17626006373079, 63.02361925357446, 62.75895591640436, 62.39300167241608, 61.64475594140431, 61.25919700577379, 60.83442868685882, 60.72810362785317, 60.47006291551704, 59.98783611947373, 59.79047885691009, 59.55522255720334, 59.36897798660215, 59.15332637853763, 58.88539559276049, 58.61746480698335, 58.42795278777513, 58.27765015185138, 58.10447537567835, 57.91606028564531, 57.90986088035719, 57.60696863492188, 57.38860475517264, 57.23895035440538, 57.07389035355914, 57.10910315373967, 57.12929442697339, 57.23259207041374, 57.24555275443923, 57.27636395459719, 57.43262075539831, 57.52311304147961,  57.5507513324321, 57.55554400969594, 57.52526491197569, 57.06945931673672, 56.92537572539127, 56.88021995256621, 56.90662955270161, 56.90002715266776, 56.83620395234054, 56.70415595166354, 56.61005722977349, 56.59851755112195, 56.58531275105425, 56.38724075003876, 56.19136954903455, 56.01392241329935, 55.89866314753388, 55.70279194652967, 55.53553114567214, 55.46985003627342 ],
-&quot;lat&quot;: [ 65.97909163340745, 65.90855406865786, 65.74569486782291, 65.64005646728131, 65.53881966676228,  65.3955763183592, 65.36935806589346, 65.32974366569037, 65.34955086579193,  65.2989324655324, 65.20869966506979, 65.06564766433638, 64.85657166326446, 64.71214908757777, 64.68230229158743, 64.62348821666075, 64.46338323491587, 64.33595273924136, 64.20198734635279, 63.99940553271642, 63.82296330793635, 63.86165276949988, 63.73147474693921, 63.53934876884536,  63.3951739969501, 63.29363663359609,  63.2348225586694, 63.28056683916793,  63.4831486528043, 63.54045766627056,  63.7053351580829, 63.90791697171927, 64.09089409371342, 64.28040611292164, 64.37498217022005, 64.75691511941575, 64.86364568927806,  64.9118386491607, 65.00741342798774, 65.09563454037779, 65.10870433480594, 65.11850668062705, 65.20773965918218, 65.40729581467838, 65.55045628241605, 65.60044206707822,  65.6026428670895, 65.64665886731517, 65.75009646784548, 65.79021411643558, 65.91515646869172, 66.01199166918818, 66.20436157796738,  66.2343403799305, 66.43038729635281, 66.43938239016512, 66.54305500844701,  66.4303258752154, 66.21666607023754, 66.09782286962825, 66.00538926915435, 66.00143243010967, 66.11623570130665, 66.23434037993046, 66.51836649497626, 66.55306713166286, 66.50227116570763,   66.534945651778, 66.58068993227654, 66.49900371710058, 66.39444536167535, 66.38995954240131, 66.35523597839092, 66.30197913889037, 66.27028231460793, 66.20493334246717, 66.16245651057567, 66.13304947311232, 66.12200775023337, 66.08077029539972, 66.07923755903808, 66.11364500489232, 66.26374741739383, 66.37157322142609, 66.44018964217389, 66.52514330595689,  66.6362365585962, 66.65662196804719, 66.70158553073695, 66.62316676416803, 66.49900371710058,  66.4826664740654, 66.56108524063431, 66.64042334734793, 66.61336441834693, 66.57415503506247, 66.60029462391878, 66.61735891953117, 66.62316676416806, 66.66237614745252, 66.75059725984255, 66.83228347501851, 66.93357438183669,  67.0283303914408, 67.14595854129418,  67.1923193711376, 67.17135517324633, 67.01930415942745, 66.80647362868218, 66.65584125023844, 66.50880606292172, 66.42385239913872, 66.36830577281907, 66.34870108117684, 66.32909638953461, 66.32909638953461, 66.26177956754485,  66.1611713697359, 66.17225885639678, 66.23434037993052, 66.29968935207127, 66.27354976321497, 66.23434037993052, 66.15918906196863, 66.03175856629413,  65.9435374539041, 65.89779317340557, 65.88140925253313, 65.88456973366041, 65.79591834475252, 65.79191166805987, 65.79411246807115, 65.80731726813886, 65.69067486754084, 65.67300750346133,  65.4566408178768, 65.40016926605145, 65.27032206538574, 65.25931806532932, 65.23625140417134, 65.18767501401241, 65.10380316189527, 65.01675075594957, 64.99326147936124, 65.02761253425153, 65.20649886505852, 65.38476366597247, 65.45959086635609, 65.51681166664946, 65.58723726701052, 65.68482112674836, 65.84253006831938, 65.98778286906408, 66.16164606995545, 66.20346127016984, 66.19983990005279, 66.21666607023752,  66.1550436699216, 66.05600766941384, 65.97909163340745 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 63.09556584316867, 63.18478755090357, 63.24136465730643, 63.24568761244652, 63.22251785092887, 63.20658880860918, 63.10704759215108, 63.02318353706818, 62.83245709738346, 62.74914558583309, 62.72832461383516, 62.78043538629272, 62.88787955860968, 62.93641792756218, 63.09556584316867 ],
-&quot;lat&quot;: [ 63.49620061351136, 63.46632213381869, 63.43040524685415,  63.3854015304977, 63.35448708008288, 63.33323362054373, 63.28125762769487, 63.27321385552791, 63.29485848288904,   63.338934333208, 63.38903269950055, 63.47223779998988,  63.5022110995425, 63.50851474409741, 63.49620061351136 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 44.44199391567054, 44.54305958387408, 44.57464260518769, 44.57464260518769, 44.53042637534864, 44.42304410288237, 44.30934522615338,   44.227229370738, 44.26512899631433, 44.44199391567054 ],
-&quot;lat&quot;: [ 67.13842054841264,  67.1187802524928, 67.10403955377363, 67.06222543175002, 67.02280498161987, 67.01293986148519, 67.02773603996353, 67.08437131122324,  67.1408744633591, 67.13842054841264 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 58.23429932332336, 58.54381293219672, 58.75857747712925, 58.75857747712925, 58.51222991088311, 58.22166611479791, 57.98795175707721, 58.05111779970442, 58.23429932332336 ],
-&quot;lat&quot;: [ 67.59780492172388, 67.58817378058627, 67.49889937976437, 67.40686128946898,  67.3144665227889, 67.30228270317471, 67.40686128946898, 67.53754582871785, 67.59780492172388 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 59.64487185316146,   59.981885432369, 60.28413964360376, 60.46780825452952, 60.47208036965445, 60.30614659016388, 59.98554300121353, 59.71952082024287, 59.61121592037516, 59.64487185316146 ],
-&quot;lat&quot;: [ 67.01160644174895, 67.10485692845728, 67.09890336986662,  66.9757598739924, 66.96048452101708, 66.82807098614684, 66.78491828581316, 66.84806241110986, 66.95739814724847, 67.01160644174895 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [  51.4155250217153, 51.66818919222416, 51.68713900501233, 51.68713900501233, 51.51659068991884, 51.23866010235909, 51.03652876595199, 51.02389555742656, 51.13127782989282,  51.4155250217153 ],
-&quot;lat&quot;: [ 67.09420742985259, 67.04252321009986,  66.9857901226729, 66.91654481219059, 66.84461885751224, 66.83219644421594, 66.92644904486853, 67.01293986148517, 67.09420742985259, 67.09420742985259 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [ 39.79139402724169, 39.88930139331388, 39.89245969544524, 39.87350988265707, 39.74401949527127, 39.59873759722868, 39.50714683541921, 39.47872211623697, 39.60189589936004, 39.79139402724169 ],
-&quot;lat&quot;: [  67.1800266123921, 67.15799292947581,  67.1212253153296, 67.07948756342633, 67.06596873620128, 67.06473937744066, 67.10036544852395, 67.13716482846172, 67.18125011505758,  67.1800266123921 ] 
-} 
-],
-[
- {
- &quot;lng&quot;: [  40.4448264700526, 40.56236250524032, 40.60086668303317, 40.57944350504708, 40.55905535737197, 40.30817815003806, 40.16976313909521, 40.23031970638271,  40.4448264700526 ],
-&quot;lat&quot;: [ 66.67894764671584, 66.66731211621004, 66.61719781024259,  66.5576629428746, 66.55604076255177, 66.51815219149863, 66.56636399406311, 66.66250750108416, 66.67894764671584 ] 
-} 
-] 
-],
-null,
-{
- &quot;lineCap&quot;: null,
-&quot;lineJoin&quot;: null,
-&quot;clickable&quot;: true,
-&quot;pointerEvents&quot;: null,
-&quot;className&quot;: &quot;&quot;,
-&quot;stroke&quot;: true,
-&quot;color&quot;: &quot;#BDBDC3&quot;,
-&quot;weight&quot;:                 1,
-&quot;opacity&quot;:               0.5,
-&quot;fill&quot;: true,
-&quot;fillColor&quot;: &quot;#BDBDC3&quot;,
-&quot;fillOpacity&quot;:               0.4,
-&quot;dashArray&quot;: null,
-&quot;smoothFactor&quot;:                 1,
-&quot;noClip&quot;: false 
-},
-[ &quot;Сёрнисикас: Краснощелье&quot;, &quot;Сёрнисикас: Саранпауль&quot;, &quot;Сёрнисикас: Казым&quot;, &quot;Сёрнисикас: Волоковая&quot;, &quot;Сёрнисикас: Нарьян-Мар&quot;, &quot;Сёрнисикас: Несь&quot;, &quot;Сёрнисикас: NA&quot;, &quot;Сёрнисикас: Салехард&quot;, &quot;Сёрнисикас: Мужи&quot;, &quot;Сёрнисикас: Овгорт&quot;, &quot;Сёрнисикас: Ловозеро&quot;, &quot;Сёрнисикас: Колва&quot;, &quot;Сёрнисикас: sartynja&quot;, &quot;Сёрнисикас: Чижа&quot;, &quot;Сёрнисикас: Хорей-Вер&quot;, &quot;Сёрнисикас: Харута&quot;, &quot;Сёрнисикас: Коткино&quot;, &quot;Сёрнисикас: Каневка&quot;, &quot;Сёрнисикас: NA&quot; ] 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
- 67.67100669999999,
-       53.1078339,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Izhva Komi Documentation Project, 2015, Funded by Kone Foundation&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
- 65.00916699999999,
-        53.916944,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Izhva Komi Documentation Project, 2014, Funded by Kone Foundation&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
-        63.5937376,
-       53.9650721,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Izhva Komi Documentation Project, 2015, Funded by Kone Foundation&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
-        68.0063722,
-       35.0259996,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Fieldwork in 2009, Kola Saami Documentation Project, Michael Rießler et.al.&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
-         67.333333,
-37.03305599999999,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Fieldwork in 2009, Kola Saami Documentation Project, Michael Rießler et.al.&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
-         64.248138,
-60.92763900000001,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Fieldwork in 2011, Personal work of Niko Partanen and Valentina Viktorovna Filippova&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
-                66,
-57.53333299999999,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Fieldwork in 1966, Erik Vászolyi-Vasse and Gennadiy Baraksanov&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
- 66.32893799999999,
-        61.205059,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Interview Niko Partanen did in 2011 while studying in Syktyvkar.&quot; 
-] 
-},
-{
- &quot;method&quot;: &quot;addMarkers&quot;,
-&quot;args&quot;: [
-         65.398056,
-        64.698611,
-null,
-null,
-{
- &quot;clickable&quot;: true,
-&quot;draggable&quot;: false,
-&quot;keyboard&quot;: true,
-&quot;title&quot;: &quot;&quot;,
-&quot;alt&quot;: &quot;&quot;,
-&quot;zIndexOffset&quot;:                 0,
-&quot;opacity&quot;:                 1,
-&quot;riseOnHover&quot;: false,
-&quot;riseOffset&quot;:               250 
-},
-&quot;Károly Rédei interviewed Juri Rochev in Syktyvkar at the 70&#39;s, the text is publisked in Zyrian Folklore Texts, Akadémiai Kiadó, 1978.&quot; 
-] 
-} 
-],
-&quot;limits&quot;: {
- &quot;lat&quot;: [ 59.19625608037017, 68.12892077632196 ],
-&quot;lng&quot;: [ 34.74284423907034, 68.45237619425031 ] 
-} 
-},&quot;evals&quot;: [  ] }&lt;/script&gt;
+&lt;div id=&quot;htmlwidget-3855&quot; style=&quot;width:612px;height:378px;&quot; class=&quot;leaflet&quot;&gt;&lt;/div&gt;
+&lt;script type=&quot;application/json&quot; data-for=&quot;htmlwidget-3855&quot;&gt;{&quot;x&quot;:{&quot;calls&quot;:[{&quot;method&quot;:&quot;addTiles&quot;,&quot;args&quot;:[&quot;http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,null,null,{&quot;minZoom&quot;:0,&quot;maxZoom&quot;:18,&quot;maxNativeZoom&quot;:null,&quot;tileSize&quot;:256,&quot;subdomains&quot;:&quot;abc&quot;,&quot;errorTileUrl&quot;:&quot;&quot;,&quot;tms&quot;:false,&quot;continuousWorld&quot;:false,&quot;noWrap&quot;:false,&quot;zoomOffset&quot;:0,&quot;zoomReverse&quot;:false,&quot;opacity&quot;:1,&quot;zIndex&quot;:null,&quot;unloadInvisibleTiles&quot;:null,&quot;updateWhenIdle&quot;:null,&quot;detectRetina&quot;:false,&quot;reuseTiles&quot;:false,&quot;attribution&quot;:&quot;Niko Partanen, work funded by Kone Foundation&quot;}]},{&quot;method&quot;:&quot;addPolygons&quot;,&quot;args&quot;:[[[{&quot;lng&quot;:[49.9848931025449,49.98568244934,50.0592000429984,50.0984094262828,50.0837059075511,50.0199906597139,49.9268683744133,49.8321123648092,49.6622050372432,49.5335637373577,49.3227317,49.3347087,49.8908952,50.2462492,50.5788134763492,50.5264451938048,50.7473309390037,50.8079081,50.7715,50.744747,50.7309267,50.682662727427,50.5721894743034,50.4300554598972,50.287921445491,50.2748516510629,50.2671999404529,50.185386,50.0380324098732,49.9848931025449],&quot;lat&quot;:[61.8181067142417,61.8804651110521,61.918040770033,61.9539827047104,62.0765120274744,62.1271574808835,62.087948097599,62.0095293310301,61.9654187748351,61.9446382571613,62.0259838,62.1059506,62.4346942,62.439891,62.1912064953155,62.0961167191166,62.0651927147888,62.0198944,61.9337967,61.8819411,61.8620633,61.8471191020726,61.9066046999084,61.9049709756049,61.8820988353556,61.7873428257515,61.7184774302616,61.693145,61.7499985879477,61.8181067142417]}],[{&quot;lng&quot;:[48.5848814242876,48.5769983,48.9904844,49.3940098,49.6587993,49.7149265,49.7334681276048,49.7829355702949,49.8002547408907,49.8558013672104,49.819859432533,49.7185685257148,49.5486611981488,49.3885562164039,49.3331572578161,48.7007866,48.6605881182997,48.7056594575328,48.8919040281339,49.0748811501281,49.2055790944096,49.3558817303334,49.4441028427234,49.4146958052601,49.408160908046,49.3460793845123,49.2186488888378,49.0618113556999,48.9441832058466,48.7514037380313,48.5848814242876],&quot;lat&quot;:[60.3313092215679,60.415457,60.7645146,60.6455192,60.4524071,60.2122546,59.9744641440918,59.741039648898,59.6896408200329,59.4282449314699,59.268139949725,59.1962560803702,59.2485352580828,59.4053727912206,59.4920224443964,59.90289,59.9567906329067,60.0033158863086,60.0196531293438,59.9869786432734,59.9052924280974,59.8334085587426,59.954304157203,60.0653974098423,60.1960953541238,60.3562003358687,60.4444214482587,60.4542237940799,60.3954097191532,60.3365956442265,60.3313092215679]}],[{&quot;lng&quot;:[50.2293157211094,50.2262318475164,50.1670258470308,50.1506886039956,50.1229152908357,50.0869733561583,50.0314267298387,49.9432056174486,49.850083332148,49.7683971169721,49.7397750861152,49.7226528364736,49.6197282053519,49.4988326068914,49.4400185319648,49.4171463917155,49.4530883263929,49.5315070929618,49.6164607567448,49.673641107368,49.7308214579911,49.7781461891746,49.7814669114002,49.8533507807551,49.9268683744134,50.016723211107,50.1114792207111,50.1947991601906,50.3026249642228,50.3728751092742,50.4398578057184,50.4839683619134,50.5102704194772,50.5781517,50.6066229,50.6269509342475,50.6424396193548,50.662044310997,50.662044310997,50.6375384464442,50.6055946490974,50.6032302360703,50.5117416750733,50.4627299459677,50.4267880112903,50.4088170439516,50.3973809738269,50.3957472495234,50.3985011223322,50.4071833196481,50.3908460766129,50.3352994502932,50.2895551697947,50.2890953139828,50.2429940271444,50.2293157211094],&quot;lat&quot;:[60.7084775943339,60.709440904201,60.7711663089626,60.8267129352822,60.8936956317265,60.9476085337426,60.9900853656341,61.0031551600623,60.9721143982954,60.892061907423,60.8613954457906,60.8430501783174,60.8267129352822,60.8610211456561,60.9034979775476,60.9476085337426,61.0113237815799,61.1207833099157,61.2106381466092,61.2416789083761,61.2400451840725,61.2087380542127,61.2073706980022,61.1812311091459,61.1583589688966,61.1436554501649,61.1452891744684,61.1518240716825,61.1975683521811,61.2465800812866,61.3086616048204,61.3789117498717,61.425879709807,61.4448401,61.3791315,61.2364633287728,61.2237079410374,61.1975683521811,61.1632601418072,61.1322193800403,61.1261348472123,61.1256844828262,61.1077135154875,61.0717715808101,60.9868179170271,60.9051317018511,60.8283466595857,60.766265136052,60.7493484887979,60.6960149910007,60.6535381591092,60.6519044348057,60.6731428507514,60.6736323746802,60.6927475423937,60.7084775943339]}],[{&quot;lng&quot;:[57.0262173353562,57.3692994390948,57.6633698137282,57.8270880820804,57.7515909261182,57.5228695236256,57.2941481211329,57.0654267186402,56.9804730548572,57.1046361019247,57.2287991489921,57.2451363920274,57.6829745053704,57.8435639353314,58.1375000744724,58.329929329564,58.3547488518568,57.9841998,57.2461643,56.8236969,56.0709016,55.823164,55.7909617,55.8344326,55.9480284541508,56.2028202863821,56.3465880250918,56.5099604554437,56.8550130691621,57.0981012047106,57.4313809626285,57.5294044208396,57.5359393180537,57.5359393180537,57.4705903459129,57.4295146367698,57.5812654,57.8434022,58.0711873894562,58.0619985437869,57.7613932719393,57.2974155697399,57.1124383208938,56.875914699432,56.7256120635082,56.6406583997252,56.6275886052971,56.6864026802238,56.875914699432,57.0262173353562],&quot;lat&quot;:[62.855798520253,62.855798520253,62.8165891369685,62.6053397584495,62.4702395846224,62.4244953041239,62.4114255096957,62.3918208180535,62.346076537555,62.1696343127749,62.0650759573497,62.0650759573497,61.9866571907808,61.9951092660419,61.9554774270566,61.836354554857,61.7767877013542,61.609628,61.6850252,61.8232003,62.654964,63.19114,63.4075691,63.5179323,63.6105676219592,63.5681023165873,63.6922653636547,63.9471263550037,64.0039071648561,63.9994055327163,64.0124753271445,64.1170336825697,64.2804061129216,64.4699181321298,64.6790348429803,64.818692254067,64.9424422,64.8330274,64.3696133079476,63.9928706355023,63.6791955692266,63.6007768026577,63.5352640270247,63.4831486528043,63.3785902973791,63.2152178670271,63.0453105394612,62.9276823896078,62.8492636230389,62.855798520253]}],[{&quot;lng&quot;:[48.4080156399107,48.4534894587283,48.5929324805901,48.7185690829117,48.8347236775109,48.9196773412939,48.9184636333345,48.9131424440799,48.8968052010447,48.9066075468658,48.9752239676136,49.099387014681,49.1005640075489,49.1320615007514,49.2496896506048,49.3248409685667,49.3967248379215,49.5502949224523,49.7169348014113,49.8260937909299,49.8868421289772,49.9783306899743,49.9325864094758,49.7985754853337,49.6450509320564,49.4457365670271,49.269294342247,49.2474572506308,49.0552285326709,48.93649682825,48.8968052010447,48.7105606304435,48.5406533028775,48.3184667975989,48.2970874533586,48.2825248629215,48.1060826381414,48.0052757977835,47.9503401899591,47.8022099176869,47.7107213566898,47.6225002442998,47.5179418888745,47.3825561082918,47.3316204,47.2370925456338,47.2876096785733,47.383976495986,47.5016046458394,47.5473489263379,47.553883823552,47.5532813966797,47.557151272159,47.4199184306634,47.1911970281707,47.0049524575696,46.8252427841824,46.5769166900475,46.5265096496254,46.3776023250182,46.3383929417338,46.4102768110886,46.6235963088878,46.8546498216458,47.1813946823496,47.3970462904141,47.6126978984787,47.8022099176869,48.0440011146077,48.1261203651413,48.2596527226722,48.3674785267045,48.4295600502382,48.4080156399107],&quot;lat&quot;:[63.8851681314174,64.1002942742854,64.2444641782442,64.3582482709128,64.3653597767046,64.2967433559568,64.270041780849,64.1529756172471,63.97326594386,63.7837539246518,63.6563234289773,63.5909744568365,63.600138187022,63.5779046624084,63.5844395596225,63.6040442512647,63.7314747469392,63.7608817844025,63.6693932234055,63.6253097853306,63.6007768026577,63.4798812041973,63.372055400165,63.3705325487543,63.368787951558,63.3589856057368,63.3067064280242,63.2919663911833,63.2896642508484,63.3086107994262,63.3263111196665,63.3883926432002,63.3883926432002,63.3655205029509,63.3608437713984,63.3622530543439,63.3361134654876,63.2805668391679,63.2502961981218,63.1498688948864,62.9276823896078,62.7087633329362,62.4898442762647,62.3924615218104,62.3835426,62.5772073526007,62.7486047679311,62.8754032118952,63.1302642032442,63.3034389794172,63.4177996806635,63.4180205705167,63.4243345778776,63.6138465970858,63.7478119899744,63.8556377940066,63.9438589063967,64.0222776729656,64.03302015699,64.0647545048571,64.1987198977456,64.3065457017779,64.3375739923669,64.2804061129216,64.1823826547105,64.0745568506782,63.9503938036107,63.8327656537574,63.718404952511,63.7066736310062,63.6628583261914,63.6726606720125,63.7870213732588,63.8851681314174]}],[{&quot;lng&quot;:[53.3897104081526,53.5888614007515,53.7489663824964,53.9384784017046,54.144327663948,54.2488860193732,54.3926537580829,54.5527587398278,54.6899915813234,54.7684103478923,54.7193986187867,54.5919681231123,54.4482003844026,54.2782930568366,54.2162115333029,54.0985833834495,53.9613505419539,53.798292819031,53.7971612494502,53.6697307537757,53.665636311975,53.7350797259164,53.869045118805,53.9638011284091,54.0944990726906,54.2002041928864,54.2774761946848,54.3988385715176,54.4473835222508,54.4622975208007,54.5486744290689,54.5575708467716,54.596334322161,54.6399018133467,54.6805046575212,54.7315011018356,54.7265169889663,54.7160938943364,54.7010380710371,54.6083053661474,54.5037470107222,54.5057020492239,54.4972121135081,54.4972121135081,54.5854332258982,54.7128637215727,54.8533640116753,55.0363411336695,55.1284312632867,55.2577107767962,55.2577107767962,55.2544281206491,55.1507018349158,55.0371813347398,55.0298062364554,55.028657600103,54.7553405534642,54.7540355816703,54.7520731048571,54.5809572097747,54.3231937352395,54.215394671151,54.1729178392596,54.2872785405059,54.4767905597141,54.5094650457845,54.275487312924,54.0160803061217,53.872312567412,53.8504547093412,53.7906263522361,53.6174515760631,53.5521026039223,53.5647643052822,53.5847770899927,53.6533935107405,53.6501260621334,53.5488351553153,53.3593231361071,53.3484354893352,53.3469336306633,53.4050674166056,53.5749747441716,53.7220099314883,53.7546844175587,53.614184127456,53.4889917171043,53.4508116971041,53.4009831058468,53.393576782015,53.382090100972,53.3802132973423,53.3282823743402,53.2400612619502,53.1894158085411,53.1665436682918,53.1619161770678,53.1600087710777,53.097927247544,53.1044621447581,53.0664159308807,53.0587178642595,52.9945463030794,52.7965996243653,52.7744498354472,52.7874895151417,52.8855430880865,52.9378222657991,52.8659383964443,52.7025659660924,52.5424609843475,52.3856234512097,52.2287859180719,52.071948384934,51.9706574781158,52.06541348772,52.2287859180719,52.3104721332478,52.3104721332478,52.2483906097141,52.091360873717,51.898773608761,51.8371312367663,51.7615407672654,51.6047032341276,51.5197495703446,51.4889001563257,51.4393105,51.4675672,51.8828248178988,52.1601694973241,52.2941348902126,52.3265236607189,52.5611422666008,52.7483102465909,52.9312873685851,53.094659798937,53.1156219139489,53.1567413224707,53.0848574531159,52.8561360506232,52.7875196298754,53.0293108267962,53.2286251918255,53.3723929305352,53.3897104081526],&quot;lat&quot;:[61.9580670154692,61.914773321426,61.8984360783908,61.8853662839626,61.8526917978922,61.7873428257515,61.7154589563966,61.7023891619685,61.7023891619685,61.748133442467,61.7873428257515,61.7873428257515,61.8167498632148,61.8984360783908,61.9703199477456,62.0846806489919,62.179436658596,62.2651464873119,62.2684746331378,62.3599631941349,62.4080728852924,62.4710564467742,62.4743238953812,62.4155098204545,62.3403585024927,62.3791889548095,62.369765539956,62.3230877027126,62.3044165678152,62.3188494696377,62.4024400260264,62.418359931389,62.4476303107647,62.4805282122723,62.4821204806713,62.4446699668779,62.3823685560117,62.3615223667519,62.3314107201534,62.2741926682002,62.172901761382,62.1717380479881,62.1663668641679,62.0356689198864,61.9735873963526,61.9474478074963,61.92130821864,61.9539827047104,62.0021207270104,61.944997221041,61.853508660044,61.7271263983807,61.6337727412207,61.5292143857954,61.5292143857954,61.525385597954,61.5226794885814,61.5219291297999,61.5226794885814,61.4936220724353,61.4907580338294,61.513694004912,61.4483450327712,61.2686353593841,61.2196236302786,61.1477397609237,61.052415499388,61.0399139568915,60.9516928445015,60.9193432145567,60.830797246041,60.8144600030058,60.8700066293255,60.9067255632692,60.9647626389296,61.1183327234604,61.1869491442082,61.1869491442082,61.1902165928152,61.1954237282279,61.2885389658832,61.3699262662023,61.4450775841642,61.4189379953079,61.5006242104839,61.5398335937683,61.5724924834253,61.5921127714809,61.6043657037573,61.6045935906444,61.6073141203652,61.607758626488,61.6133511874267,61.6051825659091,61.5896621850256,61.5708743555352,61.5600286729789,61.5594382854105,61.4026007522727,61.3013098454545,61.113796362773,61.0889256859971,61.0445889709999,61.0763208813281,61.2784377052053,61.4066612222007,61.4842869674487,61.6149849117302,61.680333883871,61.7358805101906,61.7587526504399,61.7783573420821,61.7620200990469,61.7064734727273,61.5529033881965,61.4156705467009,61.3111121912756,61.2032863872434,61.1216001720674,61.0725884429619,61.0451995355205,61.1575421067449,61.2174721906286,61.258833013563,61.3699262662023,61.5071591076979,61.7102510833222,61.8309104,61.8513024,62.0178102956852,62.0332183334311,62.1051022027859,62.1667950989884,62.3593594264575,62.4155098204545,62.4710564467742,62.4645215495601,62.4435594345482,62.4024400260264,62.2554048387097,62.1214394458211,62.0593579222874,62.029950884824,61.9678693612903,61.9580670154692,61.9580670154692]}],[{&quot;lng&quot;:[50.9855329252625,50.9554537518699,50.9430448912022,50.926707648167,50.8465486696931,50.8473827942692,51.0026634252827,51.1226563569919,51.126270045701,51.1144656977385,51.0712922490285,51.0955978506021,50.9855329252625],&quot;lat&quot;:[60.3770551895534,60.4036144596766,60.4378865510447,60.508136696096,60.5475800029641,60.5905374186359,60.6215943915179,60.5431374746311,60.5090655525164,60.4752264216907,60.4460551725622,60.3984567028139,60.3770551895534]},{&quot;lng&quot;:[50.8164312576795,50.8540069166604,50.8605418138745,50.8556406409639,50.8164312576795,50.7674195285739,50.7478148369317,50.8164312576795],&quot;lat&quot;:[60.0719323070564,60.0506938911106,60.0163856807367,59.9869786432734,59.9690076759347,59.9788100217558,60.0408915452895,60.0719323070564]}],[{&quot;lng&quot;:[50.5165197154178,50.5242550044547,50.6195674791054,50.6815597890253,50.8107132226172,50.9185390266494,51.0296322792887,51.0704753868767,51.1390918076245,51.2191442984969,51.2959293407623,51.3857841774559,51.412740628464,51.4133480001378,51.4233598364368,51.3858448670348,51.3416736212609,51.2142431255864,51.1227545645893,51.0263648306817,51.0051264147359,51.0149939039255,51.0230973820747,50.9773531015761,50.9152715780424,50.8687937886729,50.8335853628664,50.7886804258484,50.6472031,50.4726029,50.4981619726719,50.6064976846773,50.6359047221406,50.6522419651758,50.7453642504764,50.7208583859236,50.6375384464441,50.5685252069989,50.5165197154178],&quot;lat&quot;:[62.776968838666,62.8088200288177,62.8803043848058,62.9441199979586,63.0240721235155,63.0551128852823,63.0126360533908,62.9701592214993,62.9178800437867,62.8982753521445,62.9048102493586,62.8917404549304,62.8754032118952,62.8730671669961,62.8345601043073,62.7977954342932,62.7545076134348,62.7087633329363,62.5911351830829,62.5388560053703,62.4620709631049,62.3795428717014,62.3117683271811,62.2709252195931,62.2725589438967,62.3224375471225,62.3379079160374,62.2986951541344,62.2733134,62.2469016,62.3418213066858,62.3607800562867,62.4326639256415,62.4947454491753,62.5339548324597,62.6140073233322,62.6189084962427,62.6475893230251,62.776968838666]}],[{&quot;lng&quot;:[50.7500062347821,50.6678337223639,50.617933754802,50.5460498854472,50.6079263710985,50.7976434281891,50.9708182043622,51.1145859430718,51.2405987941715,51.3629120372067,51.4140326375248,51.3988539718842,51.3799722901465,51.1832023638196,51.0230973820748,50.9120041294355,50.7500062347821],&quot;lat&quot;:[61.316961492825,61.326205900472,61.3960658550586,61.601915117302,61.6955231340566,61.7783573420821,61.8012294823314,61.8665784544721,61.8783921592627,61.8437063142229,61.7171219705781,61.6639966408358,61.6478401502767,61.598647668695,61.4875544160557,61.3993333036657,61.316961492825]}]],null,null,{&quot;lineCap&quot;:null,&quot;lineJoin&quot;:null,&quot;clickable&quot;:true,&quot;pointerEvents&quot;:null,&quot;className&quot;:&quot;&quot;,&quot;stroke&quot;:true,&quot;color&quot;:&quot;#BDBDC3&quot;,&quot;weight&quot;:1,&quot;opacity&quot;:0.5,&quot;fill&quot;:true,&quot;fillColor&quot;:&quot;#BDBDC3&quot;,&quot;fillOpacity&quot;:0.4,&quot;dashArray&quot;:null,&quot;smoothFactor&quot;:1,&quot;noClip&quot;:false},null]},{&quot;method&quot;:&quot;addPolygons&quot;,&quot;args&quot;:[[[{&quot;lng&quot;:[38.67042845245,38.5943689861602,38.520466946378,38.344981387927,38.157952647841,38.1087246614792,38.1380385907157,38.2773593868736,38.4461851173593,38.6059809628816,38.6182103326092,38.6810706784445,38.67042845245],&quot;lat&quot;:[67.087914905678,67.0436562116071,67.0174380255138,66.9991296036382,67.0287482959476,67.0652408871548,67.1450085771035,67.1945021389331,67.2127572063793,67.1993199994031,67.1950415553216,67.1479336018699,67.087914905678]}],[{&quot;lng&quot;:[61.1327945111891,60.7814250442282,60.6420812934661,60.583620467496,60.5790787059959,60.7385319995563,60.8603504523744,61.078629104109,61.2373765925543,61.3014731429539,61.3035488123935,61.2411838517259,61.1327945111891],&quot;lat&quot;:[64.1359018045059,64.1337197762285,64.1873505613836,64.2320882693658,64.3357918236199,64.4018380723858,64.4219889171938,64.4244688697956,64.3757423256192,64.307880465177,64.2252688214819,64.1704607948611,64.1359018045059]}],[{&quot;lng&quot;:[68.1425418396035,68.0168712372286,67.9117871214819,67.9140700860843,68.071836269737,68.3079575426717,68.4441242965905,68.4523761942503,68.4021583550406,68.3217351773414,68.1425418396035],&quot;lat&quot;:[63.6953351917132,63.7106207672794,63.7615136373447,63.8870766904761,63.9460564269167,63.9322204427631,63.8568387104469,63.7528647999336,63.7130168574244,63.6886240925871,63.6953351917132]}],[{&quot;lng&quot;:[48.5143326918789,48.441423354614,48.3784145571434,48.3713510617916,48.4212595914391,48.5657157287016,48.8222914330443,48.9145532159375,49.0185682093081,49.0389192747115,48.957311981603,48.8970850950825,48.6686182071324,48.5143326918789],&quot;lat&quot;:[66.3420144465805,66.3586046851057,66.3998140518347,66.4857532452818,66.5424993056542,66.5991735099311,66.6086201803953,66.588378555377,66.5235716886811,66.4072798863757,66.3424684225174,66.328962042216,66.3204673936064,66.3420144465805]}],[{&quot;lng&quot;:[53.1365016841894,53.2453414706209,53.2893371557777,53.2827354724298,53.1357161901162,52.9098933836386,52.7673476900971,52.7924939257456,52.9842797190312,53.1137901854905,53.1365016841894],&quot;lat&quot;:[67.740350068966,67.6939174044306,67.6059260341169,67.5858209075573,67.5243836993505,67.5251215471811,67.5765544844554,67.6744924548757,67.7406573638996,67.7406573638996,67.740350068966]}],[{&quot;lng&quot;:[44.8811353294201,44.8162232140406,44.6232031399817,44.5581885336823,44.55714155359,44.5820905503451,44.6607313793574,44.7255647218807,44.8279349688,44.916099796257,44.9347347832087,44.9353380535226,44.8811353294201],&quot;lat&quot;:[66.5219711698305,66.5083222872758,66.5158536502843,66.5458935460149,66.5961485904456,66.6209109351888,66.644071368671,66.6499750258229,66.6468050355832,66.6070916181448,66.5928183807356,66.5475731071964,66.5219711698305]}],[{&quot;lng&quot;:[65.7199241923259,65.5336951411486,65.4720099993084,65.4731125401102,65.59177569877,65.7230154805872,65.8780157273239,65.9084999030792,65.8630697781281,65.7199241923259],&quot;lat&quot;:[66.0568065891862,66.0659289619526,66.13506336761,66.2144463053416,66.2837838437844,66.2948906989032,66.2497678708349,66.1459568939384,66.0945491209674,66.0568065891862]}],[{&quot;lng&quot;:[66.3278463540294,66.5723648559858,66.6701852670167,66.6356637845947,66.5166329071378,66.2736717003545,66.192113276673,66.2151180189421,66.3278463540294],&quot;lat&quot;:[66.6586124252839,66.6574726273737,66.5997404949403,66.5025986490551,66.4492257451305,66.4569144184683,66.5208299152753,66.6118032142486,66.6586124252839]}],[{&quot;lng&quot;:[64.5485430914949,64.5286950410975,64.5554883943268,64.6817956736415,64.9243628618531,64.996615227679,65.0296141013824,65.0081991692725,64.8758280997109,64.644901282496,64.5485430914949],&quot;lat&quot;:[65.3875864670368,65.469567544765,65.5009540442621,65.5299796451259,65.5207458272106,65.4878103819768,65.4238750641764,65.3703377339015,65.3402241972744,65.3503119291184,65.3875864670368]}],[{&quot;lng&quot;:[63.8214815375305,63.6375092435869,63.5279626403235,63.5442812211636,63.6083455586154,63.7376394151824,63.9159910772969,64.1054294678775,64.1600991885809,64.1551371040847,64.0028105026263,63.8214815375305],&quot;lat&quot;:[64.7573266048697,64.7787515982775,64.844443908011,64.9423553930517,65.0004602572522,65.0415506134814,65.0460736316299,64.9973397413899,64.9217132944169,64.8155246861989,64.7704414413785,64.7573266048697]}],[{&quot;lng&quot;:[35.0316734120125,34.8545162795166,34.7428442390703,34.7428442390703,34.8599636961238,35.0778603604092,35.2580095933082,35.3456698456449,35.3584023156767,35.3284415243374,35.1955797521283,35.0316734120125],&quot;lat&quot;:[67.9374713604056,67.9598735123688,68.0088818584966,68.0822002193833,68.128920776322,68.1279061197636,68.1045765384537,68.0660559785555,68.0262141326975,67.9721353197127,67.9426009699171,67.9374713604056]}],[{&quot;lng&quot;:[55.4698500362734,55.3858767449049,55.1701983437991,54.9501183426708,54.6772191412716,54.4170424472334,54.3426975395566,54.1380231385072,53.9465535375256,53.7462807364988,53.9355495374692,54.0521919380672,54.0147783378754,53.8966144123135,53.8347369084311,53.6713644780792,53.7334460016129,53.8543416000734,53.8183996653959,53.9000858805719,53.9883069929619,54.2038625645302,54.2880954026577,54.3155419709568,54.2074108920354,54.1312578695199,53.8306525976723,53.5039077369685,53.4124191759714,53.4427592419242,53.5300473258248,53.4973728397544,53.4320238676137,53.3405353066166,53.2412304464533,53.1990401788096,53.2612996778959,53.4321656265707,53.5521026039223,53.3952650707845,53.182880911327,52.9541595088343,52.7823860251157,53.0193371017945,53.4625839345977,53.7638871365891,54.0323847379656,54.2634687391504,54.4197255399515,54.4521011861821,54.7564479416778,54.9633231427385,55.1095242734107,55.1637716293439,55.5231909761182,55.53633765169,55.9460913334708,56.6966300363023,56.8978263526565,56.9748543530514,57.0452799534125,57.1006757000379,57.1830985614101,57.1601827282443,57.1660999389744,57.2333981434575,57.3643982661842,57.4820264160376,57.636685650104,57.6421313977824,57.5539102853924,57.5528303659375,57.5065322805903,57.4789176230715,57.4411833084496,57.4085088223792,57.4411833084496,57.5392067666607,57.631957238844,57.6993117484056,57.7077417983946,58.0253489908952,58.1975976609789,58.4099818204364,58.6419706715361,58.9393084947766,59.1157507195567,59.183022570745,59.3314023276212,59.5797284217561,59.7725078895714,60.0273688809204,60.2462879375919,60.4867064427847,60.6873934995421,61.0141383602459,61.3735577070201,61.3961220648547,61.7329770537943,62.0107101853926,62.3472573919175,62.6217230749088,62.7752931594395,62.8569793746155,63.0105494591463,63.08535898003,63.2337209958759,63.2794506240921,63.1762600637308,63.0236192535745,62.7589559164044,62.3930016724161,61.6447559414043,61.2591970057738,60.8344286868588,60.7281036278532,60.470062915517,59.9878361194737,59.7904788569101,59.5552225572033,59.3689779866022,59.1533263785376,58.8853955927605,58.6174648069833,58.4279527877751,58.2776501518514,58.1044753756783,57.9160602856453,57.9098608803572,57.6069686349219,57.3886047551726,57.2389503544054,57.0738903535591,57.1091031537397,57.1292944269734,57.2325920704137,57.2455527544392,57.2763639545972,57.4326207553983,57.5231130414796,57.5507513324321,57.5555440096959,57.5252649119757,57.0694593167367,56.9253757253913,56.8802199525662,56.9066295527016,56.9000271526678,56.8362039523405,56.7041559516635,56.6100572297735,56.598517551122,56.5853127510543,56.3872407500388,56.1913695490345,56.0139224132993,55.8986631475339,55.7027919465297,55.5355311456721,55.4698500362734],&quot;lat&quot;:[65.9790916334074,65.9085540686579,65.7456948678229,65.6400564672813,65.5388196667623,65.3955763183592,65.3693580658935,65.3297436656904,65.3495508657919,65.2989324655324,65.2086996650698,65.0656476643364,64.8565716632645,64.7121490875778,64.6823022915874,64.6234882166607,64.4633832349159,64.3359527392414,64.2019873463528,63.9994055327164,63.8229633079363,63.8616527694999,63.7314747469392,63.5393487688454,63.3951739969501,63.2936366335961,63.2348225586694,63.2805668391679,63.4831486528043,63.5404576662706,63.7053351580829,63.9079169717193,64.0908940937134,64.2804061129216,64.3749821702201,64.7569151194158,64.8636456892781,64.9118386491607,65.0074134279877,65.0956345403778,65.1087043348059,65.118506680627,65.2077396591822,65.4072958146784,65.5504562824161,65.6004420670782,65.6026428670895,65.6466588673152,65.7500964678455,65.7902141164356,65.9151564686917,66.0119916691882,66.2043615779674,66.2343403799305,66.4303872963528,66.4393823901651,66.543055008447,66.4303258752154,66.2166660702375,66.0978228696282,66.0053892691543,66.0014324301097,66.1162357013066,66.2343403799305,66.5183664949763,66.5530671316629,66.5022711657076,66.534945651778,66.5806899322765,66.4990037171006,66.3944453616754,66.3899595424013,66.3552359783909,66.3019791388904,66.2702823146079,66.2049333424672,66.1624565105757,66.1330494731123,66.1220077502334,66.0807702953997,66.0792375590381,66.1136450048923,66.2637474173938,66.3715732214261,66.4401896421739,66.5251433059569,66.6362365585962,66.6566219680472,66.7015855307369,66.623166764168,66.4990037171006,66.4826664740654,66.5610852406343,66.6404233473479,66.6133644183469,66.5741550350625,66.6002946239188,66.6173589195312,66.6231667641681,66.6623761474525,66.7505972598426,66.8322834750185,66.9335743818367,67.0283303914408,67.1459585412942,67.1923193711376,67.1713551732463,67.0193041594274,66.8064736286822,66.6558412502384,66.5088060629217,66.4238523991387,66.3683057728191,66.3487010811768,66.3290963895346,66.3290963895346,66.2617795675448,66.1611713697359,66.1722588563968,66.2343403799305,66.2996893520713,66.273549763215,66.2343403799305,66.1591890619686,66.0317585662941,65.9435374539041,65.8977931734056,65.8814092525331,65.8845697336604,65.7959183447525,65.7919116680599,65.7941124680711,65.8073172681389,65.6906748675408,65.6730075034613,65.4566408178768,65.4001692660514,65.2703220653857,65.2593180653293,65.2362514041713,65.1876750140124,65.1038031618953,65.0167507559496,64.9932614793612,65.0276125342515,65.2064988650585,65.3847636659725,65.4595908663561,65.5168116666495,65.5872372670105,65.6848211267484,65.8425300683194,65.9877828690641,66.1616460699555,66.2034612701698,66.1998399000528,66.2166660702375,66.1550436699216,66.0560076694138,65.9790916334074]}],[{&quot;lng&quot;:[63.0955658431687,63.1847875509036,63.2413646573064,63.2456876124465,63.2225178509289,63.2065888086092,63.1070475921511,63.0231835370682,62.8324570973835,62.7491455858331,62.7283246138352,62.7804353862927,62.8878795586097,62.9364179275622,63.0955658431687],&quot;lat&quot;:[63.4962006135114,63.4663221338187,63.4304052468541,63.3854015304977,63.3544870800829,63.3332336205437,63.2812576276949,63.2732138555279,63.294858482889,63.338934333208,63.3890326995006,63.4722377999899,63.5022110995425,63.5085147440974,63.4962006135114]}],[{&quot;lng&quot;:[44.4419939156705,44.5430595838741,44.5746426051877,44.5746426051877,44.5304263753486,44.4230441028824,44.3093452261534,44.227229370738,44.2651289963143,44.4419939156705],&quot;lat&quot;:[67.1384205484126,67.1187802524928,67.1040395537736,67.06222543175,67.0228049816199,67.0129398614852,67.0277360399635,67.0843713112232,67.1408744633591,67.1384205484126]}],[{&quot;lng&quot;:[58.2342993233234,58.5438129321967,58.7585774771293,58.7585774771293,58.5122299108831,58.2216661147979,57.9879517570772,58.0511177997044,58.2342993233234],&quot;lat&quot;:[67.5978049217239,67.5881737805863,67.4988993797644,67.406861289469,67.3144665227889,67.3022827031747,67.406861289469,67.5375458287179,67.5978049217239]}],[{&quot;lng&quot;:[59.6448718531615,59.981885432369,60.2841396436038,60.4678082545295,60.4720803696544,60.3061465901639,59.9855430012135,59.7195208202429,59.6112159203752,59.6448718531615],&quot;lat&quot;:[67.011606441749,67.1048569284573,67.0989033698666,66.9757598739924,66.9604845210171,66.8280709861468,66.7849182858132,66.8480624111099,66.9573981472485,67.011606441749]}],[{&quot;lng&quot;:[51.4155250217153,51.6681891922242,51.6871390050123,51.6871390050123,51.5165906899188,51.2386601023591,51.036528765952,51.0238955574266,51.1312778298928,51.4155250217153],&quot;lat&quot;:[67.0942074298526,67.0425232100999,66.9857901226729,66.9165448121906,66.8446188575122,66.8321964442159,66.9264490448685,67.0129398614852,67.0942074298526,67.0942074298526]}],[{&quot;lng&quot;:[39.7913940272417,39.8893013933139,39.8924596954452,39.8735098826571,39.7440194952713,39.5987375972287,39.5071468354192,39.478722116237,39.60189589936,39.7913940272417],&quot;lat&quot;:[67.1800266123921,67.1579929294758,67.1212253153296,67.0794875634263,67.0659687362013,67.0647393774407,67.1003654485239,67.1371648284617,67.1812501150576,67.1800266123921]}],[{&quot;lng&quot;:[40.4448264700526,40.5623625052403,40.6008666830332,40.5794435050471,40.559055357372,40.3081781500381,40.1697631390952,40.2303197063827,40.4448264700526],&quot;lat&quot;:[66.6789476467158,66.66731211621,66.6171978102426,66.5576629428746,66.5560407625518,66.5181521914986,66.5663639940631,66.6625075010842,66.6789476467158]}],[{&quot;lng&quot;:[61.4701478756011,61.6757643895333,61.5876430264195,61.3526527247827,61.176409998555,61.4701478756011],&quot;lat&quot;:[68.9967000868217,68.8498311482986,68.5120325896957,68.5560932712526,68.7323359974802,68.9967000868217]}]],null,null,{&quot;lineCap&quot;:null,&quot;lineJoin&quot;:null,&quot;clickable&quot;:true,&quot;pointerEvents&quot;:null,&quot;className&quot;:&quot;&quot;,&quot;stroke&quot;:true,&quot;color&quot;:&quot;#BDBDC3&quot;,&quot;weight&quot;:1,&quot;opacity&quot;:0.5,&quot;fill&quot;:true,&quot;fillColor&quot;:&quot;#BDBDC3&quot;,&quot;fillOpacity&quot;:0.4,&quot;dashArray&quot;:null,&quot;smoothFactor&quot;:1,&quot;noClip&quot;:false},[&quot;Сёрнисикас: Краснощелье&quot;,&quot;Сёрнисикас: Саранпауль&quot;,&quot;Сёрнисикас: Казым&quot;,&quot;Сёрнисикас: Волоковая&quot;,&quot;Сёрнисикас: Нарьян-Мар&quot;,&quot;Сёрнисикас: Несь&quot;,&quot;Сёрнисикас: NA&quot;,&quot;Сёрнисикас: Салехард&quot;,&quot;Сёрнисикас: Мужи&quot;,&quot;Сёрнисикас: Овгорт&quot;,&quot;Сёрнисикас: Ловозеро&quot;,&quot;Сёрнисикас: Колва&quot;,&quot;Сёрнисикас: sartynja&quot;,&quot;Сёрнисикас: Чижа&quot;,&quot;Сёрнисикас: Хорей-Вер&quot;,&quot;Сёрнисикас: Харута&quot;,&quot;Сёрнисикас: Коткино&quot;,&quot;Сёрнисикас: Каневка&quot;,&quot;Сёрнисикас: NA&quot;,&quot;Сёрнисикас: Каратайка&quot;]]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[67.6710067,53.1078339,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Izhva Komi Documentation Project, 2015, Funded by Kone Foundation&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[65.0070065,53.9197413,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Izhva Komi Documentation Project, 2014, Funded by Kone Foundation&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[50.5081302,35.3353987,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Izhva Komi Documentation Project, 2015, Funded by Kone Foundation&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[68.0063722,35.0259996,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Fieldwork in 2009, Kola Saami Documentation Project, Michael Rießler et.al.&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[67.333333,37.033056,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Fieldwork in 2009, Kola Saami Documentation Project, Michael Rießler et.al.&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[64.248138,60.927639,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Fieldwork in 2011, Personal work of Niko Partanen and Valentina Viktorovna Filippova&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[65.9991694,57.5243292,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Fieldwork in 1966, Erik Vászolyi-Vasse and Gennadiy Baraksanov&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[66.328938,61.205059,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Interview Niko Partanen did in 2011 while studying in Syktyvkar.&quot;,null,null]},{&quot;method&quot;:&quot;addMarkers&quot;,&quot;args&quot;:[65.402601,64.7059966,null,null,null,{&quot;clickable&quot;:true,&quot;draggable&quot;:false,&quot;keyboard&quot;:true,&quot;title&quot;:&quot;&quot;,&quot;alt&quot;:&quot;&quot;,&quot;zIndexOffset&quot;:0,&quot;opacity&quot;:1,&quot;riseOnHover&quot;:false,&quot;riseOffset&quot;:250},&quot;Károly Rédei interviewed Juri Rochev in Syktyvkar at the 70&#39;s, the text is publisked in Zyrian Folklore Texts, Akadémiai Kiadó, 1978.&quot;,null,null]}],&quot;limits&quot;:{&quot;lat&quot;:[50.5081302,68.9967000868217],&quot;lng&quot;:[34.7428442390703,68.4523761942503]}},&quot;evals&quot;:[]}&lt;/script&gt;
 &lt;!--/html_preserve--&gt;
 
 </description>
-        <pubDate>Sun, 26 Jul 2015 03:55:14 +0400</pubDate>
-        <link>http://langdoc.github.io/2015/07/26/fieldwork_map.html</link>
-        <guid isPermaLink="true">http://langdoc.github.io/2015/07/26/fieldwork_map.html</guid>
+        <pubDate>Sun, 26 Jul 2015 01:55:14 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/07/26/fieldwork-map.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/07/26/fieldwork-map.html</guid>
         
         <category>fieldwork</category>
         
@@ -516,15 +327,15 @@ null,
 
 &lt;p&gt;Header is a simple block of YAML. We are telling it the date, author, title, the location of a bibliography and other such details. It depends a bit from our desired output format what we want to have here, as we can also pass many of these settings directly into Pandoc. Here we just save the header as a character string.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;header &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;---&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;title: &amp;quot;Collaborative authoring in Google Docs&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;author: &amp;quot;Niko Partanen&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;date: &amp;quot;19 Jun 2015&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;pdf_document:&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;        keep_tex: yes&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;bibliography: ./bibtex/FRibliography_example.bib&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;---&lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;header&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;---
+title: &quot;Collaborative authoring in Google Docs&quot;
+author: &quot;Niko Partanen&quot;
+date: &quot;19 Jun 2015&quot;
+pdf_document:
+        keep_tex: yes
+bibliography: ./bibtex/FRibliography_example.bib
+---
+&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h3 id=&quot;reading-the-file&quot;&gt;Reading the file&lt;/h3&gt;
 
@@ -537,21 +348,21 @@ null,
 
 &lt;p&gt;One could have there also some other format, but a simple text file is the best for now.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kn&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;readr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;readr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-doc &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; read_file&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;https://docs.google.com/document/d/1D1C_79nLDM25r96dWinufVUd70-ipsHzv6cK-9cK-Io/export?format=txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;read_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://docs.google.com/document/d/1D1C_79nLDM25r96dWinufVUd70-ipsHzv6cK-9cK-Io/export?format=txt&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-fileConn &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;temp.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;kp&quot;&gt;writeLines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;doc&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; fileConn&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;kp&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;fileConn&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;n&quot;&gt;fileConn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;temp.txt&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;writeLines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileConn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fileConn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h3 id=&quot;removing-the-nul-character&quot;&gt;Removing the NUL character&lt;/h3&gt;
 
 &lt;p&gt;For some reason the text file contains a &lt;a href=&quot;https://en.wikipedia.org/wiki/Null_character&quot;&gt;NUL character&lt;/a&gt; in the beginning of the first line. I don’t understand at all what it is doing there, but R, LaTeX and Pandoc are all giving errors for it later, so having it around is unacceptable. I was trying to find out how to delete it for quite some time, and ended up to do it from Terminal, by simply removing those first bytes.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;cat temp.txt | tail -c +4 &amp;gt; temp_clean.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;cat temp.txt | tail -c +4 &amp;gt; temp_clean.txt&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-doc &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; read_file&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;temp_clean.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;read_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;temp_clean.txt&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;I would be very happy to know if there is some easier way to do this!&lt;/p&gt;
 
@@ -559,32 +370,32 @@ doc &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; read_file&lt;span cla
 
 &lt;p&gt;It is possible that there are some comments left into the document. They have formatting like [a] or [b] in the text, and the actual comment text comes to the end. I assume there could be some way to turn them into footnotes in the PDF, but at the moment I just want to delete them.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;doc &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;gsub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;(.+## References).+&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;\\1&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; doc&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-doc &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;gsub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;\\[.\\]&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; doc&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gsub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;(.+## References).+&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;\\1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gsub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;\\[.\\]&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h3 id=&quot;putting-it-together&quot;&gt;Putting it together&lt;/h3&gt;
 
 &lt;p&gt;Then we simply paste together the header and the document. This is then written into a new Markdown document.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;full_paper &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;paste0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;header&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; doc&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;full_paper&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;paste0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;header&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-fileConn &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;example.md&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;kp&quot;&gt;writeLines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;full_paper&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; fileConn&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;kp&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;fileConn&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;n&quot;&gt;fileConn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;example.md&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;writeLines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;full_paper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileConn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fileConn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h3 id=&quot;converting-the-files&quot;&gt;Converting the files&lt;/h3&gt;
 
 &lt;p&gt;After this we can start to convert the file. Now I convert it into HTML and PDF. &lt;strong&gt;Note for linguists:&lt;/strong&gt; The default fonts used here are not very good for any exotic script. There are lots of situations where the basic fonts in principle can handle what you have there, but in some specific situations (such as within a code block) the font in that environment doesn’t have what you need. Well, this is how the things always are with typography and lesser used languages. But remember to play with Pandoc font settings if you have any non-latin stuff there.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kn&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;rmarkdown&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rmarkdown&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-render&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;example.md&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; output_format &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;html_document&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;example.md&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output_format&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;html_document&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-&lt;span class=&quot;kp&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;pandoc example.md --latex-engine=xelatex --biblio ./bibtex/FRibliography_example.bib -o example.pdf --variable mainfont=Georgia&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pandoc example.md --latex-engine=xelatex --biblio ./bibtex/FRibliography_example.bib -o example.pdf --variable mainfont=Georgia&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;We can even turn it into an EPUB! Not that this would be necessary, but it is possible! I like epubs a lot, not really for scientific texts, but for normal books they are pleasant to use.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;pandoc example.md --biblio ./bibtex/FRibliography_example.bib -o example.epub&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pandoc example.md --biblio ./bibtex/FRibliography_example.bib -o example.epub&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;&lt;img src=&quot;/media/figures/example_epub.png&quot; alt=&quot;epub&quot; /&gt;&lt;/p&gt;
 
@@ -592,17 +403,65 @@ render&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;
 
 &lt;p&gt;As the last thing I also convert the PDF into a picture used in the beginning of this post. It uses free program &lt;a href=&quot;http://www.imagemagick.org/script/index.php&quot;&gt;ImageMagick&lt;/a&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;convert -density 300  example.pdf example.png&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;convert -density 300  example.pdf example.png&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;The script can be downloaded in one piece from &lt;a href=&quot;www.github.com/langdoc/GoogleDocs_with_md/compile_gdocs.R&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 </description>
-        <pubDate>Mon, 22 Jun 2015 03:55:14 +0400</pubDate>
-        <link>http://langdoc.github.io/2015/06/22/google_docs.html</link>
-        <guid isPermaLink="true">http://langdoc.github.io/2015/06/22/google_docs.html</guid>
+        <pubDate>Mon, 22 Jun 2015 01:55:14 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/06/22/google-docs.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/06/22/google-docs.html</guid>
         
         <category>R</category>
         
         <category>workflows</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Concatenating MTS files</title>
+        <description>&lt;p&gt;We are having a good recording session in the village of Krasnoye, Nenetskiy Avtonomnyj Okrug, Northern Russia, when we realise that our new good video camera is filling up the sd-card much faster than we anticipated. Everything on the card is backed up to several external hard drives, I have one copy at my laptop even - let’s make there some space. It is not so good practice to touch your SD-cards, they are so cheap that they never really should need to be reused, but this situation demanded radical solutions. I go and remove some of the backupped .MTS files - that is the actual video file, right?&lt;/p&gt;
+
+&lt;p&gt;Hell broke loose.&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;The consequences were not evident very soon. However, the AVCHD file format is a bit more than the actual video files. I had naively thought that the files in the other folders must be for cameras internal work, thumbnails, ok, some playlist, I guess the camera needs those!&lt;/p&gt;
+
+&lt;p&gt;When I started to edit the videos I realized this folder structure indeed kept some more information which was crucial for us. When the camera shoots the video, it automatically cuts the video into smaller pieces when they are large enough (with our settings that is something after half an hour, around 2,12 gigabytes per file). The way how these two files exactly combine, as far as I understand it now, is in .CPI files in CLIPINF folder.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ffmpeg -i kpv_izva20150000-1.MTS -ss 00:00:30.0 -c copy kpv_izva20150000-1-cut.MTS
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now the synchronization is succesful, the approach works, but we are clearly removing too much. It is a matter of just a few frames. The removal should not be detectable in the final result.&lt;/p&gt;
+
+&lt;p&gt;We know that the video frame rate is 25 fps. Then one frame should be 0.04 seconds. After some testing I found that removing 16 first frames gives us a clean join. This doesn’t happen with any less frames being removed:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ffmpeg -i kpv_izva20150000-1.MTS -ss 00:00:00.68 -c copy kpv_izva20150000-1-cut.MTS
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Doing this processing takes around half a minute, so it is fast enough to test this multiple times with different configurations.&lt;/p&gt;
+
+&lt;p&gt;However, when we open the file in Final Cut Pro X there is still something wrong. An annoying small green flash. However, it seems to be the case that we are somehow hitting the right spot with this cut, as any attempt to cut more seems to result in FCPX inserting black timeline between the clips. Now the clips join smoothly, which must be how it is supposed to be. Now we are not losing anything from the &lt;strong&gt;audio&lt;/strong&gt; track which is within those two videos. That small green flash is as long as three frames, that makes 0.12 seconds. What I ended up doing was to repeat the previous frame three times, in a configuration more or less like this:&lt;/p&gt;
+
+&lt;p&gt;IMAGE HERE!&lt;/p&gt;
+
+&lt;p&gt;This leaves to video tiny tiny portion where data is missing, but in the end of the day it is still manageable loss, at least not the worst that could happen with data mismanagement.&lt;/p&gt;
+
+&lt;h2 id=&quot;questions&quot;&gt;Questions&lt;/h2&gt;
+
+&lt;p&gt;What are we supposed to do with AVCHD files? That is the original raw data we get. Now it seems that the easiest way to access that data is through a commercial software such as Final Cut Pro X. This is fine, as we anyway have to use something like that to edit the files. However, is the resulting MOV file exactly the same as the original files in what comes to quality? What exactly happens with those files in AVCHD structure when they are opened in FCPX? There are some other open questions, mainly with archiving.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Should we archive the AVCHD files? If so, how they fit into our session structure? They are usually 30 GB files with lots of session in one large file. They also contain different binary files, would those be accepted as well?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;How about archiving the session related Plural Eyes Project files (.pep) and Final Cut Pro XML (.fcpxml)? Those two files contain all information about the process how the raw files have been transformed into sessions ready to be transcribed.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 21 May 2015 01:55:14 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/05/21/converting-mts-files.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/05/21/converting-mts-files.html</guid>
         
         
       </item>
@@ -642,9 +501,9 @@ done
 
 &lt;p&gt;I did the same recently with a folder full of mp3 and wav files. The model is identical, just the filename differs. This can be a convenient way to rearrange messy file structure, just to start dragging everything into one folder and move onward with commands like these. This also forces to check that all files are consistently named, which is of course necessary for well structured corpus.&lt;/p&gt;
 </description>
-        <pubDate>Tue, 19 May 2015 03:55:14 +0400</pubDate>
-        <link>http://langdoc.github.io/2015/05/19/moving_files.html</link>
-        <guid isPermaLink="true">http://langdoc.github.io/2015/05/19/moving_files.html</guid>
+        <pubDate>Tue, 19 May 2015 01:55:14 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/05/19/moving-files.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/05/19/moving-files.html</guid>
         
         <category>Terminal</category>
         
@@ -667,7 +526,7 @@ done
 
 &lt;p&gt;This site, LangDoc, has been built in order to disseminate our ideas and practices. It is divided into individual blogposts. We will also have independent daughter sites for specific projects and datasets.&lt;/p&gt;
 </description>
-        <pubDate>Sun, 17 May 2015 03:55:14 +0400</pubDate>
+        <pubDate>Sun, 17 May 2015 01:55:14 +0200</pubDate>
         <link>http://langdoc.github.io/2015/05/17/langdoc.html</link>
         <guid isPermaLink="true">http://langdoc.github.io/2015/05/17/langdoc.html</guid>
         
