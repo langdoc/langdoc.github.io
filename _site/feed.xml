@@ -5,9 +5,83 @@
     <description></description>
     <link>http://langdoc.github.io/</link>
     <atom:link href="http://langdoc.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 23 Mar 2016 20:44:56 +0100</pubDate>
-    <lastBuildDate>Wed, 23 Mar 2016 20:44:56 +0100</lastBuildDate>
+    <pubDate>Fri, 25 Mar 2016 22:21:53 +0100</pubDate>
+    <lastBuildDate>Fri, 25 Mar 2016 22:21:53 +0100</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Isogloss maps with Shapefiles</title>
+        <description>&lt;p&gt;I’ve been working lately a lot with language areas as different Shapefiles. This works nicely, and usually it is quite unproblematic to make a functional map. There are some problems I haven’t solved, mainly with the best way to store different attributes relevant for languages, but which I wouldn’t like to store repeatingly inside the Shapefile. But now I tackle a bit different issue, which is the use of Shapefiles to mark isoglosses. As usually, I don’t want to take the easiest route, but would look for something efficient, economic, pretty and easy to manage. &lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s take a look into a Shapefile, or Geojson, whatever. When the data is read to R as &lt;code&gt;SpatialPolygonsDataFrame&lt;/code&gt; it behaves the same way whatever the origin. It is bit more complex format which has slots for different kinds of information. The most important ones are &lt;code&gt;@data&lt;/code&gt; and &lt;code&gt;@polygons&lt;/code&gt;. The first is just a data frame, and it can be accessed with &lt;code&gt;object@data$column&lt;/code&gt;. It is possible to do there quite many of those things which you would do with any other data frame, which makes it very powerful tool.&lt;/p&gt;
+
+&lt;iframe width=&quot;100%&quot; height=&quot;500&quot; src=&quot;http://nikopartanen.github.io/language_maps/webmap/komi_basic.html&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;Now there are of course lots of different isoglosses, but they don’t necessarily align by dialects. So we cannot just store information with what kind of isogloss value which polygon is associated. In a way where this line goes can be rather arbitrary, although it is also absolute in the sense that at least on more abstract level we can say this line goes along the line. It is always another question how the isoglosses pattern in our actual corpus data. But I think both representations have their own value and use.&lt;/p&gt;
+
+&lt;p&gt;This is a good example which cuts across all main variants, showing the variation in stress within Komi. It is taken from Batalova’s 1982 book &lt;strong&gt;Ареальные исследования по восточным финно-угорским языкам (коми языки)&lt;/strong&gt;, page 41.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/media/figures/batalova1982a-41.png&quot; alt=&quot;stress in Komi&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To explain it simply, the majority of Komi-Zyrian has no morphologically significant stress, but in some southern dialects this feature is present, as it is in almost all Komi-Permyak, besides small eastern region where the stress is connected to vowel system more widely, as it is in all Komi-Yazva. In this case almost all action is in the southern varieties, so I’ll try to display it so that the attention is more theere (and some southern varieties are geographically very small, which makes them difficult to show on large scale maps).&lt;/p&gt;
+
+&lt;p&gt;We could take the polygons above and modify a variant which is cut according to this pattern, but this has some problems as well. Mainly that the changes in original polygons would not be reflected in the Shapefiles which contain the isoglosses! This would have fast quite disastrous results, and generally speaking would not be very elegant.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maptools&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;isogloss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;readShapePoly&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/Volumes/langdoc/maps/language_maps/isoglosses/kom.shp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proj4string&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CRS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addPolygons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isogloss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;fillOpacity&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+              &lt;span class=&quot;n&quot;&gt;color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;gray&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+              &lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;popup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;iframe width=&quot;100%&quot; height=&quot;500&quot; src=&quot;http://nikopartanen.github.io/language_maps/webmap/komi_isogloss_blobs.html&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;This is maybe a bit strange approach. But in many ways it is the best I’ve come up with. We can use this command from GDAL to clip the isogloss polygon with the areas defined in the language polygon.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ogr2ogr -clipsrc langs/kom/kom.shp isoglosses/kom_isogloss_1_cut.shp isoglosses/kom_isogloss.shp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This gives us something we can easily use elsewhere on maps. It will look as good as the language polygons do, but we can associate any kind of overlays with it and still be rather sure things are not breaking apart. The isogloss shapefiles will not need special maintenance work when the language polygons are modified, and this is something really important if the idea is to have something more reliable than just graphics used once and forgotten.&lt;/p&gt;
+
+&lt;p&gt;It can be bit annoying ot modify Shapefiles like these, so take a look into snapping options in QGIS to make this bit easier. Otherwise it would be next to impossible to get the polygons align prettily, and I think it is quite crucial there are no holes between the polygons.&lt;/p&gt;
+
+&lt;p&gt;There is nothing really new going on in the map below, but note that we are using &lt;code&gt;RColorBrewer&lt;/code&gt; package to set up the color scheme. The colors are always little bit complicated. On one hand they should just appear automatically and be nice, but that doesn’t work so well with varying number of features, and at times some combinations just don’t work and you want to touch them manually. However, something with &lt;code&gt;RColorBrewer&lt;/code&gt; should be simple enough to have inside a function which tries to select suitable color palette for most of the cases. And if there would be tens of different values to map, it probably would not be always that good idea to place them all on one map to start with.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;n&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RColorBrewer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;isogloss_cut&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;readShapePoly&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/Volumes/langdoc/maps/language_maps/isoglosses/kom_isogloss_1_cut.shp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proj4string&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CRS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;as.character&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;distinct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isogloss_cut&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arrange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+&lt;span class=&quot;n&quot;&gt;colors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RColorBrewer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;brewer.pal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Dark2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;leaflet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setView&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lng&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;54&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;zoom&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;addProviderTiles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Esri.WorldTopoMap&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;addPolygons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isogloss_cut&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;fillOpacity&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;fillColor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;popup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;stroke&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;addLegend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;bottomright&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;labels&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;title&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Stress in Komi Dialects&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;opacity&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;iframe width=&quot;100%&quot; height=&quot;500&quot; src=&quot;http://nikopartanen.github.io/language_maps/webmap/komi_isogloss_stress.html&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;I think the next topic would be how to associate points with polygons, for example, to gather data from polygon layers to the token level data frames where there are different coordinates. It could be quite interesting to locate all speakers whose bithplace and place of residence are on different isogloss areas, as just looking to the adaptation of different variables could be enlightening.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 23 Mar 2016 18:00:00 +0100</pubDate>
+        <link>http://langdoc.github.io/2016/03/23/isogloss-maps.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2016/03/23/isogloss-maps.html</guid>
+        
+        <category>R</category>
+        
+        <category>maps</category>
+        
+        
+      </item>
     
       <item>
         <title>Adding shadows to images</title>
@@ -24,7 +98,7 @@
 
 &lt;p&gt;We get a one with background shadow!&lt;/p&gt;
 
-&lt;p&gt;![shadow_example(/media/figures/cat_shadowed.png)]&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/media/figures/cat_shadowed.png&quot; alt=&quot;shadow_example&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;You have to play with the numbers to get the direction, size and distance of the shadow right. I think the main potential use for this is in map icons.&lt;/p&gt;
 </description>
@@ -292,6 +366,34 @@
       </item>
     
       <item>
+        <title>Basic language maps</title>
+        <description>&lt;p&gt;I started to write some long rant about the data situation with semi-large language like Komi, and ended up combining it to geographical locations, with which I ended into mapping. For quite a while I had problems in embedding Leaflet/R based maps into Github Pages, although now when I realized how it works it is actually ridiculously easy. There are many frameworks to work with maps, but I think at the moment Leaflet is the one doing best. What kind of complicates the things is how one can use Leaflet within different frameworks, basically with JavaScript and with R. I have been working with both of them intensively, and started also collecting different language maps into a new Github repository called &lt;a href=&quot;http://github.com/nikopartanen/language_maps/&quot;&gt;Language Maps&lt;/a&gt;.&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;p&gt;I have this idea that we are not using geographical data as complexly as could.&lt;/p&gt;
+
+&lt;p&gt;At the moment the map shows only Komi-Zyrian dialects. I’m on my way to connect it to our database and get some markers from there.&lt;/p&gt;
+
+&lt;iframe width=&quot;100%&quot; height=&quot;500&quot; src=&quot;http://nikopartanen.github.io/language_maps/webmap/kpv_dial.html&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;Also more complicated work is possible, as an example, the map below shows the languages which are part of the INEL project I’m now working with.&lt;/p&gt;
+
+&lt;iframe width=&quot;100%&quot; height=&quot;500&quot; src=&quot;http://nikopartanen.github.io/language_maps/webmap/language_maps_inel_osm.html&quot;&gt;&lt;/iframe&gt;
+
+</description>
+        <pubDate>Sun, 26 Jul 2015 01:55:14 +0200</pubDate>
+        <link>http://langdoc.github.io/2015/07/26/basic-language-maps.html</link>
+        <guid isPermaLink="true">http://langdoc.github.io/2015/07/26/basic-language-maps.html</guid>
+        
+        <category>maps</category>
+        
+        <category>R</category>
+        
+        <category>leaflet</category>
+        
+        
+      </item>
+    
+      <item>
         <title>Google Docs and Markdown</title>
         <description>&lt;p&gt;We were recently writing a small abstract together with a few colleagues (Michael Rießler and Hanna Thiele). We started in Dropbox, but that is, as usually, quite bad in intensive writing. In principle we could use other tools we use already anyway, GitHub or SVN, but the same problem remains that it would be very convenient to see what others are editing and use some clear system for commenting.&lt;!--more--&gt;&lt;/p&gt;
 
@@ -505,71 +607,6 @@ done
         <guid isPermaLink="true">http://langdoc.github.io/2015/05/19/moving-files.html</guid>
         
         <category>Terminal</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Spectrograms with Spek</title>
-        <description>&lt;p&gt;One of the problems in ELAN is that it doesn’t really give you a good picture from the wave form for the whole file. Often this is full of visual cues that help us to find relevant pieces, i.e. songs, where new section starts etc. Naturally for different purposes we need different views, and this means use of different programs which handle some aspect particularly well.&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;To get overview into the file, I’d say that among free programs Audacity does this well, Reaper is another good low-cost option, but I think the way Audacity produces the view is the most telling. (I bet one can produce waveforms also directly from R with &lt;a href=&quot;http://rug.mnhn.fr/seewave/&quot;&gt;Seewave R package&lt;/a&gt;, but this is an experiment for another time.)&lt;/p&gt;
-
-&lt;p&gt;One thing we would need every now and then is to have very clean spectrograms from the audio in order to see what is really going on at the different frequencies, especially the highest ones. This tells us a lot about the background noices of the recording space.&lt;/p&gt;
-
-&lt;p&gt;This example is from one session which was done indoors in a quiet environment, closed door, closed windows. But there was some periodic work going on outside which we didn’t really hear through closed window, but it was there. Some sort of machinery operating pretty far away from us, but still apparently close enough for microphones to catch something from it.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/media/figures/0409_100225.WAV.png&quot; alt=&quot;Spek image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The pattern here reminds the one produced by every fieldworkers enemy number one: the Russian refridgerator. This is something less problematic, not really even audible in itself. Ideally we would have view like this into our recordings while they are being done.&lt;/p&gt;
-
-&lt;p&gt;This also reminds from &lt;a href=&quot;http://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem&quot;&gt;Nyquist–Shannon sampling theorem&lt;/a&gt;. It states that the highest frequency that can be captured is approximately half from the sampling rate chosen. As our sampling rate is always 48 kHz, it means that we would capture something up to 20+ kHz. This seems to be the case. And it is of course reasonable as we capture basically the range a human can hear and a bit extra.&lt;/p&gt;
-
-&lt;p&gt;What would happen if the sampling rate would be higher? As a very young man I was doing fieldwork in Karelia, and indeed some time had set the sampling rate into 96 kHz. I must have been thinking that if I have the settings high enough at least I can’t screw it up! Well, I guess there is no harm done, only wasted hard disk space.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/media/figures/0515_124033.WAV.png&quot; alt=&quot;Spek image 2&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Suddenly there are higher frequencies! And this must be a consequence of higher sampling rate. These both files were recorded with Edirol HR-09 recorder, but the first one with an external lapel mic. That explains the exceptional clarity of the signal.&lt;/p&gt;
-
-&lt;p&gt;In principle, if one would record in a cave full of bats, then would their high-frequency noise appear as distortion on 48 kHz recording but be captured adequately at the 96 kHz recording? The problem is that those high frequency sounds are present in the lower sampling rate too, they just are not there so systematically that their actual form would had been captured! Something to think about (yet nothing to act upon, this is a theoretical question)!&lt;/p&gt;
-
-&lt;h2 id=&quot;things-to-do&quot;&gt;Things to do&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Check what is going on at the Praat level of view with higher frequency noises on and off&lt;/li&gt;
-  &lt;li&gt;Simulate the environment with lots of above-hearing-level frequency noise and see what happens to the recordings&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Tue, 19 May 2015 01:55:14 +0200</pubDate>
-        <link>http://langdoc.github.io/2015/05/19/spectrograms-with-spek.html</link>
-        <guid isPermaLink="true">http://langdoc.github.io/2015/05/19/spectrograms-with-spek.html</guid>
-        
-        <category>audio</category>
-        
-        <category>recording</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Welcome to the blog</title>
-        <description>&lt;p&gt;While we document the endangered languages of the world there is quite a lot to do. Data quality, data content, connection with the speech communities, managing different audio and video files – this is in many ways extremely difficult job to do. One would assume that the technical solutions which we use would had been designed to make this work as easy as possible. Somehow this does not seem to be the case. Technology is just a tool, our real questions have nothing to do with it. This blog functions mainly as a platform where one can collect notes and tips about how to do different things.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;How often do we update our archived data? I think it is often done maybe every half a year, just because the uploading process is so inconvenient, slow and unreliable. I’m certain this is not intentional. Surely everyone has done their part well and the tools are designed to work in the best possible manner. But something has gone wrong.&lt;/p&gt;
-
-&lt;p&gt;Filling metadata should be so easy that one does it just for joy of keeping things ordered the easiest possible way. Similarly, archiving should be so easy that one just syncs the newest files in the end of the day. Press a button, collect your stuff, tidy your desk – beep – sync done. Repeat every day you do something with your data.&lt;/p&gt;
-
-&lt;p&gt;This should be possible with current technology. We believe this doesn’t need to be so difficult. There are better solutions for almost any aspect of our digital data management, and we are going to figure out what those are.&lt;/p&gt;
-
-&lt;p&gt;At times the tools we need do not exist. But then we have to build them. Luckily, programming nowadays has started to remind more and more building with Legos. There are so many packages and modules for all kinds of languages (R, Python, Ruby – whatever one needs) floating around GitHub and other repositories that often 70% of the work is already done. It’s just about combining those pieces together in a way that contributes to language documentation workflow.&lt;/p&gt;
-
-&lt;p&gt;This site, LangDoc, has been built in order to disseminate our ideas and practices. It is divided into individual blogposts. We also plan having independent daughter sites for specific projects and datasets.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 17 May 2015 01:55:14 +0200</pubDate>
-        <link>http://langdoc.github.io/2015/05/17/langdoc.html</link>
-        <guid isPermaLink="true">http://langdoc.github.io/2015/05/17/langdoc.html</guid>
         
         
       </item>

@@ -10,7 +10,7 @@
     <meta name="description" content="">
 
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="canonical" href="http://langdoc.github.io/2016/03/23/shadows-to-images.html">
+    <link rel="canonical" href="http://langdoc.github.io/2016-03-23-Shadows-to-images.Rmd">
 </head>
 
 
@@ -34,6 +34,10 @@
 <a href="https://github.com/langdoc"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
 
       <div class="trigger">
+        
+          
+          <a class="page-link" href="/2016-03-23-Shadows-to-images.Rmd">Adding shadows to images</a>
+          
         
           
           <a class="page-link" href="/about/">About</a>
@@ -94,22 +98,21 @@
   </header>
 
   <article class="post-content">
-    <p>I’m not certain if this is something anyone needs often, but at least I was surprised to learn this can also be done from the command line. So I needed to overlay something on a map as a marker, and already had fired up Gimp and started to edit a shadow file to be used in JavaScript. Little I knew that ImageMagick was able to do that as well!  <!--more--></p>
+    I'm not certain if this is something anyone needs often, but at least I was surprised to learn this can also be done from the command line. So I needed to overlay something on a map as a marker, and already had fired up Gimp and started to edit a shadow file to be used in JavaScript. Little I knew that ImageMagick was able to do that as well!  <!--more-->
 
-<p>So if one would start with a file like this:</p>
+So if one would start with a file like this:
 
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Icon256x256.png" alt="example" /></p>
+![example](https://upload.wikimedia.org/wikipedia/commons/2/29/Icon256x256.png)
 
-<p>With command like this:</p>
+With command like this:
 
-<pre><code>convert Icon256x256.png '(' +clone -background black -shadow 80x100+100+100 ')' +swap -background none -layers merge +repage cat_shadowed.png
-</code></pre>
+    convert Icon256x256.png '(' +clone -background black -shadow 80x100+100+100 ')' +swap -background none -layers merge +repage cat_shadowed.png
 
-<p>We get a one with background shadow!</p>
+We get a one with background shadow!
 
-<p><img src="/media/figures/cat_shadowed.png" alt="shadow_example" /></p>
+![shadow_example(/media/figures/cat_shadowed.png)]
 
-<p>You have to play with the numbers to get the direction, size and distance of the shadow right. I think the main potential use for this is in map icons.</p>
+You have to play with the numbers to get the direction, size and distance of the shadow right. I think the main potential use for this is in map icons.
 
     <p id="post-meta"> <i class="fa fa-tags"></i> </p>
   </article>

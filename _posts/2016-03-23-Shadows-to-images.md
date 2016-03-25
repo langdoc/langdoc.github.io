@@ -22,6 +22,6 @@ With command like this:
 
 We get a one with background shadow!
 
-![shadow_example(/media/figures/cat_shadowed.png)]
+![shadow_example](/media/figures/cat_shadowed.png)
 
 You have to play with the numbers to get the direction, size and distance of the shadow right. I think the main potential use for this is in map icons.

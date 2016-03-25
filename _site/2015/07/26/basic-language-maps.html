@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Adding shadows to images</title>
+    <title>Basic language maps</title>
     <meta name="description" content="">
 
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="canonical" href="http://langdoc.github.io/2016/03/23/shadows-to-images.html">
+    <link rel="canonical" href="http://langdoc.github.io/2015/07/26/basic-language-maps.html">
 </head>
 
 
@@ -89,27 +89,23 @@
 <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Adding shadows to images</h1>
-    <p class="post-meta">Mar 23, 2016 • Niko Partanen</p>
+    <h1 class="post-title">Basic language maps</h1>
+    <p class="post-meta">Jul 26, 2015</p>
   </header>
 
   <article class="post-content">
-    <p>I’m not certain if this is something anyone needs often, but at least I was surprised to learn this can also be done from the command line. So I needed to overlay something on a map as a marker, and already had fired up Gimp and started to edit a shadow file to be used in JavaScript. Little I knew that ImageMagick was able to do that as well!  <!--more--></p>
+    <p>I started to write some long rant about the data situation with semi-large language like Komi, and ended up combining it to geographical locations, with which I ended into mapping. For quite a while I had problems in embedding Leaflet/R based maps into Github Pages, although now when I realized how it works it is actually ridiculously easy. There are many frameworks to work with maps, but I think at the moment Leaflet is the one doing best. What kind of complicates the things is how one can use Leaflet within different frameworks, basically with JavaScript and with R. I have been working with both of them intensively, and started also collecting different language maps into a new Github repository called <a href="http://github.com/nikopartanen/language_maps/">Language Maps</a>.<!--more--></p>
 
-<p>So if one would start with a file like this:</p>
+<p>I have this idea that we are not using geographical data as complexly as could.</p>
 
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Icon256x256.png" alt="example" /></p>
+<p>At the moment the map shows only Komi-Zyrian dialects. I’m on my way to connect it to our database and get some markers from there.</p>
 
-<p>With command like this:</p>
+<iframe width="100%" height="500" src="http://nikopartanen.github.io/language_maps/webmap/kpv_dial.html"></iframe>
 
-<pre><code>convert Icon256x256.png '(' +clone -background black -shadow 80x100+100+100 ')' +swap -background none -layers merge +repage cat_shadowed.png
-</code></pre>
+<p>Also more complicated work is possible, as an example, the map below shows the languages which are part of the INEL project I’m now working with.</p>
 
-<p>We get a one with background shadow!</p>
+<iframe width="100%" height="500" src="http://nikopartanen.github.io/language_maps/webmap/language_maps_inel_osm.html"></iframe>
 
-<p><img src="/media/figures/cat_shadowed.png" alt="shadow_example" /></p>
-
-<p>You have to play with the numbers to get the direction, size and distance of the shadow right. I think the main potential use for this is in map icons.</p>
 
     <p id="post-meta"> <i class="fa fa-tags"></i> </p>
   </article>
