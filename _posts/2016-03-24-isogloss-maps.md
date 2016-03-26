@@ -15,6 +15,33 @@ I've been working lately a lot with language areas as different Shapefiles. This
 Let's take a look into a Shapefile, or Geojson, whatever. When the data is read to R as `SpatialPolygonsDataFrame` it behaves the same way whatever the origin. It is bit more complex format which has slots for different kinds of information. The most important ones are `@data` and `@polygons`. The first is just a data frame, and it can be accessed with `object@data$column`. It is possible to do there quite many of those things which you would do with any other data frame, which makes it very powerful tool.
 
 
+{% highlight r %}
+library(rgdal)
+library(dplyr)
+library(leaflet)
+
+kpv <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kpv.geojson", "OGRGeoJSON")
+koi <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi.geojson", "OGRGeoJSON")
+jzv <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi-j.geojson", "OGRGeoJSON")
+
+map <- leaflet() %>%
+              addProviderTiles("Esri.WorldTopoMap") %>%
+    addPolygons(data = kpv,
+              fillOpacity = 0.4, 
+              color = "gray", 
+              weight = 1,
+              popup = ~dial) %>%
+    addPolygons(data = koi,
+              fillOpacity = 0.4, 
+              color = "gray", 
+              weight = 1,
+              popup = ~dial) %>%
+    addPolygons(data = jzv,
+              fillOpacity = 0.4, 
+              color = "gray", 
+              weight = 1,
+              popup = ~dial)
+{% endhighlight %}
 
 <iframe width="100%" height="500" src="http://nikopartanen.github.io/language_maps/webmap/komi_basic.html"></iframe>
 

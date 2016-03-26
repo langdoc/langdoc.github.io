@@ -98,6 +98,32 @@
 
 <p>Let’s take a look into a Shapefile, or Geojson, whatever. When the data is read to R as <code>SpatialPolygonsDataFrame</code> it behaves the same way whatever the origin. It is bit more complex format which has slots for different kinds of information. The most important ones are <code>@data</code> and <code>@polygons</code>. The first is just a data frame, and it can be accessed with <code>object@data$column</code>. It is possible to do there quite many of those things which you would do with any other data frame, which makes it very powerful tool.</p>
 
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span>
+<span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
+<span class="n">library</span><span class="p">(</span><span class="n">leaflet</span><span class="p">)</span>
+
+<span class="n">kpv</span> <span class="o">&lt;-</span> <span class="n">readOGR</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kpv.geojson"</span><span class="p">,</span> <span class="s2">"OGRGeoJSON"</span><span class="p">)</span>
+<span class="n">koi</span> <span class="o">&lt;-</span> <span class="n">readOGR</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi.geojson"</span><span class="p">,</span> <span class="s2">"OGRGeoJSON"</span><span class="p">)</span>
+<span class="n">jzv</span> <span class="o">&lt;-</span> <span class="n">readOGR</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi-j.geojson"</span><span class="p">,</span> <span class="s2">"OGRGeoJSON"</span><span class="p">)</span>
+
+<span class="n">map</span> <span class="o">&lt;-</span> <span class="n">leaflet</span><span class="p">()</span> <span class="o">%&gt;%</span>
+              <span class="n">addProviderTiles</span><span class="p">(</span><span class="s2">"Esri.WorldTopoMap"</span><span class="p">)</span> <span class="o">%&gt;%</span>
+    <span class="n">addPolygons</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">kpv</span><span class="p">,</span>
+              <span class="n">fillOpacity</span> <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> 
+              <span class="n">color</span> <span class="o">=</span> <span class="s2">"gray"</span><span class="p">,</span> 
+              <span class="n">weight</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+              <span class="n">popup</span> <span class="o">=</span> <span class="o">~</span><span class="n">dial</span><span class="p">)</span> <span class="o">%&gt;%</span>
+    <span class="n">addPolygons</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">koi</span><span class="p">,</span>
+              <span class="n">fillOpacity</span> <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> 
+              <span class="n">color</span> <span class="o">=</span> <span class="s2">"gray"</span><span class="p">,</span> 
+              <span class="n">weight</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+              <span class="n">popup</span> <span class="o">=</span> <span class="o">~</span><span class="n">dial</span><span class="p">)</span> <span class="o">%&gt;%</span>
+    <span class="n">addPolygons</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">jzv</span><span class="p">,</span>
+              <span class="n">fillOpacity</span> <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> 
+              <span class="n">color</span> <span class="o">=</span> <span class="s2">"gray"</span><span class="p">,</span> 
+              <span class="n">weight</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+              <span class="n">popup</span> <span class="o">=</span> <span class="o">~</span><span class="n">dial</span><span class="p">)</span></code></pre></figure>
+
 <iframe width="100%" height="500" src="http://nikopartanen.github.io/language_maps/webmap/komi_basic.html"></iframe>
 
 <p>Now there are of course lots of different isoglosses, but they don’t necessarily align by dialects. So we cannot just store information with what kind of isogloss value which polygon is associated. In a way where this line goes can be rather arbitrary, although it is also absolute in the sense that at least on more abstract level we can say this line goes along the line. It is always another question how the isoglosses pattern in our actual corpus data. But I think both representations have their own value and use.</p>

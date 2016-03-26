@@ -14,13 +14,10 @@ I've been working lately a lot with language areas as different Shapefiles. This
 
 Let's take a look into a Shapefile, or Geojson, whatever. When the data is read to R as `SpatialPolygonsDataFrame` it behaves the same way whatever the origin. It is bit more complex format which has slots for different kinds of information. The most important ones are `@data` and `@polygons`. The first is just a data frame, and it can be accessed with `object@data$column`. It is possible to do there quite many of those things which you would do with any other data frame, which makes it very powerful tool.
 
-```{r, echo=F, eval=F, warning=F, message=F, comment=F}
+```{r, eval=F}
 library(rgdal)
-library(raster)
-library(plyr)
-suppressPackageStartupMessages(library(dplyr))
+library(dplyr)
 library(leaflet)
-library(htmlwidgets)
 
 kpv <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kpv.geojson", "OGRGeoJSON")
 koi <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi.geojson", "OGRGeoJSON")
