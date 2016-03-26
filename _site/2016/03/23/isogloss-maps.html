@@ -102,10 +102,14 @@
 <span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
 <span class="n">library</span><span class="p">(</span><span class="n">leaflet</span><span class="p">)</span>
 
+<span class="c1"># Here we read in the polygons - now in geojson, but the original format is not that relevant
+</span>
 <span class="n">kpv</span> <span class="o">&lt;-</span> <span class="n">readOGR</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kpv.geojson"</span><span class="p">,</span> <span class="s2">"OGRGeoJSON"</span><span class="p">)</span>
 <span class="n">koi</span> <span class="o">&lt;-</span> <span class="n">readOGR</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi.geojson"</span><span class="p">,</span> <span class="s2">"OGRGeoJSON"</span><span class="p">)</span>
 <span class="n">jzv</span> <span class="o">&lt;-</span> <span class="n">readOGR</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi-j.geojson"</span><span class="p">,</span> <span class="s2">"OGRGeoJSON"</span><span class="p">)</span>
 
+<span class="c1"># Those polygons are added as new layers to the Leaflet map
+</span>
 <span class="n">map</span> <span class="o">&lt;-</span> <span class="n">leaflet</span><span class="p">()</span> <span class="o">%&gt;%</span>
               <span class="n">addProviderTiles</span><span class="p">(</span><span class="s2">"Esri.WorldTopoMap"</span><span class="p">)</span> <span class="o">%&gt;%</span>
     <span class="n">addPolygons</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">kpv</span><span class="p">,</span>
@@ -137,6 +141,9 @@
 <p>We could take the polygons above and modify a variant which is cut according to this pattern, but this has some problems as well. Mainly that the changes in original polygons would not be reflected in the Shapefiles which contain the isoglosses! This would have fast quite disastrous results, and generally speaking would not be very elegant.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">maptools</span><span class="p">)</span>
+
+<span class="c1"># This is same as above, but the polygon is read from Shapefile
+</span>
 <span class="n">isogloss</span> <span class="o">&lt;-</span> <span class="n">readShapePoly</span><span class="p">(</span><span class="s2">"/Volumes/langdoc/maps/language_maps/isoglosses/kom.shp"</span><span class="p">,</span> <span class="n">proj4string</span> <span class="o">=</span> <span class="n">CRS</span><span class="p">(</span><span class="s2">"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"</span><span class="p">))</span>
 
 <span class="n">map</span> <span class="o">%&gt;%</span> <span class="n">addPolygons</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">isogloss</span><span class="p">,</span>
@@ -162,6 +169,9 @@
 
 <span class="n">isogloss_cut</span> <span class="o">&lt;-</span> <span class="n">readShapePoly</span><span class="p">(</span><span class="s2">"/Volumes/langdoc/maps/language_maps/isoglosses/kom_isogloss_1_cut.shp"</span><span class="p">,</span> <span class="n">proj4string</span> <span class="o">=</span> <span class="n">CRS</span><span class="p">(</span><span class="s2">"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"</span><span class="p">))</span>
 
+<span class="c1"># Here we need to play around a bit to get the values and colors correctly both on map and in legend.
+# There maybe is some better way to do it, but this is how I've done it now.
+</span>
 <span class="n">value</span> <span class="o">&lt;-</span> <span class="n">as.character</span><span class="p">(</span><span class="n">distinct</span><span class="p">(</span><span class="n">isogloss_cut</span><span class="o">@</span><span class="n">data</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="n">arrange</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="err">.</span><span class="o">$</span><span class="n">value</span><span class="p">)</span> 
 <span class="n">colors</span> <span class="o">&lt;-</span> <span class="n">RColorBrewer</span><span class="o">::</span><span class="n">brewer.pal</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s2">"Dark2"</span><span class="p">)</span>
 

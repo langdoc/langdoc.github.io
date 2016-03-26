@@ -19,9 +19,13 @@ library(rgdal)
 library(dplyr)
 library(leaflet)
 
+# Here we read in the polygons - now in geojson, but the original format is not that relevant
+
 kpv <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kpv.geojson", "OGRGeoJSON")
 koi <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi.geojson", "OGRGeoJSON")
 jzv <- readOGR("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/koi-j.geojson", "OGRGeoJSON")
+
+# Those polygons are added as new layers to the Leaflet map
 
 map <- leaflet() %>%
               addProviderTiles("Esri.WorldTopoMap") %>%
@@ -57,6 +61,9 @@ We could take the polygons above and modify a variant which is cut according to 
 
 ```{r, eval=F}
 library(maptools)
+
+# This is same as above, but the polygon is read from Shapefile
+
 isogloss <- readShapePoly("/Volumes/langdoc/maps/language_maps/isoglosses/kom.shp", proj4string = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
 
 map %>% addPolygons(data = isogloss,
@@ -84,6 +91,9 @@ There is nothing really new going on in the map below, but note that we are usin
 library(RColorBrewer)
 
 isogloss_cut <- readShapePoly("/Volumes/langdoc/maps/language_maps/isoglosses/kom_isogloss_1_cut.shp", proj4string = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+
+# Here we need to play around a bit to get the values and colors correctly both on map and in legend.
+# There maybe is some better way to do it, but this is how I've done it now.
 
 value <- as.character(distinct(isogloss_cut@data, value) %>% arrange(value) %>% .$value) 
 colors <- RColorBrewer::brewer.pal(length(value), "Dark2")
