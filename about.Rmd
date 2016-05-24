@@ -3,6 +3,7 @@ bibliography: ~/FRibliography/bibtex/FRibliography.bib
 ---
 
 </br>
+</br>
 
 This website is maintained by Niko Partanen and Michael Rießler. It will discuss topics related to language documentation projects funded by different groups and with work done in different universities, so it is not stricktly connected to any one project or institutions. The site has been built with `rmarkdown` package. The main reason to this is that it allows:
 
