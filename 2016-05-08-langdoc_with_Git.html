@@ -279,7 +279,7 @@ div.tocify {
         <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Subpages</a>
                 <ul class="dropdown-menu">
-            <li><a href="http://langdoc.github.io/izvakomi">Iźva Komi Documentation Project</a></li>
+            <li><a href="http://izvakomi.github.io/">Iźva Komi Documentation Project</a></li>
             <li><a href="http://langdoc.github.io/downrivervashka">Down River Vashka</a></li>
             <li><a href="http://nikopartanen.github.io/sle2016partanen">Niko Partanen's SLE 2016 paper</a></li>
             <li role="separator" class="divider"></li>
@@ -308,12 +308,17 @@ div.tocify {
 
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p>There are some posts under preparation about more important topics, but this is also something worth commenting, and as small thing it is suitable for an initial post. Using version control is in many ways crucial, especially in the conditions where we can’t always archive the newest versions of our files. It is also important in order to know who has done what. There are all kind of changes one tends to do into corpus, and in the longer run it gets difficult to return into old changes if there are second thoughts. For example, I’m currently doing a small study about Komi sibilant articulation, and while creating phonetic transcription for specific word forms I often find out that one has to adjust the transcribed form a bit. For example, many words transcribed seem to be actually shortened fast speech forms. Now I could fix those while I am in it, but the fact remains that a native speaker has transcribed there the complete form. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn’t be the first time my analysis is not the right one.</p>
+<p>There are some posts under preparation about more important topics, but this is also something worth commenting, and as small thing it is suitable for an initial post. Using version control is in many ways crucial, especially in the conditions where we can’t always archive the newest versions of our files. And it isn’t useful only to retrieve old versions, as it is also important in order to know who has done what. There are all kind of changes one tends to do into corpus, and in the longer run it gets difficult to return into old changes if there are second thoughts. For example, I’m currently doing a small study about Komi sibilant articulation, and while creating phonetic transcription for specific word forms I often find out that one has to adjust the transcribed form a bit. For example, many words transcribed seem to be actually shortened fast speech forms. Now I could fix those while I am in it, but the fact remains that a native speaker has transcribed there the complete form. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn’t be the first time my analysis is not the right one.</p>
 </div>
 <div id="technical-part" class="section level3">
 <h3>Technical part</h3>
+<div id="creating-a-repository" class="section level4">
+<h4>Creating a repository</h4>
 <p>So one can always just move into an empty main folder and run command:</p>
 <pre><code>git init .</code></pre>
+</div>
+<div id="gitignore" class="section level4">
+<h4>.gitignore</h4>
 <p>This initiates an empty Git repository in the current folder. Now we don’t want all the files, mainly ELAN files actually. And maybe CMDI or IMDI, if that’s where ones metadata is stored. We have to set up <code>.gitignore</code> file with following content:</p>
 <pre><code>*
 !*/
@@ -325,18 +330,33 @@ div.tocify {
 - And don&#39;t ignore this file
 - And keep the ELAN files</code></pre>
 <p>I’m still bit unsure whether one should save the pfsx-files. Probably no. Although they make cloning the repository much nicer as the files would appear correctly. On the other hand, they change when no real changes are done to the files, so would committing them be confusing? Or would it just be a good way to keep track of what was done?</p>
+</div>
+<div id="cloning-the-repo" class="section level4">
+<h4>Cloning the repo</h4>
 <pre><code>git clone --bare . ~/.git_master/kpv</code></pre>
 <p>This will give a message like this:</p>
 <pre><code>Cloning into bare repository &#39;/Users/niko/.git_master/kpv&#39;...
 warning: You appear to have cloned an empty repository.
 done.</code></pre>
 <p>This means that you have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn’t contain the files in actually browsable folder structure. You can copy the files from there any time with command <code>git clone ~/.git_master/kpv</code>, but you cannot just browse around there. I think this is quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.</p>
+</div>
+<div id="setting-the-new-master" class="section level4">
+<h4>Setting the new master</h4>
 <pre><code>git remote add origin ~/.git_master/kpv/</code></pre>
+</div>
+<div id="adding-the-files" class="section level4">
+<h4>Adding the files</h4>
 <p>All ELAN files can be added with simple command:</p>
 <pre><code>git add -A</code></pre>
 <p>This adds everything. Normally it is good idea to check what has changed with <code>git status</code> and maybe comment on those files one by one, but it is good to know this can also be used. Even after this <code>git status</code> would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small comment about what was done. As I mentioned, it is possible to do <code>git add</code> + <code>git commit -m &quot;...&quot;</code> for each file or groups of files, so they get their own messages in log.</p>
+</div>
+<div id="committing" class="section level4">
+<h4>Committing</h4>
 <pre><code>git commit -m &quot;setting up the git repository&quot;</code></pre>
 <p>After committing we have to push the changes into master repository. In step above we just set the master, so simply typing:</p>
+</div>
+<div id="pushing" class="section level4">
+<h4>Pushing</h4>
 <pre><code>git push --set-upstream origin master</code></pre>
 <p>Will send the files over there. If we do instantly after this <code>git status</code> we will see:</p>
 <pre><code>On branch master
@@ -348,6 +368,9 @@ Changes not staged for commit:
 (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)
 modified:   kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf
 no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</code></pre>
+</div>
+<div id="comparing-differences" class="section level4">
+<h4>Comparing differences</h4>
 <p>It is easy to see with <code>git diff</code> command what exactly has changed:</p>
 <pre><code>git diff kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf</code></pre>
 <p>Result would look, for example when touching one annotation, be something like this (the output is often more complex, but the lines with plus and minus signs show the differences:</p>
@@ -366,6 +389,7 @@ Author: nikopartanen &lt;nikotapiopartanen@gmail.com&gt;
 Date:   Sun May 15 19:03:18 2016 +0200
 did something with this file</code></pre>
 <p>Each commit gets id, and it is rather easy to move back into that version with individual files or with the whole project. Also this is wonderful way to track what the project has been doing for all the years it has been rolling.</p>
+</div>
 </div>
 <div id="hardships" class="section level3">
 <h3>Hardships</h3>
