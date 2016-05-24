@@ -1,0 +1,98 @@
+---
+title: "Reading ELAN files to R"
+author: "Niko Partanen"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+excerpt_separator: <!--more-->
+bibliography: ~/FRibliography/bibtex/FRibliography.bib
+---
+
+### Introduction
+
+This writing is part of the wider topic of how to get documentary linguistic data into R. This means not only reading in ELAN files, but doing the same for metadata and other accompanying datasets we may have with our corpus. There are many reasons one may want to have documentary linguistic corpus in R. It makes searching the data very easy, and one is not limited to the predefined possibilities of individual user-interface. Besides this it is easy to make the study entirely reproducible, as there is no unnecessary mouse clicking involved. R has already for many years been used in variationistic sociolinguistics, and also in that realm use of ELAN has been around [@nagyEtAl2015a]. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).
+
+All treatments of data analysis with R start with the notion that one has to get the data into R (see, for example [@wickhamEtAl2016a]). Getting data into R is basically a data transformation, and the method of doing the import is to define this transformation and run it whenever needed. So the question can also be turned into a statement: if data can be transformed, then it can be read into R. By transformation I mean any kind of operation where the data is parsed, in its totality or with some subset, and turned into whatever other data structure we need without information being lost. Or if the information is lost, it should be clearly understood and acknowledged.
+
+In order to be able to make this kind of transformations to the corpus, the data str
+
+Ideally the connection would be rather seamless between the forms our dataset is stored and analysed. 
+
+ELAN stores its data in a well structured XML file. 
+
+I think often when there is talk about data formats there is some confusion over the fact that the data should be in different structures in different parts of its life. Of course these stages are not really distinct from one another, but there are clear conceptual differences and requirements which I try to outline below. 
+
+- data editing: minimal repetition of fields
+- data archiving: maximal usability for different purposes
+- data analysis: wide applicability for different statistics and plotting
+
+All these stages have different demands for the ideal data structure, and we should not imagine that there is just one solution for this. Naturally this is a two way street, so that during data analysis one often needs to edit the data and come back to analysis. If we think about the resulting dataset in terms of **tidy data**, where we would ideally have one row per one observation [@wickham2014a], then I think we often should consider **token** as the basic unit here. The resulting data is relatively ineffective in the sense that the same information is repeated all over the place, but it is **tidy**. It can be described also as **long**, as there are relatively few columns and the data is stored along the rows. 
+
+### Technical part
+
+There are many ways to parse ELAN file into R, and ultimately it boils down to the question **what do you want to do**? Usually I want to search from the data in R or I want to merge some content with metadata, either to make more complex searches or to check what is going on. However, the scope varies. If I think in terms of ELAN's tier structure, there are following attributes we can use:
+
+- linguistic type: ideally each file would have one tier of one type per speaker
+- speaker
+
+Reading ELAN files into R is not trivially easy and it gets fast very complicated. The main question is always how uniform the ELAN files are in their basic structure. This is really where all problems begin. If all ELAN files are identical, then one can just specify the pattern to parse one and loop it over all files. However, in reality the situation is much more complicated, and ELAN files tend to be somewhat heterogenic. There is nothing in ELAN that would prevent small creeping in here and there, and what may look harmless for a human, for example, slightly different name of a linguistic type, is of course impassable barrier for a computer which tries to read the file. So the code to parse ELAN files often needs to have all kinds of bells and whistles attached into it to handle errors, which makes the code very complicated and there is always possibility that something fails in a new way.
+
+However, this is what makes parsing ELAN files to R particularly rewarding as well. It tells where the problems are, and makes it easier to address them. It can thereby be tested also as a robust testing method which helps to keep ELAN files organized. As far as I see it, the fact that all files adhere to uniform structure should be among the most basic definitions we have for **corpus**, differentiating it from eclectic file collections. This comes back to what I was describing above: if corpus is parsable, it is also transformable, and this is actually guarantees its longevity. It is not likely that in thirty years we want data to be in exactly this kind of XML files, but if they are perfectly uniform doing the transformation will never be more than a fast and easy task, whereas currently that can be quite a nightmare.
+
+#### Reading one tier
+
+I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.
+
+```{r, eval=F}
+
+read_tier <- function(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", participant = "JAI-M-1939", linguistic_type = "wordT", independent = F){
+
+        `%>%` <- dplyr::`%>%`
+
+        file <- xml2::read_xml(eaf_file)
+        
+        create_path <- function(..., above = F){
+                if (exists("participant")){
+                        restriction <- paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "' and @PARTICIPANT='", participant,"']")
+                } else {
+                        restiction <- paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "']")
+                }
+                if (above == T){
+                        xpath_end <- "/ANNOTATION/*/ANNOTATION_VALUE/../../.."
+                } else {
+                        xpath_end <- "/ANNOTATION/*/ANNOTATION_VALUE/.."
+                }
+                
+                file %>% xml2::xml_find_all(paste0(restiction, xpath_end))
+        }
+
+        dplyr::data_frame(
+                Content = create_path() %>% xml2::xml_text(),
+                annot_id = create_path() %>% xml2::xml_attr("ANNOTATION_ID"),
+                ref_id = create_path() %>% xml2::xml_attr("ANNOTATION_REF"),
+                participant = create_path(above = T) %>% xml2::xml_attr("PARTICIPANT"),
+                tier_id = create_path(above = T) %>% xml2::xml_attr("TIER_ID"),
+                type = create_path(above = T) %>% xml2::xml_attr("LINGUISTIC_TYPE_REF"))
+        }
+
+```
+
+
+#### Reading whole ELAN file
+
+What there is in ELAN file can be thought in following terms:
+
+- tiers which have identical basic structure
+    - with the difference that some have references to the time codes
+- in principle all tiers have time references, but those are accessible from their parent tiers (or their parents)
+    - I mean that even with annotations on tiers like **symbolic subdivision** it is possible to locate the span during which they are located on recording (time span of their parent tier)
+
+```{r note_core, eval=F, echo=F}
+        #        file %>% xml2::xml_find_all(paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "']")) %>%
+        #                xml2::xml_attr("PARTICIPANT") -> participant
+```
+
+
+### References

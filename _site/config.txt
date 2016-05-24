@@ -1,2 +1,0 @@
-t: latex
-latex-engine: xelatex

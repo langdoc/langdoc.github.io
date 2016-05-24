@@ -1,0 +1,63 @@
+---
+---
+
+</br>
+
+<center>
+<figure>
+<img src="media/images/sordla_2012.jpg" alt="At Nina Pigulina's in Syordla, 2012" style="width:700px">
+</br>
+<figcaption>Interview with Paš Kolya, a resident of Syordla village, who passed away on 8.6.2015.</figcaption>
+</figure>
+</center>
+
+</br>
+
+```{r, echo=F, message=F}
+
+library(plyr)
+library(dplyr)
+
+rmd_files <- list.files(".", "^\\d\\d\\d\\d-\\d\\d-\\d\\d.+Rmd$")
+
+rmd_name <- gsub("^(\\d\\d\\d\\d-\\d\\d-\\d\\d)-(.+).Rmd$", "\\2", rmd_files)
+rmd_date <- gsub("^(\\d\\d\\d\\d-\\d\\d-\\d\\d)-(.+).Rmd$", "\\1", rmd_files)
+
+rmd_df <- dplyr::data_frame(name = rmd_name,
+                  date = rmd_date,
+                  file = rmd_files)
+
+library(yaml)
+
+get_header_attr <- function(rmd_file){
+
+#        http://stackoverflow.com/questions/30153194/access-name-of-rmd-file-and-use-in-r
+                lines <- readLines(rmd_file)
+                # Find the header portion contained between the --- lines. 
+                header_line_nums <- which(lines == "---") + c(1, -1)
+                # Create a string of just that header portion
+                header <- paste(lines[seq(header_line_nums[1], 
+                                          header_line_nums[2])], 
+                                collapse = "\n")
+                # parse it as yaml, which returns a list of property values
+                header <- yaml.load(header)
+                dplyr::data_frame(author = header$author,
+                                  title = header$title,
+                                  file = rmd_file,
+                                  html_file = gsub("(.+)(Rmd)", "\\1html", rmd_file))
+}
+
+rmd_info <- plyr::ldply(rmd_files, get_header_attr) %>% left_join(rmd_df)
+
+blog_list <- paste(plyr::dlply(rmd_info, .variables = "file", function(x) {
+        paste0('<li><a href="', x$html_file, '">', x$title, '</a> by ', x$author, "</li>")
+        }
+), collapse = "")
+
+blog_list <- paste0("<ul>", blog_list, "</ul>")
+
+```
+
+Here are current posts in the blog:
+
+`r blog_list`

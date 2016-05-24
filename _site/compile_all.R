@@ -1,6 +1,0 @@
-#source("compile_eaf.R")
-source("compile_Rmd.R")
-KnitPost(overwriteAll = T)
-# KnitMd(overwriteAll = T)
-# source("compile_book.R")
-# system("jekyll serve --detach")

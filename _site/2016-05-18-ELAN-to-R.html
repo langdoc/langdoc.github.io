@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Niko Partanen" />
+
+
+<title>Reading ELAN files to R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.0/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <!-- NOTE: add "navbar-inverse" class for an alternate navbar background -->
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Language Documentation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Subpages</a>
+                <ul class="dropdown-menu">
+            <li><a href="http://langdoc.github.io/izvakomi">Iźva Komi Documentation Project</a></li>
+            <li><a href="http://langdoc.github.io/downrivervashka">Down River Vashka</a></li>
+            <li><a href="#">Some Niko's stuff</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Micha's conference page</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/langdoc">GitHub</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Reading ELAN files to R</h1>
+<h4 class="author"><em>Niko Partanen</em></h4>
+
+</div>
+
+
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>This writing is part of the wider topic of how to get documentary linguistic data into R. This means not only reading in ELAN files, but doing the same for metadata and other accompanying datasets we may have with our corpus. There are many reasons one may want to have documentary linguistic corpus in R. It makes searching the data very easy, and one is not limited to the predefined possibilities of individual user-interface. Besides this it is easy to make the study entirely reproducible, as there is no unnecessary mouse clicking involved. R has already for many years been used in variationistic sociolinguistics, and also in that realm use of ELAN has been around <span class="citation">(Nagy and Meyerhoff 2015)</span>. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).</p>
+<p>All treatments of data analysis with R start with the notion that one has to get the data into R (see, for example <span class="citation">(Wickham and Grolemund 2016)</span>). Getting data into R is basically a data transformation, and the method of doing the import is to define this transformation and run it whenever needed. So the question can also be turned into a statement: if data can be transformed, then it can be read into R. By transformation I mean any kind of operation where the data is parsed, in its totality or with some subset, and turned into whatever other data structure we need without information being lost. Or if the information is lost, it should be clearly understood and acknowledged.</p>
+<p>In order to be able to make this kind of transformations to the corpus, the data str</p>
+<p>Ideally the connection would be rather seamless between the forms our dataset is stored and analysed.</p>
+<p>ELAN stores its data in a well structured XML file.</p>
+<p>I think often when there is talk about data formats there is some confusion over the fact that the data should be in different structures in different parts of its life. Of course these stages are not really distinct from one another, but there are clear conceptual differences and requirements which I try to outline below.</p>
+<ul>
+<li>data editing: minimal repetition of fields</li>
+<li>data archiving: maximal usability for different purposes</li>
+<li>data analysis: wide applicability for different statistics and plotting</li>
+</ul>
+<p>All these stages have different demands for the ideal data structure, and we should not imagine that there is just one solution for this. Naturally this is a two way street, so that during data analysis one often needs to edit the data and come back to analysis. If we think about the resulting dataset in terms of <strong>tidy data</strong>, where we would ideally have one row per one observation <span class="citation">(Wickham 2014)</span>, then I think we often should consider <strong>token</strong> as the basic unit here. The resulting data is relatively ineffective in the sense that the same information is repeated all over the place, but it is <strong>tidy</strong>. It can be described also as <strong>long</strong>, as there are relatively few columns and the data is stored along the rows.</p>
+</div>
+<div id="technical-part" class="section level3">
+<h3>Technical part</h3>
+<p>There are many ways to parse ELAN file into R, and ultimately it boils down to the question <strong>what do you want to do</strong>? Usually I want to search from the data in R or I want to merge some content with metadata, either to make more complex searches or to check what is going on. However, the scope varies. If I think in terms of ELAN’s tier structure, there are following attributes we can use:</p>
+<ul>
+<li>linguistic type: ideally each file would have one tier of one type per speaker</li>
+<li>speaker</li>
+</ul>
+<p>Reading ELAN files into R is not trivially easy and it gets fast very complicated. The main question is always how uniform the ELAN files are in their basic structure. This is really where all problems begin. If all ELAN files are identical, then one can just specify the pattern to parse one and loop it over all files. However, in reality the situation is much more complicated, and ELAN files tend to be somewhat heterogenic. There is nothing in ELAN that would prevent small creeping in here and there, and what may look harmless for a human, for example, slightly different name of a linguistic type, is of course impassable barrier for a computer which tries to read the file. So the code to parse ELAN files often needs to have all kinds of bells and whistles attached into it to handle errors, which makes the code very complicated and there is always possibility that something fails in a new way.</p>
+<p>However, this is what makes parsing ELAN files to R particularly rewarding as well. It tells where the problems are, and makes it easier to address them. It can thereby be tested also as a robust testing method which helps to keep ELAN files organized. As far as I see it, the fact that all files adhere to uniform structure should be among the most basic definitions we have for <strong>corpus</strong>, differentiating it from eclectic file collections. This comes back to what I was describing above: if corpus is parsable, it is also transformable, and this is actually guarantees its longevity. It is not likely that in thirty years we want data to be in exactly this kind of XML files, but if they are perfectly uniform doing the transformation will never be more than a fast and easy task, whereas currently that can be quite a nightmare.</p>
+<div id="reading-one-tier" class="section level4">
+<h4>Reading one tier</h4>
+<p>I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.</p>
+<pre class="r"><code>read_tier &lt;- function(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, participant = &quot;JAI-M-1939&quot;, linguistic_type = &quot;wordT&quot;, independent = F){
+
+        `%&gt;%` &lt;- dplyr::`%&gt;%`
+
+        file &lt;- xml2::read_xml(eaf_file)
+        
+        create_path &lt;- function(..., above = F){
+                if (exists(&quot;participant&quot;)){
+                        restriction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39; and @PARTICIPANT=&#39;&quot;, participant,&quot;&#39;]&quot;)
+                } else {
+                        restiction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39;]&quot;)
+                }
+                if (above == T){
+                        xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE/../../..&quot;
+                } else {
+                        xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE/..&quot;
+                }
+                
+                file %&gt;% xml2::xml_find_all(paste0(restiction, xpath_end))
+        }
+
+        dplyr::data_frame(
+                Content = create_path() %&gt;% xml2::xml_text(),
+                annot_id = create_path() %&gt;% xml2::xml_attr(&quot;ANNOTATION_ID&quot;),
+                ref_id = create_path() %&gt;% xml2::xml_attr(&quot;ANNOTATION_REF&quot;),
+                participant = create_path(above = T) %&gt;% xml2::xml_attr(&quot;PARTICIPANT&quot;),
+                tier_id = create_path(above = T) %&gt;% xml2::xml_attr(&quot;TIER_ID&quot;),
+                type = create_path(above = T) %&gt;% xml2::xml_attr(&quot;LINGUISTIC_TYPE_REF&quot;))
+        }</code></pre>
+</div>
+<div id="reading-whole-elan-file" class="section level4">
+<h4>Reading whole ELAN file</h4>
+<p>What there is in ELAN file can be thought in following terms:</p>
+<ul>
+<li>tiers which have identical basic structure
+<ul>
+<li>with the difference that some have references to the time codes</li>
+</ul></li>
+<li>in principle all tiers have time references, but those are accessible from their parent tiers (or their parents)
+<ul>
+<li>I mean that even with annotations on tiers like <strong>symbolic subdivision</strong> it is possible to locate the span during which they are located on recording (time span of their parent tier)</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="references" class="section level3 unnumbered">
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-nagyEtAl2015a">
+<p>Nagy, Naomi, and Miriam Meyerhoff. 2015. “Extending ELAN into Quantitative Sociolinguistics.” <em>Linguistics Vanguard</em> 1 (1): 271–81.</p>
+</div>
+<div id="ref-wickham2014a">
+<p>Wickham, Hadley. 2014. “Tidy Data.” <em>Under Review</em>.</p>
+</div>
+<div id="ref-wickhamEtAl2016a">
+<p>Wickham, Hadley, and Garrett Grolemund. 2016. <em>R for Data Science: Visualize, Model, Transform, Tidy, and Import Data</em>. O’Reilly. <a href="http://r4ds.had.co.nz/" class="uri">http://r4ds.had.co.nz/</a>.</p>
+</div>
+</div>
+</div>
+
+<hr>
+<p>Copyright &copy; 2016 CC-BY Niko Partanen or individual writers.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
