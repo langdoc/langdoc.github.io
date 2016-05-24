@@ -310,26 +310,78 @@ div.tocify {
 <h3>Introduction</h3>
 <p>This writing is part of the wider topic of how to get documentary linguistic data into R. This means not only reading in ELAN files, but doing the same for metadata and other accompanying datasets we may have with our corpus. There are many reasons one may want to have documentary linguistic corpus in R. It makes searching the data very easy, and one is not limited to the predefined possibilities of individual user-interface. Besides this it is easy to make the study entirely reproducible, as there is no unnecessary mouse clicking involved. R has already for many years been used in variationistic sociolinguistics, and also in that realm use of ELAN has been around <span class="citation">(Nagy and Meyerhoff 2015)</span>. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).</p>
 <p>All treatments of data analysis with R start with the notion that one has to get the data into R (see, for example <span class="citation">(Wickham and Grolemund 2016)</span>). Getting data into R is basically a data transformation, and the method of doing the import is to define this transformation and run it whenever needed. So the question can also be turned into a statement: if data can be transformed, then it can be read into R. By transformation I mean any kind of operation where the data is parsed, in its totality or with some subset, and turned into whatever other data structure we need without information being lost. Or if the information is lost, it should be clearly understood and acknowledged.</p>
-<p>In order to be able to make this kind of transformations to the corpus, the data str</p>
-<p>Ideally the connection would be rather seamless between the forms our dataset is stored and analysed.</p>
-<p>ELAN stores its data in a well structured XML file.</p>
+<p>In order to be able to make this kind of transformations to the corpus, the data structures have to be perfectly described and systematically present in the files. Actually making sure that this is the case would be very easy, for example, with <a href="http://rmarkdown.rstudio.com/developer_parameterized_reports.html">parameteried RMarkdown reports</a>. The R functions to parse ELAN files are kind of backbones of this kind of testing, about which I should probably be writing more soon.</p>
 <p>I think often when there is talk about data formats there is some confusion over the fact that the data should be in different structures in different parts of its life. Of course these stages are not really distinct from one another, but there are clear conceptual differences and requirements which I try to outline below.</p>
 <ul>
 <li>data editing: minimal repetition of fields</li>
 <li>data archiving: maximal usability for different purposes</li>
 <li>data analysis: wide applicability for different statistics and plotting</li>
 </ul>
-<p>All these stages have different demands for the ideal data structure, and we should not imagine that there is just one solution for this. Naturally this is a two way street, so that during data analysis one often needs to edit the data and come back to analysis. If we think about the resulting dataset in terms of <strong>tidy data</strong>, where we would ideally have one row per one observation <span class="citation">(Wickham 2014)</span>, then I think we often should consider <strong>token</strong> as the basic unit here. The resulting data is relatively ineffective in the sense that the same information is repeated all over the place, but it is <strong>tidy</strong>. It can be described also as <strong>long</strong>, as there are relatively few columns and the data is stored along the rows.</p>
+<p>All these stages have different demands for the ideal data structures, and we should not imagine that there is just one solution for this. Naturally this is a two way street, so that during data analysis one often needs to edit the data and come back to analysis. If we think about the resulting dataset in terms of <strong>tidy data</strong>, where we would ideally have one row per one observation <span class="citation">(Wickham 2014)</span>, then I think we often should consider <strong>token</strong> as the basic unit here. The resulting data is relatively ineffective in the sense that the same information is repeated all over the place, but it is <strong>tidy</strong> according to some specifications. It can be described also as <strong>long</strong>, as there are relatively few columns and the data is stored along the rows. This kind of data structure is not supposed to be edited by human, but computers crunch it very happily.</p>
 </div>
 <div id="technical-part" class="section level3">
 <h3>Technical part</h3>
 <p>There are many ways to parse ELAN file into R, and ultimately it boils down to the question <strong>what do you want to do</strong>? Usually I want to search from the data in R or I want to merge some content with metadata, either to make more complex searches or to check what is going on. However, the scope varies. If I think in terms of ELAN’s tier structure, there are following attributes we can use:</p>
 <ul>
-<li>linguistic type: ideally each file would have one tier of one type per speaker</li>
+<li>linguistic type (ideally each file would have one tier of one type per speaker)</li>
 <li>speaker</li>
 </ul>
 <p>Reading ELAN files into R is not trivially easy and it gets fast very complicated. The main question is always how uniform the ELAN files are in their basic structure. This is really where all problems begin. If all ELAN files are identical, then one can just specify the pattern to parse one and loop it over all files. However, in reality the situation is much more complicated, and ELAN files tend to be somewhat heterogenic. There is nothing in ELAN that would prevent small creeping in here and there, and what may look harmless for a human, for example, slightly different name of a linguistic type, is of course impassable barrier for a computer which tries to read the file. So the code to parse ELAN files often needs to have all kinds of bells and whistles attached into it to handle errors, which makes the code very complicated and there is always possibility that something fails in a new way.</p>
 <p>However, this is what makes parsing ELAN files to R particularly rewarding as well. It tells where the problems are, and makes it easier to address them. It can thereby be tested also as a robust testing method which helps to keep ELAN files organized. As far as I see it, the fact that all files adhere to uniform structure should be among the most basic definitions we have for <strong>corpus</strong>, differentiating it from eclectic file collections. This comes back to what I was describing above: if corpus is parsable, it is also transformable, and this is actually guarantees its longevity. It is not likely that in thirty years we want data to be in exactly this kind of XML files, but if they are perfectly uniform doing the transformation will never be more than a fast and easy task, whereas currently that can be quite a nightmare.</p>
+<div id="testing-if-tier-exists" class="section level4">
+<h4>Testing if tier exists</h4>
+<p>I’m always ranting about the lack of uniformity in corpora, so let’s come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.</p>
+<pre class="r"><code>tier_exists &lt;- function(eaf_file, tier){
+        
+        match &lt;- xml2::read_xml(eaf_file) %&gt;% xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]&quot;))
+        if (length(match) &gt;= 1){
+                TRUE
+        } else {
+                FALSE
+        }
+}
+
+tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;word@JAI-M-1939&quot;)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;token@JAI-M-1939&quot;)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+</div>
+<div id="testing-if-tier-is-empty" class="section level4">
+<h4>Testing if tier is empty</h4>
+<p>This little function does two things – and can be used uncountable ways! If the value is specified as <code>TRUE</code>, it gives the number of items on that tier. This is often useful to know! However, it can also just tell us whether the tier is empty or not. For example, one could easily loop this across the files to find out all ELAN files where the tier that is supposed to contain the tokenized words has not been populated by the tokens.</p>
+<pre class="r"><code>tier_has_content &lt;- function(eaf_file, tier, value = F){
+        
+        if (tier_exists(eaf_file = eaf_file, tier = tier) == F){
+        print(&quot;Tier doesn&#39;t exist!&quot;)
+                } else {
+        tier_content &lt;- xml2::read_xml(eaf_file) %&gt;% 
+                xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;%
+                xml2::xml_text()
+        }
+        
+        if (value == FALSE &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
+                result &lt;- length(tier_content) &gt; 0
+                print(result)
+        }
+        
+        if (value == T &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
+        length(tier_content)
+        }
+}
+
+# This tier has content
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;word@JAI-M-1939&quot;, value = F)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># This tier exists, but has no content
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;phonet-UPA@JAI-M-1939&quot;, value = F)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># This tier is full of content, actually
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;word@JAI-M-1939&quot;, value = T)</code></pre>
+<pre><code>## [1] 5507</code></pre>
+<pre class="r"><code># This tier doesn&#39;t exist
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;token@JAI-M-1939&quot;, value = T)</code></pre>
+<pre><code>## [1] &quot;Tier doesn&#39;t exist!&quot;</code></pre>
+</div>
 <div id="reading-one-tier" class="section level4">
 <h4>Reading one tier</h4>
 <p>I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.</p>
