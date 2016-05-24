@@ -32,6 +32,7 @@ There are many ways to parse ELAN file into R, and ultimately it boils down to t
 
 - linguistic type (ideally each file would have one tier of one type per speaker)
 - speaker
+- tier name (although this is complicated -- what is tier name but combination of attributes above?)
 
 Reading ELAN files into R is not trivially easy and it gets fast very complicated. The main question is always how uniform the ELAN files are in their basic structure. This is really where all problems begin. If all ELAN files are identical, then one can just specify the pattern to parse one and loop it over all files. However, in reality the situation is much more complicated, and ELAN files tend to be somewhat heterogenic. There is nothing in ELAN that would prevent small creeping in here and there, and what may look harmless for a human, for example, slightly different name of a linguistic type, is of course impassable barrier for a computer which tries to read the file. So the code to parse ELAN files often needs to have all kinds of bells and whistles attached into it to handle errors, which makes the code very complicated and there is always possibility that something fails in a new way.
 
