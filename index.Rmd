@@ -7,7 +7,7 @@
 <figure>
 <img src="media/images/sordla_2012.jpg" alt="At Nina Pigulina's in Syordla, 2012" style="width:700px">
 </br>
-<figcaption>Interview with Paš Kolya, a resident of Syordla village, who passed away on 8.6.2015.</figcaption>
+<figcaption>Interview with Paš Kolya, a former resident of Syordla village, who passed away on 8.6.2015</figcaption>
 </figure>
 </center>
 
@@ -58,6 +58,6 @@ blog_list <- paste0("<ul>", blog_list, "</ul>")
 
 ```
 
-Here are current posts in the blog:
+Here are current posts in our blog:
 
 `r blog_list`
