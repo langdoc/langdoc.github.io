@@ -1,5 +1,5 @@
 ---
-title: "Git repository for documentary corpus"
+title: "Using a Git repository for language documentation corpora"
 author: "Niko Partanen"
 output:
   html_document:
@@ -12,45 +12,49 @@ bibliography: ~/FRibliography/bibtex/FRibliography.bib
 
 ### Introduction
 
-There are some posts under preparation about more important topics, but this is also something worth commenting, and as small thing it is suitable for an initial post. Using version control is in many ways crucial, especially in the conditions where we can't always archive the newest versions of our files. And it isn't useful only to retrieve old versions, as it is also important in order to know who has done what. There are all kind of changes one tends to do into corpus, and in the longer run it gets difficult to return into old changes if there are second thoughts. For example, I'm currently doing a small study about Komi sibilant articulation, and while creating phonetic transcription for specific word forms I often find out that one has to adjust the transcribed form a bit. For example, many words transcribed seem to be actually shortened fast speech forms. Now I could fix those while I am in it, but the fact remains that a native speaker has transcribed there the complete form. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn't be the first time my analysis is not the right one.
+There are some posts about more important topics under preparation, but this is also something worth commenting, and as a rather small topic it is ecpecially suitable for an initial post.
+
+Using version control as our local working repository is in many ways crucial, especially under conditions where several team members collaboratively work with corpus building and we can't permanently send the newest versions of our files to the language archive, where the finished corpus files are stored more persistantly. 
+
+Through versioning we keep track about who has committed what changes in the data. It is also very useful  to retrieve former versions, if necessary. There are all kind of - smaller and bigger - additions, changes and corrections we are permanently applying to our corpus files. After a certain amount of work has been done in these file and by several team members it gets rather difficult to correct back into former versions, in case there are second thoughts. For example, I'm currently doing a small study about Komi sibilant articulation, <!--we need a hyperlink here--> and while creating phonetic transcripts of specific word forms I often find out that one has to re-adjust some of the formerly transcribed words. If, for example, several transcribed words actually seem to represent shortened fast speech form. Now I could fix those while I am in it, but the fact remains that a native speaker had transcribed the complete form before. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn't be the first time my analysis is not the right one.
 
 ### Technical part
 
 #### Creating a repository
 
-So one can always just move into an empty main folder and run command:
+One can always just move into an empty main folder and run the command:
 
     git init .
 
 #### .gitignore
 
-This initiates an empty Git repository in the current folder. Now we don't want all the files, mainly ELAN files actually. And maybe CMDI or IMDI, if that's where ones metadata is stored. We have to set up `.gitignore` file with following content:
+This initiates an empty Git repository in the current folder. Now we don't want all the files, in our case actually mainly ELAN files for the textual data. And maybe also CMDI or IMDI files for the metadata. We have to set up a `.gitignore` file with the following content:
 
     *
     !*/
     !.gitignore
     !*.eaf
 
-This basically says in four lines: 
+This basically translates into the follwoing four lines: 
 
     - Ignore everything
     - But don't ignore folders
     - And don't ignore this file
     - And keep the ELAN files
 
-I'm still bit unsure whether one should save the pfsx-files. Probably no. Although they make cloning the repository much nicer as the files would appear correctly. On the other hand, they change when no real changes are done to the files, so would committing them be confusing? Or would it just be a good way to keep track of what was done?
+I'm still a bit uncertain whether one should save the pfsx files (i.e. created by ELAN to store the last used preferences). I tend not to save them. Although they make cloning the repository much nicer as the files would appear correctly if opened in the ELAN program. On the other hand, they change all the time even when no real changes are done to the actual ELAN files. Therefore, perhaps, committing them to Git could be confusing? Or would it just be a good way to keep track of what was done?
 
-#### Cloning the repo
+#### Cloning the repository
 
     git clone --bare . ~/.git_master/kpv
 
-This will give a message like this:
+This will result in a message like this:
 
     Cloning into bare repository '/Users/niko/.git_master/kpv'...
     warning: You appear to have cloned an empty repository.
     done.
 
-This means that you have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn't contain the files in actually browsable folder structure. You can copy the files from there any time with command `git clone ~/.git_master/kpv`, but you cannot just browse around there. I think this is quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.
+This means that you have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn't contain the files in actually browsable folder structure. You can copy the files from there any time using the command `git clone ~/.git_master/kpv`. however, you cannot just browse around there. I think this is a quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.
 
 #### Setting the new master
 
@@ -58,23 +62,23 @@ This means that you have cloned a bare repository, which means a repository wher
 
 #### Adding the files
 
-All ELAN files can be added with simple command:
+All ELAN files can be added with a simple command:
 
     git add -A
 
-This adds everything. Normally it is good idea to check what has changed with `git status` and maybe comment on those files one by one, but it is good to know this can also be used. Even after this `git status` would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small comment about what was done. As I mentioned, it is possible to do `git add` + `git commit -m "..."` for each file or groups of files, so they get their own messages in log.
+This adds everything. Normally it is a better way to check what has changed (using the command `git status`) and maybe comment on those files one by one, but it is good to know this can also be used. Even after running this `git status` would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small log message, i.e. a comment about what was actually done. As I mentioned, it is possible to do `git add` + `git commit -m "..."` for each file or groups of files, so they get their own messages in log.
 
 #### Committing
 
     git commit -m "setting up the git repository"
 
-After committing we have to push the changes into master repository. In step above we just set the master, so simply typing:
+After committing we have to push the changes into the master repository. In the step above we just set the master, so simply typing:
 
 #### Pushing
 
     git push --set-upstream origin master
  
- Will send the files over there. If we do instantly after this `git status` we will see:
+will send the files over there. If we run `git status` instantly afterwards we will see:
 
     On branch master
     nothing to commit, working directory clean
@@ -90,11 +94,11 @@ Because everything is up to date right after committing and pushing. However, if
 
 #### Comparing differences
 
-It is easy to see with `git diff` command what exactly has changed:
+With the `git diff` command it is easy to see what exactly has changed:
 
     git diff kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf
 
-Result would look, for example when touching one annotation, be something like this (the output is often more complex, but the lines with plus and minus signs show the differences:
+A result, for example when touching one annotation, would look something like this (the output is often more complex, but the lines with plus and minus signs show the differences:
 
     diff --git a/kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf b/kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf
          <ANNOTATION>
@@ -105,23 +109,23 @@ Result would look, for example when touching one annotation, be something like t
          </ANNOTATION>
          <ANNOTATION>
 
-Here it is easy to see that one annotation content has changed, in this case from Cyrillic to IPA. In reality the changes are usually not this small, but this shows the idea. And after doing this bit more regularly it is easy to monitor that things have been in control.
+Here it is easy to see that one annotation content has changed, in this case from Cyrillic to IPA. In reality the changes are usually not this small, but this example shows the general idea behind this function. And after having done this a bit more regularly you will find it easy to monitor that things are under control.
 
-Now when one uses command `git log` all these updates appear as a list with elements like:
+Now when one uses the command `git log` all these updates appear as a list with elements like:
 
     commit 9aa76ab27fd409cb229827985746d628bc10025d
     Author: nikopartanen <nikotapiopartanen@gmail.com>
     Date:   Sun May 15 19:03:18 2016 +0200
     did something with this file
 
-Each commit gets id, and it is rather easy to move back into that version with individual files or with the whole project. Also this is wonderful way to track what the project has been doing for all the years it has been rolling.
+Each commit gets a unique id, and it is rather easy to move back into that version with individual files or with the whole project. This is actually a wonderful way to keep track how the corpus data has been evolving during all the years the project is rolling.
 
 ### Hardships
 
-It is difficult to get people to commit their changes regularly! Rest is easy! But seriously there are few other issues:
+Obviously it is difficult to get people committing their changes regularly! The rest is easy! But seriously there are few other issues:
 
-- Git doesn't seem to be very good for large files. It would be important to see what is happening with audio and video fies although they still probably change much less than the transcription files
-    - Main issue here is the enormous size of contemporary multimedia corpus. Few terabytes large harddisk is quite easily full. Thereby backups which actually have the file history must be done to the server
-- Git is in the end relatively difficult system to learn, especially when working with branches and generally when cooperating with lots of people. It is important to understand the concepts behing Git, not that I would perfectly know them either, and getting into this point takes some time.
+- Git doesn't seem to work well for very large files. It would be important to see what is happening with binaries, like audio and video files although they still probably change much less than the transcription files;
+- One main issue here is the enormous size of a contemporary multimedia corpus. Even a large harddisk of a few terabytes is filled with data quite easily. Thereby, backups including the actual file history must be done to the server;
+- Git is also a relatively difficult system to learn, especially when working with branches and when lots of people collaboratively work on similar files. It is therefore important to understand the concepts behind Git. Not that I would know them perfectly either... But definitely, getting into this point takes some time.
 
 ### References
