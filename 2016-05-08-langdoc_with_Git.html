@@ -12,7 +12,7 @@
 <meta name="author" content="Niko Partanen" />
 
 
-<title>Git repository for documentary corpus</title>
+<title>Using a Git repository for language documentation corpora</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
@@ -300,7 +300,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Git repository for documentary corpus</h1>
+<h1 class="title toc-ignore">Using a Git repository for language documentation corpora</h1>
 <h4 class="author"><em>Niko Partanen</em></h4>
 
 </div>
@@ -308,37 +308,43 @@ div.tocify {
 
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p>There are some posts under preparation about more important topics, but this is also something worth commenting, and as small thing it is suitable for an initial post. Using version control is in many ways crucial, especially in the conditions where we can’t always archive the newest versions of our files. And it isn’t useful only to retrieve old versions, as it is also important in order to know who has done what. There are all kind of changes one tends to do into corpus, and in the longer run it gets difficult to return into old changes if there are second thoughts. For example, I’m currently doing a small study about Komi sibilant articulation, and while creating phonetic transcription for specific word forms I often find out that one has to adjust the transcribed form a bit. For example, many words transcribed seem to be actually shortened fast speech forms. Now I could fix those while I am in it, but the fact remains that a native speaker has transcribed there the complete form. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn’t be the first time my analysis is not the right one.</p>
+<p>There are some posts about more important topics under preparation, but this is also something worth commenting, and as a rather small topic it is ecpecially suitable for an initial post.</p>
+<p>Using version control as our local working repository is in many ways crucial, especially under conditions where several team members collaboratively work with corpus building and we can’t permanently send the newest versions of our files to the language archive, where the finished corpus files are stored more persistantly.</p>
+<p>Version control is in many ways connected to making backups, but it is still somewhat distint from that. Hopefully everyone is using some method to mirror copies of all files regularly somewhere, for example, using Apple’s Time Machine, Carbon Copy Cloner or rsync – there are many possibilities, and probably the most important thing is to do this regularly. This keeps the files themselves secure, they can’t be lost in case one device breaks or one building burns down, for example. Naturally the data is also supposedly archived, but in current conditions this is often something people working with language documentation cannot do every week or every day. Partially this stems from the fact that usually we want to archive files which are somehow ready, and it may not be always reasonable to update all work-in-progress kind of files to the archive. Maybe the archive should still be thought as a place where one goes to access somewhat coherent and curated corpus versions. But what to do with all that stuff that is being worked on? Setting it under version control could be something worth considering.</p>
+<p>However, if the version control isn’t really about backups (we can’t version all media files probably anyway) and it isn’t about archiving (there are real language archives out there for a reason), what it is good for? We think the main benefit is indeed that one can see what has been done. If every change to the corpus is associated with a comment, it is relatively easy to figure out what is generally going on. Just dumping things regularly into Git, though good as well, doesn’t really make that big difference, since everyone probably has yesterdays files on some external harddisk anyway.</p>
+<p>The main point here is that this idea has direct consequences to the way how Git is most useful for documentary linguistics. <strong>To get the most out of it, one should commit often and with small changes</strong>. I also do often commits with the messages like <em>did something</em>, but I also see there is some space for improvements here. There is also another reason why small commits may be the best way to go. The files we work with are usually such that comparing their differences works best with small changes. Let’s say you change few transcribed words in an ELAN file. This makes a difference in few XML nodes. However, if you transcribe, translate, fix few typos and segment a bit onward during the day and commit afterwards, the changes are going to be so overwhelming that it will not be obvious what small change actually caused what.</p>
+<p>So through versioning we can keep track about who has committed what changes in the data. Although it is often combined with other means of backup, it is also very useful to retrieve former versions, if necessary. There are all kind of - smaller and bigger - additions, changes and corrections we are permanently applying to our corpus files. After a certain amount of work has been done in these file and by several team members it gets rather difficult to correct back into former versions, in case there are second thoughts. For example, I’m currently doing a small study about Komi sibilant articulation, <!--we need a hyperlink here -- no we don't, that isn't ready enough! :) --> and while creating phonetic transcripts of specific word forms I often find out that one has to re-adjust some of the formerly transcribed words. If, for example, several transcribed words actually seem to represent shortened fast speech form. Now I could fix those while I am in it, but the fact remains that a native speaker had transcribed the complete form before. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn’t be the first time my analysis is not the right one. However, this also demands that the commit message is somehow searchable and indicates that this kind of change took place (actually at the moment the comments in these changes have been very vague…).</p>
 </div>
 <div id="technical-part" class="section level3">
 <h3>Technical part</h3>
 <div id="creating-a-repository" class="section level4">
 <h4>Creating a repository</h4>
-<p>So one can always just move into an empty main folder and run command:</p>
+<p>In the ideal world one would start with a empty repository when the project starts, but often we awake to this idea bit later. Luckily one can always just move into the main folder and run the command:</p>
 <pre><code>git init .</code></pre>
 </div>
-<div id="gitignore" class="section level4">
-<h4>.gitignore</h4>
-<p>This initiates an empty Git repository in the current folder. Now we don’t want all the files, mainly ELAN files actually. And maybe CMDI or IMDI, if that’s where ones metadata is stored. We have to set up <code>.gitignore</code> file with following content:</p>
+<div id="adding-.gitignore" class="section level4">
+<h4>Adding .gitignore</h4>
+<p>This initiates an empty Git repository in the current folder. Now we don’t want all the files, in our case actually mainly ELAN files for the textual data. And maybe also CMDI or IMDI files for the metadata. We have to set up a <code>.gitignore</code> file with the following content:</p>
 <pre><code>*
 !*/
 !.gitignore
 !*.eaf</code></pre>
-<p>This basically says in four lines:</p>
+<p>This basically translates into the follwoing four lines:</p>
 <pre><code>- Ignore everything
 - But don&#39;t ignore folders
 - And don&#39;t ignore this file
 - And keep the ELAN files</code></pre>
-<p>I’m still bit unsure whether one should save the pfsx-files. Probably no. Although they make cloning the repository much nicer as the files would appear correctly. On the other hand, they change when no real changes are done to the files, so would committing them be confusing? Or would it just be a good way to keep track of what was done?</p>
+<p>I’m still a bit uncertain whether one should save the pfsx files (i.e. created by ELAN to store the last used preferences). I tend not to save them. Although they make cloning the repository much nicer as the files would appear correctly if opened in the ELAN program. On the other hand, they change all the time even when no real changes are done to the actual ELAN files. Therefore, perhaps, committing them to Git could be confusing? Or would it just be a good way to keep track of what was done? Maybe one could have a script which generates new .psfx-files with the individual preferences?</p>
 </div>
-<div id="cloning-the-repo" class="section level4">
-<h4>Cloning the repo</h4>
+<div id="cloning-the-repository" class="section level4">
+<h4>Cloning the repository</h4>
+<p>Anyway, as Git works with the idea of different copies of the repository being in different places, we should create for this repository the master version. We can do it with this command, which creates that near my home folder. In principle this could be also on some other server.</p>
 <pre><code>git clone --bare . ~/.git_master/kpv</code></pre>
-<p>This will give a message like this:</p>
+<p>This will result in a message like this:</p>
 <pre><code>Cloning into bare repository &#39;/Users/niko/.git_master/kpv&#39;...
 warning: You appear to have cloned an empty repository.
 done.</code></pre>
-<p>This means that you have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn’t contain the files in actually browsable folder structure. You can copy the files from there any time with command <code>git clone ~/.git_master/kpv</code>, but you cannot just browse around there. I think this is quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.</p>
+<p>Flag <code>--bare</code> means that we have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn’t contain the files in actually browsable folder structure. You can copy the files from there any time using the command <code>git clone ~/.git_master/kpv</code>. However, one cannot just browse around there. I think this is quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.</p>
 </div>
 <div id="setting-the-new-master" class="section level4">
 <h4>Setting the new master</h4>
@@ -346,19 +352,20 @@ done.</code></pre>
 </div>
 <div id="adding-the-files" class="section level4">
 <h4>Adding the files</h4>
-<p>All ELAN files can be added with simple command:</p>
+<p>All ELAN files can be added with a simple command:</p>
 <pre><code>git add -A</code></pre>
-<p>This adds everything. Normally it is good idea to check what has changed with <code>git status</code> and maybe comment on those files one by one, but it is good to know this can also be used. Even after this <code>git status</code> would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small comment about what was done. As I mentioned, it is possible to do <code>git add</code> + <code>git commit -m &quot;...&quot;</code> for each file or groups of files, so they get their own messages in log.</p>
+<p>This adds everything. However, it does that within the conditions specified in <code>.gitignore</code> file. Without that file it would add all audio and video files, and one can just imagine what a mess that would be. Normally it can be good to check what has changed (using the command <code>git status</code>) and maybe comment on those files one by one, but it is good to know this can also be used when the changes cover larger number of files in a way that is easily expressed in one comment. Even after running this <code>git status</code> would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small log message, i.e. a comment about what was actually done. This is what the rant in the beginning was all about. As I mentioned, it is possible to do <code>git add</code> + <code>git commit -m &quot;...&quot;</code> for each file or groups of files, so they get their own messages in log.</p>
 </div>
 <div id="committing" class="section level4">
 <h4>Committing</h4>
+<p>Committing is done following way:</p>
 <pre><code>git commit -m &quot;setting up the git repository&quot;</code></pre>
-<p>After committing we have to push the changes into master repository. In step above we just set the master, so simply typing:</p>
+<p>After committing we have to push the changes into the master repository. In the step above we just set the master, so simply typing:</p>
 </div>
 <div id="pushing" class="section level4">
 <h4>Pushing</h4>
 <pre><code>git push --set-upstream origin master</code></pre>
-<p>Will send the files over there. If we do instantly after this <code>git status</code> we will see:</p>
+<p>will send the files over there. After the initial commit it is enough to write <code>git push</code>. If we run <code>git status</code> instantly afterwards we will see:</p>
 <pre><code>On branch master
 nothing to commit, working directory clean</code></pre>
 <p>Because everything is up to date right after committing and pushing. However, if we change some file the message changes:</p>
@@ -371,9 +378,9 @@ no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&q
 </div>
 <div id="comparing-differences" class="section level4">
 <h4>Comparing differences</h4>
-<p>It is easy to see with <code>git diff</code> command what exactly has changed:</p>
+<p>With the <code>git diff</code> command it is easy to see what exactly has changed:</p>
 <pre><code>git diff kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf</code></pre>
-<p>Result would look, for example when touching one annotation, be something like this (the output is often more complex, but the lines with plus and minus signs show the differences:</p>
+<p>A result, for example when touching one annotation, would look something like this (the output is often more complex, but the lines with plus and minus signs show the differences:</p>
 <pre><code>diff --git a/kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf b/kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf
      &lt;ANNOTATION&gt;
          &lt;ALIGNABLE_ANNOTATION ANNOTATION_ID=&quot;a10889&quot; TIME_SLOT_REF1=&quot;ts5&quot; TIME_SLOT_REF2=&quot;ts6&quot;&gt;
@@ -382,24 +389,22 @@ no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&q
          &lt;/ALIGNABLE_ANNOTATION&gt;
      &lt;/ANNOTATION&gt;
      &lt;ANNOTATION&gt;</code></pre>
-<p>Here it is easy to see that one annotation content has changed, in this case from Cyrillic to IPA. In reality the changes are usually not this small, but this shows the idea. And after doing this bit more regularly it is easy to monitor that things have been in control.</p>
-<p>Now when one uses command <code>git log</code> all these updates appear as a list with elements like:</p>
+<p>Here it is easy to see that one annotation content has changed, in this case from Cyrillic to IPA. In reality the changes are usually not this small, but this example shows the general idea behind this function. And after having done this a bit more regularly you will find it easy to monitor that things are under control. This comes back to what I was writing in the beginning – very large and diverse changes will not be easy to understand with <code>git diff</code> command.</p>
+<p>Now when one uses the command <code>git log</code> all these updates appear as a list with elements like:</p>
 <pre><code>commit 9aa76ab27fd409cb229827985746d628bc10025d
 Author: nikopartanen &lt;nikotapiopartanen@gmail.com&gt;
 Date:   Sun May 15 19:03:18 2016 +0200
 did something with this file</code></pre>
-<p>Each commit gets id, and it is rather easy to move back into that version with individual files or with the whole project. Also this is wonderful way to track what the project has been doing for all the years it has been rolling.</p>
+<p>Each commit gets a unique id, and it is rather easy to move back into that version with individual files or with the whole project. This is actually a wonderful way to keep track how the corpus data has been evolving during all the years the project is rolling.</p>
 </div>
 </div>
 <div id="hardships" class="section level3">
 <h3>Hardships</h3>
-<p>It is difficult to get people to commit their changes regularly! Rest is easy! But seriously there are few other issues:</p>
+<p>Obviously it is difficult to get people committing their changes regularly! The rest is easy! But seriously there are few other issues:</p>
 <ul>
-<li>Git doesn’t seem to be very good for large files. It would be important to see what is happening with audio and video fies although they still probably change much less than the transcription files
-<ul>
-<li>Main issue here is the enormous size of contemporary multimedia corpus. Few terabytes large harddisk is quite easily full. Thereby backups which actually have the file history must be done to the server</li>
-</ul></li>
-<li>Git is in the end relatively difficult system to learn, especially when working with branches and generally when cooperating with lots of people. It is important to understand the concepts behing Git, not that I would perfectly know them either, and getting into this point takes some time.</li>
+<li>Git doesn’t seem to work well for very large files. It would be important to see what is happening with binaries, like audio and video files although they still probably change much less than the transcription files;</li>
+<li>One main issue here is the enormous size of a contemporary multimedia corpus. Even a large harddisk of a few terabytes is filled with data quite easily. Thereby, backups including the actual file history must be done to the server;</li>
+<li>Git is also a relatively difficult system to learn, especially when working with branches and when lots of people collaboratively work on similar files. It is therefore important to understand the concepts behind Git. Not that I would know them perfectly either… But definitely, getting into this point takes some time.</li>
 </ul>
 </div>
 <div id="references" class="section level3 unnumbered">

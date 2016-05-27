@@ -16,17 +16,23 @@ There are some posts about more important topics under preparation, but this is 
 
 Using version control as our local working repository is in many ways crucial, especially under conditions where several team members collaboratively work with corpus building and we can't permanently send the newest versions of our files to the language archive, where the finished corpus files are stored more persistantly. 
 
-Through versioning we keep track about who has committed what changes in the data. It is also very useful  to retrieve former versions, if necessary. There are all kind of - smaller and bigger - additions, changes and corrections we are permanently applying to our corpus files. After a certain amount of work has been done in these file and by several team members it gets rather difficult to correct back into former versions, in case there are second thoughts. For example, I'm currently doing a small study about Komi sibilant articulation, <!--we need a hyperlink here--> and while creating phonetic transcripts of specific word forms I often find out that one has to re-adjust some of the formerly transcribed words. If, for example, several transcribed words actually seem to represent shortened fast speech form. Now I could fix those while I am in it, but the fact remains that a native speaker had transcribed the complete form before. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn't be the first time my analysis is not the right one.
+Version control is in many ways connected to making backups, but it is still somewhat distint from that. Hopefully everyone is using some method to mirror copies of all files regularly somewhere, for example, using Apple's Time Machine, Carbon Copy Cloner or rsync -- there are many possibilities, and probably the most important thing is to do this regularly. This keeps the files themselves secure, they can't be lost in case one device breaks or one building burns down, for example. Naturally the data is also supposedly archived, but in current conditions this is often something people working with language documentation cannot do every week or every day. Partially this stems from the fact that usually we want to archive files which are somehow ready, and it may not be always reasonable to update all work-in-progress kind of files to the archive. Maybe the archive should still be thought as a place where one goes to access somewhat coherent and curated corpus versions. But what to do with all that stuff that is being worked on? Setting it under version control could be something worth considering.
+
+However, if the version control isn't really about backups (we can't version all media files probably anyway) and it isn't about archiving (there are real language archives out there for a reason), what it is good for? We think the main benefit is indeed that one can see what has been done. If every change to the corpus is associated with a comment, it is relatively easy to figure out what is generally going on. Just dumping things regularly into Git, though good as well, doesn't really make that big difference, since everyone probably has yesterdays files on some external harddisk anyway.
+
+The main point here is that this idea has direct consequences to the way how Git is most useful for documentary linguistics. **To get the most out of it, one should commit often and with small changes**. I also do often commits with the messages like *did something*, but I also see there is some space for improvements here. There is also another reason why small commits may be the best way to go. The files we work with are usually such that comparing their differences works best with small changes. Let's say you change few transcribed words in an ELAN file. This makes a difference in few XML nodes. However, if you transcribe, translate, fix few typos and segment a bit onward during the day and commit afterwards, the changes are going to be so overwhelming that it will not be obvious what small change actually caused what. 
+
+So through versioning we can keep track about who has committed what changes in the data. Although it is often combined with other means of backup, it is also very useful to retrieve former versions, if necessary. There are all kind of - smaller and bigger - additions, changes and corrections we are permanently applying to our corpus files. After a certain amount of work has been done in these file and by several team members it gets rather difficult to correct back into former versions, in case there are second thoughts. For example, I'm currently doing a small study about Komi sibilant articulation, <!--we need a hyperlink here -- no we don't, that isn't ready enough! :) --> and while creating phonetic transcripts of specific word forms I often find out that one has to re-adjust some of the formerly transcribed words. If, for example, several transcribed words actually seem to represent shortened fast speech form. Now I could fix those while I am in it, but the fact remains that a native speaker had transcribed the complete form before. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn't be the first time my analysis is not the right one. However, this also demands that the commit message is somehow searchable and indicates that this kind of change took place (actually at the moment the comments in these changes have been very vague...). 
 
 ### Technical part
 
 #### Creating a repository
 
-One can always just move into an empty main folder and run the command:
+In the ideal world one would start with a empty repository when the project starts, but often we awake to this idea bit later. Luckily one can always just move into the main folder and run the command:
 
     git init .
 
-#### .gitignore
+#### Adding .gitignore
 
 This initiates an empty Git repository in the current folder. Now we don't want all the files, in our case actually mainly ELAN files for the textual data. And maybe also CMDI or IMDI files for the metadata. We have to set up a `.gitignore` file with the following content:
 
@@ -42,9 +48,11 @@ This basically translates into the follwoing four lines:
     - And don't ignore this file
     - And keep the ELAN files
 
-I'm still a bit uncertain whether one should save the pfsx files (i.e. created by ELAN to store the last used preferences). I tend not to save them. Although they make cloning the repository much nicer as the files would appear correctly if opened in the ELAN program. On the other hand, they change all the time even when no real changes are done to the actual ELAN files. Therefore, perhaps, committing them to Git could be confusing? Or would it just be a good way to keep track of what was done?
+I'm still a bit uncertain whether one should save the pfsx files (i.e. created by ELAN to store the last used preferences). I tend not to save them. Although they make cloning the repository much nicer as the files would appear correctly if opened in the ELAN program. On the other hand, they change all the time even when no real changes are done to the actual ELAN files. Therefore, perhaps, committing them to Git could be confusing? Or would it just be a good way to keep track of what was done? Maybe one could have a script which generates new .psfx-files with the individual preferences?
 
 #### Cloning the repository
+
+Anyway, as Git works with the idea of different copies of the repository being in different places, we should create for this repository the master version. We can do it with this command, which creates that near my home folder. In principle this could be also on some other server.
 
     git clone --bare . ~/.git_master/kpv
 
@@ -54,7 +62,7 @@ This will result in a message like this:
     warning: You appear to have cloned an empty repository.
     done.
 
-This means that you have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn't contain the files in actually browsable folder structure. You can copy the files from there any time using the command `git clone ~/.git_master/kpv`. however, you cannot just browse around there. I think this is a quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.
+Flag `--bare` means that we have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn't contain the files in actually browsable folder structure. You can copy the files from there any time using the command `git clone ~/.git_master/kpv`. However, one cannot just browse around there. I think this is quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.
 
 #### Setting the new master
 
@@ -66,9 +74,11 @@ All ELAN files can be added with a simple command:
 
     git add -A
 
-This adds everything. Normally it is a better way to check what has changed (using the command `git status`) and maybe comment on those files one by one, but it is good to know this can also be used. Even after running this `git status` would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small log message, i.e. a comment about what was actually done. As I mentioned, it is possible to do `git add` + `git commit -m "..."` for each file or groups of files, so they get their own messages in log.
+This adds everything. However, it does that within the conditions specified in `.gitignore` file. Without that file it would add all audio and video files, and one can just imagine what a mess that would be. Normally it can be good to check what has changed (using the command `git status`) and maybe comment on those files one by one, but it is good to know this can also be used when the changes cover larger number of files in a way that is easily expressed in one comment. Even after running this `git status` would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small log message, i.e. a comment about what was actually done. This is what the rant in the beginning was all about. As I mentioned, it is possible to do `git add` + `git commit -m "..."` for each file or groups of files, so they get their own messages in log.
 
 #### Committing
+
+Committing is done following way:
 
     git commit -m "setting up the git repository"
 
@@ -78,7 +88,7 @@ After committing we have to push the changes into the master repository. In the 
 
     git push --set-upstream origin master
  
-will send the files over there. If we run `git status` instantly afterwards we will see:
+will send the files over there. After the initial commit it is enough to write `git push`. If we run `git status` instantly afterwards we will see:
 
     On branch master
     nothing to commit, working directory clean
@@ -109,7 +119,7 @@ A result, for example when touching one annotation, would look something like th
          </ANNOTATION>
          <ANNOTATION>
 
-Here it is easy to see that one annotation content has changed, in this case from Cyrillic to IPA. In reality the changes are usually not this small, but this example shows the general idea behind this function. And after having done this a bit more regularly you will find it easy to monitor that things are under control.
+Here it is easy to see that one annotation content has changed, in this case from Cyrillic to IPA. In reality the changes are usually not this small, but this example shows the general idea behind this function. And after having done this a bit more regularly you will find it easy to monitor that things are under control. This comes back to what I was writing in the beginning -- very large and diverse changes will not be easy to understand with `git diff` command.
 
 Now when one uses the command `git log` all these updates appear as a list with elements like:
 

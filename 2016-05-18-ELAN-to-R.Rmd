@@ -10,13 +10,20 @@ excerpt_separator: <!--more-->
 bibliography: ~/FRibliography/bibtex/FRibliography.bib
 ---
 
+```{r, echo=F}
+library(plyr)
+suppressPackageStartupMessages(library(dplyr))
+library(FRelan)
+```
+
+
 ### Introduction
 
 This writing is part of the wider topic of how to get documentary linguistic data into R. This means not only reading in ELAN files, but doing the same for metadata and other accompanying datasets we may have with our corpus. There are many reasons one may want to have documentary linguistic corpus in R. It makes searching the data very easy, and one is not limited to the predefined possibilities of individual user-interface. Besides this it is easy to make the study entirely reproducible, as there is no unnecessary mouse clicking involved. R has already for many years been used in variationistic sociolinguistics, and also in that realm use of ELAN has been around [@nagyEtAl2015a]. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).
 
 All treatments of data analysis with R start with the notion that one has to get the data into R (see, for example [@wickhamEtAl2016a]). Getting data into R is basically a data transformation, and the method of doing the import is to define this transformation and run it whenever needed. So the question can also be turned into a statement: if data can be transformed, then it can be read into R. By transformation I mean any kind of operation where the data is parsed, in its totality or with some subset, and turned into whatever other data structure we need without information being lost. Or if the information is lost, it should be clearly understood and acknowledged.
 
-In order to be able to make this kind of transformations to the corpus, the data structures have to be perfectly described and systematically present in the files. Actually making sure that this is the case would be very easy, for example, with [parameteried RMarkdown reports](http://rmarkdown.rstudio.com/developer_parameterized_reports.html). The R functions to parse ELAN files are kind of backbones of this kind of testing, about which I should probably be writing more soon.
+In order to be able to make this kind of transformations to the corpus, the data structures have to be perfectly described and systematically present in the files. Actually making sure that this is the case would be very easy, for example, with [parameterized RMarkdown reports](http://rmarkdown.rstudio.com/developer_parameterized_reports.html). The R functions to parse ELAN files are kind of backbones of this kind of testing, about which I should probably be writing more soon.
 
 I think often when there is talk about data formats there is some confusion over the fact that the data should be in different structures in different parts of its life. Of course these stages are not really distinct from one another, but there are clear conceptual differences and requirements which I try to outline below. 
 
