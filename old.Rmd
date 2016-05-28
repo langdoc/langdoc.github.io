@@ -3,16 +3,6 @@
 
 </br>
 
-<center>
-<figure>
-<img src="media/images/sordla_2012.jpg" alt="At Nina Pigulina's in Syordla, 2012" style="width:700px">
-</br>
-<figcaption>Interview with Paš Kolya, a former resident of Syordla village, who passed away on 8.6.2015</figcaption>
-</figure>
-</center>
-
-</br>
-
 ```{r, echo=F, message=F}
 
 library(plyr)
@@ -47,17 +37,17 @@ get_header_attr <- function(rmd_file){
                                   html_file = gsub("(.+)(Rmd)", "\\1html", rmd_file))
 }
 
-rmd_info <- plyr::ldply(rmd_files, get_header_attr) %>% left_join(rmd_df) %>% arrange(date) %>% slice(1)
+rmd_info <- plyr::ldply(rmd_files, get_header_attr) %>% left_join(rmd_df)
 
-blog_list_short <- paste(plyr::dlply(rmd_info, .variables = "file", function(x) {
+blog_list <- paste(plyr::dlply(rmd_info, .variables = "file", function(x) {
         paste0('<li><a href="', x$html_file, '">', x$title, '</a> by ', x$author, "</li>")
         }
 ), collapse = "")
 
-blog_list_short <- paste0("<ul>", blog_list_short, "</ul>")
+blog_list <- paste0("<ul>", blog_list, "</ul>")
 
 ```
 
-Here the newest post in our blog:
+Here are current posts in our blog:
 
-`r blog_list_short`
+`r blog_list`
