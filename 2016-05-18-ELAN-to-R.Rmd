@@ -38,6 +38,11 @@ FRelan package can be installed from GitHub with `devtools` package:
 
 However, one should probably read this post thoroughly before attempting to use it. (And do not try to do that before this post is 'officially' published, because it is guaranteed to be work very weirdly!)
 
+In an ideal world one could read ELAN file into R just typing:
+
+    FRelan::read_eaf(file = "elan_file.eaf")
+
+And this is how it works with our ELAN files, but I want to help others to achieve the same with their corpora!
 ### Introduction
 
 This writing is part of the wider topic of how to get documentary linguistic data into R. This means not only reading in ELAN files, but doing the same for metadata and other accompanying datasets we may have with our corpus. There are many reasons one may want to have documentary linguistic corpus in R. It makes searching the data very easy, and one is not limited to the predefined possibilities of individual user-interface. Besides this it is easy to make the study entirely reproducible, as there is no unnecessary mouse clicking involved. R has already for many years been used in variationistic sociolinguistics, and also in that realm use of ELAN has been around [@nagyEtAl2015a]. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).
