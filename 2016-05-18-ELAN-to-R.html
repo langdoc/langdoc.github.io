@@ -317,15 +317,15 @@ div.tocify {
 </div>
 <p>Into something like this:</p>
 <div class="figure">
-<img src="media/images/elan-R.png" alt="Elan file" />
-<p class="caption">Elan file</p>
+<img src="media/images/elan-R.png" alt="Elan file and some metadata in R data frame" />
+<p class="caption">Elan file and some metadata in R data frame</p>
 </div>
-<p>As one can see, not all data in this data frame comes from ELAN file directly. In my opinion this is one of the major reasons to use R to work with ELAN files. Associating session name or speaker id with any arbitrary pieces of information suddenly become trivially easy. In this case I have just merged some metadata with the tokens, but naturally there is no end to what one can have there. I have sorted the data here by speaker and the time, whereas sorting it only with time would of course bring to the table the natural order in which the utterances were spoken. In principle one could use more complicated data structures to store the ELAN file’s content, but in my opinion a data frame is just fine since it is very easy to work with.</p>
+<p>As one can see, not all data in this data frame comes from ELAN file directly. In my opinion this is one of the major reasons to use R to work with ELAN files. Associating session name or speaker id with any arbitrary pieces of information suddenly become trivially easy. In this case I have just merged some metadata with the tokens, but naturally there is no end to what one can have there. I have sorted the data here by speaker and the time, whereas sorting it only with time would of course bring to the table the natural order in which the utterances were spoken. In principle one could use more complicated data structures to store the ELAN file’s content, but in my opinion a data frame is just fine since it is very easy to work with. I will go through now only how one reads ELAN files – metadata comes later. I can just say briefly that what I’m usually doing is to open database connection from R to FileMaker Pro and to read the metadata from there. Now perfect, but works fine and is easy.</p>
 <p>I wrote already some year ago a small R package that can be used to parse ELAN files. We’ve called it <code>FRelan</code>, as it is developed with Freiburg based language documentation traditions. There is just one small problem – it works out of the box only with our ELAN files. The reason is that ELAN files can be structured in almost any possible way. As far as I see it, it is almost impossible to write a package which would just work automatically. However, I think it is possible to write some kind of generic tools which can be adapted into most of the files, and following the same logic one can also parse more exotic tier structures if the need arises.</p>
 <p>FRelan package can be installed from GitHub with <code>devtools</code> package:</p>
 <pre><code>install.packages(&quot;devtools&quot;)
 devtools::install_github(&quot;langdoc/FRelan&quot;)</code></pre>
-<p>However, one should probably read this post thoroughly before attempting to use it.</p>
+<p>However, one should probably read this post thoroughly before attempting to use it. (And do not try to do that before this post is ‘officially’ published, because it is guaranteed to be work very weirdly!)</p>
 </div>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
