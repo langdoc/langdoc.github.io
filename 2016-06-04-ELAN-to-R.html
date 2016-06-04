@@ -370,7 +370,8 @@ corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf)</code></pre>
 <p>I’m always ranting about the lack of uniformity in corpora, so let’s come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.</p>
 <pre class="r"><code>tier_exists &lt;- function(eaf_file, tier){
         
-        match &lt;- xml2::read_xml(eaf_file) %&gt;% xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]&quot;))
+        match &lt;- xml2::read_xml(eaf_file) %&gt;% 
+                xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]&quot;))
         if (length(match) &gt;= 1){
                 TRUE
         } else {
@@ -378,9 +379,11 @@ corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf)</code></pre>
         }
 }
 
-tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;word@JAI-M-1939&quot;)</code></pre>
+tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+            tier = &quot;word@JAI-M-1939&quot;)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;token@JAI-M-1939&quot;)</code></pre>
+<pre class="r"><code>tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+            tier = &quot;token@JAI-M-1939&quot;)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 </div>
 <div id="testing-if-tier-is-empty" class="section level4">
@@ -392,7 +395,8 @@ tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA
         print(&quot;Tier doesn&#39;t exist!&quot;)
                 } else {
         tier_content &lt;- xml2::read_xml(eaf_file) %&gt;% 
-                xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;%
+                xml2::xml_find_all(
+                        xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;%
                 xml2::xml_text()
         }
         
@@ -407,50 +411,83 @@ tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA
 }
 
 # This tier has content
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;word@JAI-M-1939&quot;, value = F)</code></pre>
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+                 tier = &quot;word@JAI-M-1939&quot;, 
+                 value = F)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code># This tier exists, but has no content
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;phonet-UPA@JAI-M-1939&quot;, value = F)</code></pre>
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+                 tier = &quot;phonet-UPA@JAI-M-1939&quot;, 
+                 value = F)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <pre class="r"><code># This tier is full of content, actually
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;word@JAI-M-1939&quot;, value = T)</code></pre>
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+                 tier = &quot;word@JAI-M-1939&quot;, 
+                 value = T)</code></pre>
 <pre><code>## [1] 5507</code></pre>
 <pre class="r"><code># This tier doesn&#39;t exist
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, tier = &quot;token@JAI-M-1939&quot;, value = T)</code></pre>
+tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+                 tier = &quot;token@JAI-M-1939&quot;, 
+                 value = T)</code></pre>
 <pre><code>## [1] &quot;Tier doesn&#39;t exist!&quot;</code></pre>
 </div>
 <div id="reading-one-tier" class="section level4">
 <h4>Reading one tier</h4>
 <p>I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.</p>
 <pre class="r"><code>read_tier &lt;- function(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, participant = &quot;JAI-M-1939&quot;, linguistic_type = &quot;wordT&quot;, independent = F){
-
+        
         `%&gt;%` &lt;- dplyr::`%&gt;%`
 
         file &lt;- xml2::read_xml(eaf_file)
+        
+        # file %&gt;% xml2::xml_find_all(paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39;]&quot;)) %&gt;%
+        #                 xml2::xml_attr(&quot;PARTICIPANT&quot;) -&gt; participants_in_file
+        # 
+        # participant %in% participants_in_file
         
         create_path &lt;- function(..., above = F){
                 if (exists(&quot;participant&quot;)){
                         restriction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39; and @PARTICIPANT=&#39;&quot;, participant,&quot;&#39;]&quot;)
                 } else {
-                        restiction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39;]&quot;)
+                        restriction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39;]&quot;)
                 }
                 if (above == T){
                         xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE/../../..&quot;
                 } else {
-                        xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE/..&quot;
+                        xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE&quot;
                 }
                 
-                file %&gt;% xml2::xml_find_all(paste0(restiction, xpath_end))
+                paste0(restriction, xpath_end)
         }
 
         dplyr::data_frame(
-                Content = create_path() %&gt;% xml2::xml_text(),
-                annot_id = create_path() %&gt;% xml2::xml_attr(&quot;ANNOTATION_ID&quot;),
-                ref_id = create_path() %&gt;% xml2::xml_attr(&quot;ANNOTATION_REF&quot;),
-                participant = create_path(above = T) %&gt;% xml2::xml_attr(&quot;PARTICIPANT&quot;),
-                tier_id = create_path(above = T) %&gt;% xml2::xml_attr(&quot;TIER_ID&quot;),
-                type = create_path(above = T) %&gt;% xml2::xml_attr(&quot;LINGUISTIC_TYPE_REF&quot;))
-        }</code></pre>
+                Content = file %&gt;% xml2::xml_find_all(create_path()) %&gt;% xml2::xml_text(),
+                annot_id = file %&gt;% xml2::xml_find_all(paste0(create_path(), &quot;/..&quot;)) %&gt;% xml2::xml_attr(&quot;ANNOTATION_ID&quot;),
+                ref_id = file %&gt;% xml2::xml_find_all(paste0(create_path(), &quot;/..&quot;)) %&gt;% xml2::xml_attr(&quot;ANNOTATION_REF&quot;),
+                participant = file %&gt;% xml2::xml_find_all(create_path(above = T)) %&gt;% xml2::xml_attr(&quot;PARTICIPANT&quot;),
+                tier_id = file %&gt;% xml2::xml_find_all(create_path(above = T)) %&gt;% xml2::xml_attr(&quot;TIER_ID&quot;),
+                type = file %&gt;% xml2::xml_find_all(create_path(above = T)) %&gt;% xml2::xml_attr(&quot;LINGUISTIC_TYPE_REF&quot;))
+        }
+
+read_tier()</code></pre>
+<pre><code>## Source: local data frame [5,507 x 6]
+## 
+##     Content annot_id ref_id participant         tier_id  type
+##       (chr)    (chr)  (chr)       (chr)           (chr) (chr)
+## 1  Пожняысь    a3613   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 2         ,    a3614   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 3     Пожня    a3615   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 4         ,    a3616   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 5     Пожня    a3617   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 6         ,    a3618   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 7     Пожня    a3619   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 8   сиктысь    a3620   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 9         ,    a3621   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## 10       да    a3622   a224  JAI-M-1939 word@JAI-M-1939 wordT
+## ..      ...      ...    ...         ...             ...   ...</code></pre>
+<pre class="r"><code>## Note to self - find some elegant way to deal with multiple participants here, doesn&#39;t work now nicely</code></pre>
+<p>The trick here is that the result is such a data frame which contains all crucial information from the individual tier. And as we are familiar with the tier hierarchy we can combine the results of different <code>read_tier()</code> functions to eventually get the whole file. Only difficulty will be with getting the actual time slots, but on the other hand that is also trivially easy, since that is expressed the same way in each and every ELAN file.</p>
+<p><strong>TO-DO: Explain the tier id relations</strong></p>
 </div>
 <div id="reading-whole-elan-file" class="section level4">
 <h4>Reading whole ELAN file</h4>

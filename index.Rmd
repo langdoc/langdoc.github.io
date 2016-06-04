@@ -47,7 +47,7 @@ get_header_attr <- function(rmd_file){
                                   html_file = gsub("(.+)(Rmd)", "\\1html", rmd_file))
 }
 
-rmd_info <- plyr::ldply(rmd_files, get_header_attr) %>% left_join(rmd_df) %>% arrange(date) %>% slice(1)
+rmd_info <- plyr::ldply(rmd_files, get_header_attr) %>% left_join(rmd_df) %>% arrange(desc(date)) %>% slice(1)
 
 blog_list_short <- paste(plyr::dlply(rmd_info, .variables = "file", function(x) {
         paste0('<li><a href="', x$html_file, '">', x$title, '</a> by ', x$author, "</li>")
