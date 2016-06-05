@@ -44,10 +44,27 @@ In an ideal world one could read ELAN file into R just typing:
     
 And this is how it works with our ELAN files, but I want to help others to achieve the same with their corpora!  Of course usually the idea would be to read in the whole corpus, which can be achieved easiest this way:
 
-    eaf_files <- list.files(path = "path/to/corpus/main/folder", pattern = "eaf$", full.names = T, recursive = T, )
+    eaf_files <- list.files(path = "path/to/corpus/main/folder", 
+                            pattern = "eaf$", 
+                            full.names = T, 
+                            recursive = T, )
     corpus <- plyr::ldply(eaf_files, FRelan::read_eaf)
 
 What happens here is also relatively simple. I use `list.files` function to find all ELAN files recursively. Those files are stored in a character vector which has one element for each ELAN file. After that I use `ldply` function from `plyr` package, which basically loops the function `read_eaf` across each path stored in `eaf_files` and coerces the result into a dataframe. In this point the data frame `corpus` one row for each token in the ELAN files with all information that is present in those files. However, reality is often less beautiful, and the parsing tends to be interrupted in one point or another. If each ELAN file would be perfectly similar in their structure, the loop would work. The majority of problems arise from tiny hidden inconsistencies which at least my files tend to be ridden with. I would call these an **invisible problem**, because they never really pop up in our daily work with ELAN corpus, but actually cause very large number of issues behind the scenes. So in the end very much about **parsing ELAN files into R** is actually about **finding out which ELAN files are inconsistent with R**.
+
+Lots of common tasks use packages `plyr`, `dplyr`, `xml2` and `XML`, so installing those is necessary. Especially two first mentioned are very useful in general.
+
+    library(plyr)
+    library(dplyr)
+
+In this tutorial I use ELAN file called `kpv_izva20140404IgusevJA.eaf`, which is a long interview I made with Komi researcher Jevgeni Aleksandrovich Igushev in 2014. 
+
+    test_file <- "kpv_izva20140404IgusevJA.eaf"
+
+```{r, echo=F}
+test_file <- "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA-ipa.eaf"
+```
+
 
 ### Introduction
 
@@ -86,25 +103,115 @@ Reading ELAN files into R is not trivially easy and it gets fast very complicate
 
 However, this is what makes parsing ELAN files to R particularly rewarding as well. It tells where the problems are, and makes it easier to address them. It can thereby be tested also as a robust testing method which helps to keep ELAN files organized. As far as I see it, the fact that all files adhere to uniform structure should be among the most basic definitions we have for **corpus**, differentiating it from eclectic file collections. This comes back to what I was describing above: if corpus is parsable, it is also transformable, and this is actually guarantees its longevity. It is not likely that in thirty years we want data to be in exactly this kind of XML files, but if they are perfectly uniform doing the transformation will never be more than a fast and easy task, whereas currently that can be quite a nightmare.
 
+#### Reading one tier
+
+I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.
+
+```{r, eval=T}
+
+FRelan::read_tier(eaf_file = test_file, linguistic_type = "wordT") %>% 
+        dplyr::slice(1:15) %>% # This slices 15 rows
+        knitr::kable() # This displays table nicely
+
+FRelan::read_tier(eaf_file = test_file, linguistic_type = "refT") %>% 
+        dplyr::slice(1:5) %>%
+        knitr::kable()
+
+# kable() thinks the id's are email addresses, have to look into that in some point...
+
+```
+
+The trick here is that the result is a data frame which contains all crucial information from the individual tiers. And as we are familiar with the tier hierarchy we can combine the results of different `read_tier()` functions to eventually get the whole file. Only difficulty will be with getting the actual time slots, but on the other hand that is also trivially easy, since that is expressed the same way in each and every ELAN file. In `FRelan` package there is a function `read_timeslots()` which can be used to match those values.
+
+#### Reading whole ELAN file
+
+Reading the whole ELAN file is essentially about figuring out the pattern how the tiers connect by their id's and imitate this pattern when joining different data frames. Of course there are many other things we want to do, for example, it makes sense to process and tidy the output already while it is being parsed. There are things such as right and left context, removing empty values, making some first calculations about the occurrences etc. This can be done automatically, but starting to set this up very easily leads into a situation where the model is clearly project specific, and not easily extended to be used by others. However, the model I propose here for joining the files tier by tier should be pretty bullet proof.
+
+Structure of the ELAN file we are using with Komi is basically like this:
+
+    |-ref (id)
+    \- orth (kpv)
+      \- word (tokenized from orth)
+    \- ft-rus (Russian translation)
+    \- ft-eng (English translation)
+    \- note (different notes on utterance level)
+
+So what we have in the utterance level table above is the content of the tiers with `wordT` linguistic type. The time slots are empty, because the tier is not independent. When I have parsed the tier with the type `refT` the id's are there. There are some situations where one wants to have the id's around, but I think in many situations it is equally possible to leave them out once they have been used to do the joins.
+
+I usually find it easiest to start from the smallest possible unit, which in this case would be a token. In the end I want one token to be one row.
+
+The `annot_id` of transcription tier is the `ref_id` of the token level tier.
+
+```{r}
+
+elan_file <- FRelan::read_tier(eaf_file = test_file, linguistic_type = "wordT") %>%
+        dplyr::select(content, ref_id, participant) %>%
+        dplyr::rename(token = content) %>%
+        dplyr::rename(annot_id = ref_id) %>%
+        dplyr::left_join(FRelan::read_tier(eaf_file = test_file, linguistic_type = "orthT")) %>%
+        dplyr::select(token, content, participant, ref_id) %>%
+        dplyr::rename(utterance = content) %>%
+        dplyr::rename(annot_id = ref_id) %>%
+        dplyr::left_join(FRelan::read_tier(eaf_file = test_file, linguistic_type = "refT")) %>%
+        dplyr::select(token, utterance, content, participant, time_slot_1, time_slot_2) %>%
+        dplyr::rename(reference = content)
+
+elan_file %>% dplyr::slice(1:15) %>% knitr::kable()
+
+# Note: add also some translation tiers to this
+
+```
+
+After this it is already very simple to grab the time slot values and associate them with this data frame. And in this point we can even throw away the time slot id's, as those really do not give us very much information about anything outside ELAN XML file. This join is little bit strange because the same information has to be joined twice -- each row has start and end time associated with it.
+
+```{r}
+
+elan_file %>% dplyr::left_join(FRelan::read_timeslots(eaf_file = test_file), 
+                               by = c("time_slot_1" = "time_slot_id")) %>%
+        dplyr::rename(time_start = time_value) %>%
+        dplyr::left_join(FRelan::read_timeslots(eaf_file = test_file), 
+                         by = c("time_slot_2" = "time_slot_id")) %>%
+        dplyr::rename(time_end = time_value) %>%
+        dplyr::select(-time_slot_1, -time_slot_2) -> elan_content
+
+elan_content %>% dplyr::slice(1:15) %>% knitr::kable()
+
+```
+
+And that's about it! Now one can ask what is this worth? What can one do with ELAN files in R? I will return to this later, but now I give just a trivial example. First of all, we can instantly know what there is in the corpus. For example, this tells how the tokens are distributed by the speakers:
+
+```{r}
+elan_content %>% count(participant) %>% knitr::kable()
+```
+
+Or let's say we have some arbitrary metadata. Sex, age -- which in this case already hide in the naming convention -- education level, birthplace, language acquisition history, any variables like these can be easily merged with the data from the ELAN files. And the best part is that the feedback is instant. If we modify ELAN files we can always just parse them again and evaluate the results with the changed files.
+
+I hope this excersice has been useful for someone. If there are questions please don't hesitate to contact me by email (nikotapiopartanen@gmail.com). I've been working with R and ELAN for several years now, but in many ways I'm also just discovering new possibilities every day. The treatment I've presented here is quite satisfactory in the sense that I believe it is elegant enough that one should avoid many parsing errors with heterogenous ELAN corpora. However, I think that detecting and fixing errors in ELAN files is certainly a topic worth its own longer posting. I have added below couple of functions which can be combined in different ways to find out some properties of ELAN files. I think usually the problems in ELAN files are connected to missing or wrongly named tiers or types.
+
+There are also lots of ways to search from the result:
+
+```{r}
+elan_content %>% find_token(".+иг.+")
+```
+
+
+```{r note_core, eval=F, echo=F}
+        #        file %>% xml2::xml_find_all(paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "']")) %>%
+        #                xml2::xml_attr("PARTICIPANT") -> participant
+```
+
+### Helper function
+
 #### Testing if tier exists
 
 I'm always ranting about the lack of uniformity in corpora, so let's come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.
 
 ```{r}
-tier_exists <- function(eaf_file, tier){
-        
-        match <- xml2::read_xml(eaf_file) %>% 
-                xml2::xml_find_all(xpath = paste0("//TIER[@TIER_ID='", tier, "']"))
-        if (length(match) >= 1){
-                TRUE
-        } else {
-                FALSE
-        }
-}
+FRelan::tier_exists
 
-tier_exists(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", 
+tier_exists(eaf_file = test_file, 
             tier = "word@JAI-M-1939")
-tier_exists(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", 
+tier_exists(eaf_file = test_file, 
             tier = "token@JAI-M-1939")
 
 ```
@@ -115,111 +222,27 @@ This little function does two things -- and can be used uncountable ways! If the
 
 ```{r}
 
-tier_has_content <- function(eaf_file, tier, value = F){
-        
-        if (tier_exists(eaf_file = eaf_file, tier = tier) == F){
-        print("Tier doesn't exist!")
-                } else {
-        tier_content <- xml2::read_xml(eaf_file) %>% 
-                xml2::xml_find_all(
-                        xpath = paste0("//TIER[@TIER_ID='", tier, "']/ANNOTATION/*/ANNOTATION_VALUE")) %>%
-                xml2::xml_text()
-        }
-        
-        if (value == FALSE && tier_exists(eaf_file = eaf_file, tier = tier) == T) {
-                result <- length(tier_content) > 0
-                print(result)
-        }
-        
-        if (value == T && tier_exists(eaf_file = eaf_file, tier = tier) == T) {
-        length(tier_content)
-        }
-}
+FRelan::tier_has_content
 
 # This tier has content
-tier_has_content(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", 
+tier_has_content(eaf_file = test_file, 
                  tier = "word@JAI-M-1939", 
                  value = F)
 # This tier exists, but has no content
-tier_has_content(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", 
+tier_has_content(eaf_file = test_file, 
                  tier = "phonet-UPA@JAI-M-1939", 
                  value = F)
 # This tier is full of content, actually
-tier_has_content(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", 
+tier_has_content(eaf_file = test_file, 
                  tier = "word@JAI-M-1939", 
                  value = T)
 # This tier doesn't exist
-tier_has_content(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", 
+tier_has_content(eaf_file = test_file, 
                  tier = "token@JAI-M-1939", 
                  value = T)
 
 ```
 
-
-#### Reading one tier
-
-I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.
-
-```{r, eval=T}
-
-read_tier <- function(eaf_file = "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf", participant = "JAI-M-1939", linguistic_type = "wordT", independent = F){
-        
-        `%>%` <- dplyr::`%>%`
-
-        file <- xml2::read_xml(eaf_file)
-        
-        # file %>% xml2::xml_find_all(paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "']")) %>%
-        #                 xml2::xml_attr("PARTICIPANT") -> participants_in_file
-        # 
-        # participant %in% participants_in_file
-        
-        create_path <- function(..., above = F){
-                if (exists("participant")){
-                        restriction <- paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "' and @PARTICIPANT='", participant,"']")
-                } else {
-                        restriction <- paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "']")
-                }
-                if (above == T){
-                        xpath_end <- "/ANNOTATION/*/ANNOTATION_VALUE/../../.."
-                } else {
-                        xpath_end <- "/ANNOTATION/*/ANNOTATION_VALUE"
-                }
-                
-                paste0(restriction, xpath_end)
-        }
-
-        dplyr::data_frame(
-                Content = file %>% xml2::xml_find_all(create_path()) %>% xml2::xml_text(),
-                annot_id = file %>% xml2::xml_find_all(paste0(create_path(), "/..")) %>% xml2::xml_attr("ANNOTATION_ID"),
-                ref_id = file %>% xml2::xml_find_all(paste0(create_path(), "/..")) %>% xml2::xml_attr("ANNOTATION_REF"),
-                participant = file %>% xml2::xml_find_all(create_path(above = T)) %>% xml2::xml_attr("PARTICIPANT"),
-                tier_id = file %>% xml2::xml_find_all(create_path(above = T)) %>% xml2::xml_attr("TIER_ID"),
-                type = file %>% xml2::xml_find_all(create_path(above = T)) %>% xml2::xml_attr("LINGUISTIC_TYPE_REF"))
-        }
-
-read_tier()
-
-## Note to self - find some elegant way to deal with multiple participants here, doesn't work now nicely
-
-```
-
-The trick here is that the result is such a data frame which contains all crucial information from the individual tier. And as we are familiar with the tier hierarchy we can combine the results of different `read_tier()` functions to eventually get the whole file. Only difficulty will be with getting the actual time slots, but on the other hand that is also trivially easy, since that is expressed the same way in each and every ELAN file.
-
-**TO-DO: Explain the tier id relations**
-
-#### Reading whole ELAN file
-
-What there is in ELAN file can be thought in following terms:
-
-- tiers which have identical basic structure
-    - with the difference that some have references to the time codes
-- in principle all tiers have time references, but those are accessible from their parent tiers (or their parents)
-    - I mean that even with annotations on tiers like **symbolic subdivision** it is possible to locate the span during which they are located on recording (time span of their parent tier)
-
-```{r note_core, eval=F, echo=F}
-        #        file %>% xml2::xml_find_all(paste0("//TIER[@LINGUISTIC_TYPE_REF='", linguistic_type, "']")) %>%
-        #                xml2::xml_attr("PARTICIPANT") -> participant
-```
 
 
 ### References

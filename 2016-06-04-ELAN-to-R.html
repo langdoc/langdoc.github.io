@@ -329,9 +329,17 @@ devtools::install_github(&quot;langdoc/FRelan&quot;)</code></pre>
 <p>In an ideal world one could read ELAN file into R just typing:</p>
 <pre><code>FRelan::read_eaf(file = &quot;elan_file.eaf&quot;)</code></pre>
 <p>And this is how it works with our ELAN files, but I want to help others to achieve the same with their corpora! Of course usually the idea would be to read in the whole corpus, which can be achieved easiest this way:</p>
-<pre><code>eaf_files &lt;- list.files(path = &quot;path/to/corpus/main/folder&quot;, pattern = &quot;eaf$&quot;, full.names = T, recursive = T, )
+<pre><code>eaf_files &lt;- list.files(path = &quot;path/to/corpus/main/folder&quot;, 
+                        pattern = &quot;eaf$&quot;, 
+                        full.names = T, 
+                        recursive = T, )
 corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf)</code></pre>
 <p>What happens here is also relatively simple. I use <code>list.files</code> function to find all ELAN files recursively. Those files are stored in a character vector which has one element for each ELAN file. After that I use <code>ldply</code> function from <code>plyr</code> package, which basically loops the function <code>read_eaf</code> across each path stored in <code>eaf_files</code> and coerces the result into a dataframe. In this point the data frame <code>corpus</code> one row for each token in the ELAN files with all information that is present in those files. However, reality is often less beautiful, and the parsing tends to be interrupted in one point or another. If each ELAN file would be perfectly similar in their structure, the loop would work. The majority of problems arise from tiny hidden inconsistencies which at least my files tend to be ridden with. I would call these an <strong>invisible problem</strong>, because they never really pop up in our daily work with ELAN corpus, but actually cause very large number of issues behind the scenes. So in the end very much about <strong>parsing ELAN files into R</strong> is actually about <strong>finding out which ELAN files are inconsistent with R</strong>.</p>
+<p>Lots of common tasks use packages <code>plyr</code>, <code>dplyr</code>, <code>xml2</code> and <code>XML</code>, so installing those is necessary. Especially two first mentioned are very useful in general.</p>
+<pre><code>library(plyr)
+library(dplyr)</code></pre>
+<p>In this tutorial I use ELAN file called <code>kpv_izva20140404IgusevJA.eaf</code>, which is a long interview I made with Komi researcher Jevgeni Aleksandrovich Igushev in 2014.</p>
+<pre><code>test_file &lt;- &quot;kpv_izva20140404IgusevJA.eaf&quot;</code></pre>
 </div>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
@@ -365,143 +373,662 @@ corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf)</code></pre>
 </ul>
 <p>Reading ELAN files into R is not trivially easy and it gets fast very complicated. The main question is always how uniform the ELAN files are in their basic structure. This is really where all problems begin. If all ELAN files are identical, then one can just specify the pattern to parse one and loop it over all files. However, in reality the situation is much more complicated, and ELAN files tend to be somewhat heterogenic. There is nothing in ELAN that would prevent small creeping in here and there, and what may look harmless for a human, for example, slightly different name of a linguistic type, is of course impassable barrier for a computer which tries to read the file. So the code to parse ELAN files often needs to have all kinds of bells and whistles attached into it to handle errors, which makes the code very complicated and there is always possibility that something fails in a new way.</p>
 <p>However, this is what makes parsing ELAN files to R particularly rewarding as well. It tells where the problems are, and makes it easier to address them. It can thereby be tested also as a robust testing method which helps to keep ELAN files organized. As far as I see it, the fact that all files adhere to uniform structure should be among the most basic definitions we have for <strong>corpus</strong>, differentiating it from eclectic file collections. This comes back to what I was describing above: if corpus is parsable, it is also transformable, and this is actually guarantees its longevity. It is not likely that in thirty years we want data to be in exactly this kind of XML files, but if they are perfectly uniform doing the transformation will never be more than a fast and easy task, whereas currently that can be quite a nightmare.</p>
+<div id="reading-one-tier" class="section level4">
+<h4>Reading one tier</h4>
+<p>I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.</p>
+<pre class="r"><code>FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;wordT&quot;) %&gt;% 
+        dplyr::slice(1:15) %&gt;% # This slices 15 rows
+        knitr::kable() # This displays table nicely</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">content</th>
+<th align="left">annot_id</th>
+<th align="left">ref_id</th>
+<th align="left">participant</th>
+<th align="left">tier_id</th>
+<th align="left">type</th>
+<th align="left">time_slot_1</th>
+<th align="left">time_slot_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Пожняысь</td>
+<td align="left">a3613</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">a3614</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">a3615</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">a3616</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">a3617</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">a3618</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">a3619</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">сиктысь</td>
+<td align="left">a3620</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">,</td>
+<td align="left">a3621</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">да</td>
+<td align="left">a3622</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">.</td>
+<td align="left">a3623</td>
+<td align="left">a224</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">Да</td>
+<td align="left">a3624</td>
+<td align="left">a902</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">,</td>
+<td align="left">a3625</td>
+<td align="left">a902</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">уджалі</td>
+<td align="left">a3626</td>
+<td align="left">a902</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">.</td>
+<td align="left">a3627</td>
+<td align="left">a902</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td align="left">wordT</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;refT&quot;) %&gt;% 
+        dplyr::slice(1:5) %&gt;%
+        knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">content</th>
+<th align="left">annot_id</th>
+<th align="left">ref_id</th>
+<th align="left">participant</th>
+<th align="left">tier_id</th>
+<th align="left">type</th>
+<th align="left">time_slot_1</th>
+<th align="left">time_slot_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">a2</td>
+<td align="left">NA</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td align="left">refT</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">a3</td>
+<td align="left">NA</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td align="left">refT</td>
+<td align="left">ts23</td>
+<td align="left">ts24</td>
+</tr>
+<tr class="odd">
+<td align="left">kpv_izva20140404IgusevJA-b-013</td>
+<td align="left">a4</td>
+<td align="left">NA</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td align="left">refT</td>
+<td align="left">ts29</td>
+<td align="left">ts30</td>
+</tr>
+<tr class="even">
+<td align="left">kpv_izva20140404IgusevJA-b-014</td>
+<td align="left">a5</td>
+<td align="left">NA</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td align="left">refT</td>
+<td align="left">ts31</td>
+<td align="left">ts32</td>
+</tr>
+<tr class="odd">
+<td align="left">kpv_izva20140404IgusevJA-b-015</td>
+<td align="left">a6</td>
+<td align="left">NA</td>
+<td align="left">JAI-M-1939</td>
+<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td align="left">refT</td>
+<td align="left">ts33</td>
+<td align="left">ts34</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># kable() thinks the id&#39;s are email addresses, have to look into that in some point...</code></pre>
+<p>The trick here is that the result is a data frame which contains all crucial information from the individual tiers. And as we are familiar with the tier hierarchy we can combine the results of different <code>read_tier()</code> functions to eventually get the whole file. Only difficulty will be with getting the actual time slots, but on the other hand that is also trivially easy, since that is expressed the same way in each and every ELAN file. In <code>FRelan</code> package there is a function <code>read_timeslots()</code> which can be used to match those values.</p>
+</div>
+<div id="reading-whole-elan-file" class="section level4">
+<h4>Reading whole ELAN file</h4>
+<p>Reading the whole ELAN file is essentially about figuring out the pattern how the tiers connect by their id’s and imitate this pattern when joining different data frames. Of course there are many other things we want to do, for example, it makes sense to process and tidy the output already while it is being parsed. There are things such as right and left context, removing empty values, making some first calculations about the occurrences etc. This can be done automatically, but starting to set this up very easily leads into a situation where the model is clearly project specific, and not easily extended to be used by others. However, the model I propose here for joining the files tier by tier should be pretty bullet proof.</p>
+<p>Structure of the ELAN file we are using with Komi is basically like this:</p>
+<pre><code>|-ref (id)
+\- orth (kpv)
+  \- word (tokenized from orth)
+\- ft-rus (Russian translation)
+\- ft-eng (English translation)
+\- note (different notes on utterance level)</code></pre>
+<p>So what we have in the utterance level table above is the content of the tiers with <code>wordT</code> linguistic type. The time slots are empty, because the tier is not independent. When I have parsed the tier with the type <code>refT</code> the id’s are there. There are some situations where one wants to have the id’s around, but I think in many situations it is equally possible to leave them out once they have been used to do the joins.</p>
+<p>I usually find it easiest to start from the smallest possible unit, which in this case would be a token. In the end I want one token to be one row.</p>
+<p>The <code>annot_id</code> of transcription tier is the <code>ref_id</code> of the token level tier.</p>
+<pre class="r"><code>elan_file &lt;- FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;wordT&quot;) %&gt;%
+        dplyr::select(content, ref_id, participant) %&gt;%
+        dplyr::rename(token = content) %&gt;%
+        dplyr::rename(annot_id = ref_id) %&gt;%
+        dplyr::left_join(FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;orthT&quot;)) %&gt;%
+        dplyr::select(token, content, participant, ref_id) %&gt;%
+        dplyr::rename(utterance = content) %&gt;%
+        dplyr::rename(annot_id = ref_id) %&gt;%
+        dplyr::left_join(FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;refT&quot;)) %&gt;%
+        dplyr::select(token, utterance, content, participant, time_slot_1, time_slot_2) %&gt;%
+        dplyr::rename(reference = content)</code></pre>
+<pre><code>## Joining by: c(&quot;annot_id&quot;, &quot;participant&quot;)</code></pre>
+<pre><code>## Joining by: c(&quot;participant&quot;, &quot;annot_id&quot;)</code></pre>
+<pre class="r"><code>elan_file %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">token</th>
+<th align="left">utterance</th>
+<th align="left">reference</th>
+<th align="left">participant</th>
+<th align="left">time_slot_1</th>
+<th align="left">time_slot_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Пожняысь</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">сиктысь</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="odd">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">да</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="odd">
+<td align="left">.</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts7</td>
+<td align="left">ts16</td>
+</tr>
+<tr class="even">
+<td align="left">Да</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts23</td>
+<td align="left">ts24</td>
+</tr>
+<tr class="odd">
+<td align="left">,</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts23</td>
+<td align="left">ts24</td>
+</tr>
+<tr class="even">
+<td align="left">уджалі</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts23</td>
+<td align="left">ts24</td>
+</tr>
+<tr class="odd">
+<td align="left">.</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="left">ts23</td>
+<td align="left">ts24</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Note: add also some translation tiers to this</code></pre>
+<p>After this it is already very simple to grab the time slot values and associate them with this data frame. And in this point we can even throw away the time slot id’s, as those really do not give us very much information about anything outside ELAN XML file. This join is little bit strange because the same information has to be joined twice – each row has start and end time associated with it.</p>
+<pre class="r"><code>elan_file %&gt;% dplyr::left_join(FRelan::read_timeslots(eaf_file = test_file), 
+                               by = c(&quot;time_slot_1&quot; = &quot;time_slot_id&quot;)) %&gt;%
+        dplyr::rename(time_start = time_value) %&gt;%
+        dplyr::left_join(FRelan::read_timeslots(eaf_file = test_file), 
+                         by = c(&quot;time_slot_2&quot; = &quot;time_slot_id&quot;)) %&gt;%
+        dplyr::rename(time_end = time_value) %&gt;%
+        dplyr::select(-time_slot_1, -time_slot_2) -&gt; elan_content
+
+elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">token</th>
+<th align="left">utterance</th>
+<th align="left">reference</th>
+<th align="left">participant</th>
+<th align="right">time_start</th>
+<th align="right">time_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Пожняысь</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="even">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="odd">
+<td align="left">Пожня</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="even">
+<td align="left">сиктысь</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="odd">
+<td align="left">,</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="even">
+<td align="left">да</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="odd">
+<td align="left">.</td>
+<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-004</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">29728</td>
+<td align="right">32233</td>
+</tr>
+<tr class="even">
+<td align="left">Да</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">40165</td>
+<td align="right">40953</td>
+</tr>
+<tr class="odd">
+<td align="left">,</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">40165</td>
+<td align="right">40953</td>
+</tr>
+<tr class="even">
+<td align="left">уджалі</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">40165</td>
+<td align="right">40953</td>
+</tr>
+<tr class="odd">
+<td align="left">.</td>
+<td align="left">Да, уджалі.</td>
+<td align="left">kpv_izva20140404IgusevJA-b-010</td>
+<td align="left">JAI-M-1939</td>
+<td align="right">40165</td>
+<td align="right">40953</td>
+</tr>
+</tbody>
+</table>
+<p>And that’s about it! Now one can ask what is this worth? What can one do with ELAN files in R? I will return to this later, but now I give just a trivial example. First of all, we can instantly know what there is in the corpus. For example, this tells how the tokens are distributed by the speakers:</p>
+<pre class="r"><code>elan_content %&gt;% count(participant) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">participant</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">JAI-M-1939</td>
+<td align="right">5507</td>
+</tr>
+<tr class="even">
+<td align="left">NTP-M-1986</td>
+<td align="right">1416</td>
+</tr>
+</tbody>
+</table>
+<p>Or let’s say we have some arbitrary metadata. Sex, age – which in this case already hide in the naming convention – education level, birthplace, language acquisition history, any variables like these can be easily merged with the data from the ELAN files. And the best part is that the feedback is instant. If we modify ELAN files we can always just parse them again and evaluate the results with the changed files.</p>
+<p>I hope this excersice has been useful for someone. If there are questions please don’t hesitate to contact me by email (<a href="mailto:nikotapiopartanen@gmail.com">nikotapiopartanen@gmail.com</a>). I’ve been working with R and ELAN for several years now, but in many ways I’m also just discovering new possibilities every day. The treatment I’ve presented here is quite satisfactory in the sense that I believe it is elegant enough that one should avoid many parsing errors with heterogenous ELAN corpora. However, I think that detecting and fixing errors in ELAN files is certainly a topic worth its own longer posting. I have added below couple of functions which can be combined in different ways to find out some properties of ELAN files. I think usually the problems in ELAN files are connected to missing or wrongly named tiers or types.</p>
+<p>There are also lots of ways to search from the result:</p>
+<pre class="r"><code>elan_content %&gt;% find_token(&quot;.+иг.+&quot;)</code></pre>
+<pre><code>## Source: local data frame [5 x 6]
+## 
+##             token
+##             (chr)
+## 1      кыпӧдчигас
+## 2     Григорьевна
+## 3         керигӧн
+## 4     Григорьевна
+## 5 оригинальнӧйӧсь
+## Variables not shown: utterance (chr), reference (chr), participant (chr),
+##   time_start (dbl), time_end (dbl)</code></pre>
+</div>
+</div>
+<div id="helper-function" class="section level3">
+<h3>Helper function</h3>
 <div id="testing-if-tier-exists" class="section level4">
 <h4>Testing if tier exists</h4>
 <p>I’m always ranting about the lack of uniformity in corpora, so let’s come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.</p>
-<pre class="r"><code>tier_exists &lt;- function(eaf_file, tier){
-        
-        match &lt;- xml2::read_xml(eaf_file) %&gt;% 
-                xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]&quot;))
-        if (length(match) &gt;= 1){
-                TRUE
-        } else {
-                FALSE
-        }
-}
-
-tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+<pre class="r"><code>FRelan::tier_exists</code></pre>
+<pre><code>## function(eaf_file, tier){
+## 
+##         match &lt;- xml2::read_xml(eaf_file) %&gt;%
+##                 xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]&quot;))
+##         if (length(match) &gt;= 1){
+##                 TRUE
+##         } else {
+##                 FALSE
+##         }
+## }
+## &lt;environment: namespace:FRelan&gt;</code></pre>
+<pre class="r"><code>tier_exists(eaf_file = test_file, 
             tier = &quot;word@JAI-M-1939&quot;)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>tier_exists(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+<pre class="r"><code>tier_exists(eaf_file = test_file, 
             tier = &quot;token@JAI-M-1939&quot;)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 </div>
 <div id="testing-if-tier-is-empty" class="section level4">
 <h4>Testing if tier is empty</h4>
 <p>This little function does two things – and can be used uncountable ways! If the value is specified as <code>TRUE</code>, it gives the number of items on that tier. This is often useful to know! However, it can also just tell us whether the tier is empty or not. For example, one could easily loop this across the files to find out all ELAN files where the tier that is supposed to contain the tokenized words has not been populated by the tokens.</p>
-<pre class="r"><code>tier_has_content &lt;- function(eaf_file, tier, value = F){
-        
-        if (tier_exists(eaf_file = eaf_file, tier = tier) == F){
-        print(&quot;Tier doesn&#39;t exist!&quot;)
-                } else {
-        tier_content &lt;- xml2::read_xml(eaf_file) %&gt;% 
-                xml2::xml_find_all(
-                        xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;%
-                xml2::xml_text()
-        }
-        
-        if (value == FALSE &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
-                result &lt;- length(tier_content) &gt; 0
-                print(result)
-        }
-        
-        if (value == T &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
-        length(tier_content)
-        }
-}
-
-# This tier has content
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+<pre class="r"><code>FRelan::tier_has_content</code></pre>
+<pre><code>## function(eaf_file, tier, value = F){
+## 
+##         if (tier_exists(eaf_file = eaf_file, tier = tier) == F){
+##                 print(&quot;Tier doesn&#39;t exist!&quot;)
+##         } else {
+##                 tier_content &lt;- xml2::read_xml(eaf_file) %&gt;%
+##                         xml2::xml_find_all(
+##                                 xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;%
+##                         xml2::xml_text()
+##         }
+## 
+##         if (value == FALSE &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
+##                 result &lt;- length(tier_content) &gt; 0
+##                 print(result)
+##         }
+## 
+##         if (value == T &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
+##                 length(tier_content)
+##         }
+## }
+## &lt;environment: namespace:FRelan&gt;</code></pre>
+<pre class="r"><code># This tier has content
+tier_has_content(eaf_file = test_file, 
                  tier = &quot;word@JAI-M-1939&quot;, 
                  value = F)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code># This tier exists, but has no content
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+tier_has_content(eaf_file = test_file, 
                  tier = &quot;phonet-UPA@JAI-M-1939&quot;, 
                  value = F)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <pre class="r"><code># This tier is full of content, actually
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+tier_has_content(eaf_file = test_file, 
                  tier = &quot;word@JAI-M-1939&quot;, 
                  value = T)</code></pre>
 <pre><code>## [1] 5507</code></pre>
 <pre class="r"><code># This tier doesn&#39;t exist
-tier_has_content(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, 
+tier_has_content(eaf_file = test_file, 
                  tier = &quot;token@JAI-M-1939&quot;, 
                  value = T)</code></pre>
 <pre><code>## [1] &quot;Tier doesn&#39;t exist!&quot;</code></pre>
-</div>
-<div id="reading-one-tier" class="section level4">
-<h4>Reading one tier</h4>
-<p>I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.</p>
-<pre class="r"><code>read_tier &lt;- function(eaf_file = &quot;/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf&quot;, participant = &quot;JAI-M-1939&quot;, linguistic_type = &quot;wordT&quot;, independent = F){
-        
-        `%&gt;%` &lt;- dplyr::`%&gt;%`
-
-        file &lt;- xml2::read_xml(eaf_file)
-        
-        # file %&gt;% xml2::xml_find_all(paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39;]&quot;)) %&gt;%
-        #                 xml2::xml_attr(&quot;PARTICIPANT&quot;) -&gt; participants_in_file
-        # 
-        # participant %in% participants_in_file
-        
-        create_path &lt;- function(..., above = F){
-                if (exists(&quot;participant&quot;)){
-                        restriction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39; and @PARTICIPANT=&#39;&quot;, participant,&quot;&#39;]&quot;)
-                } else {
-                        restriction &lt;- paste0(&quot;//TIER[@LINGUISTIC_TYPE_REF=&#39;&quot;, linguistic_type, &quot;&#39;]&quot;)
-                }
-                if (above == T){
-                        xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE/../../..&quot;
-                } else {
-                        xpath_end &lt;- &quot;/ANNOTATION/*/ANNOTATION_VALUE&quot;
-                }
-                
-                paste0(restriction, xpath_end)
-        }
-
-        dplyr::data_frame(
-                Content = file %&gt;% xml2::xml_find_all(create_path()) %&gt;% xml2::xml_text(),
-                annot_id = file %&gt;% xml2::xml_find_all(paste0(create_path(), &quot;/..&quot;)) %&gt;% xml2::xml_attr(&quot;ANNOTATION_ID&quot;),
-                ref_id = file %&gt;% xml2::xml_find_all(paste0(create_path(), &quot;/..&quot;)) %&gt;% xml2::xml_attr(&quot;ANNOTATION_REF&quot;),
-                participant = file %&gt;% xml2::xml_find_all(create_path(above = T)) %&gt;% xml2::xml_attr(&quot;PARTICIPANT&quot;),
-                tier_id = file %&gt;% xml2::xml_find_all(create_path(above = T)) %&gt;% xml2::xml_attr(&quot;TIER_ID&quot;),
-                type = file %&gt;% xml2::xml_find_all(create_path(above = T)) %&gt;% xml2::xml_attr(&quot;LINGUISTIC_TYPE_REF&quot;))
-        }
-
-read_tier()</code></pre>
-<pre><code>## Source: local data frame [5,507 x 6]
-## 
-##     Content annot_id ref_id participant         tier_id  type
-##       (chr)    (chr)  (chr)       (chr)           (chr) (chr)
-## 1  Пожняысь    a3613   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 2         ,    a3614   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 3     Пожня    a3615   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 4         ,    a3616   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 5     Пожня    a3617   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 6         ,    a3618   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 7     Пожня    a3619   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 8   сиктысь    a3620   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 9         ,    a3621   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## 10       да    a3622   a224  JAI-M-1939 word@JAI-M-1939 wordT
-## ..      ...      ...    ...         ...             ...   ...</code></pre>
-<pre class="r"><code>## Note to self - find some elegant way to deal with multiple participants here, doesn&#39;t work now nicely</code></pre>
-<p>The trick here is that the result is such a data frame which contains all crucial information from the individual tier. And as we are familiar with the tier hierarchy we can combine the results of different <code>read_tier()</code> functions to eventually get the whole file. Only difficulty will be with getting the actual time slots, but on the other hand that is also trivially easy, since that is expressed the same way in each and every ELAN file.</p>
-<p><strong>TO-DO: Explain the tier id relations</strong></p>
-</div>
-<div id="reading-whole-elan-file" class="section level4">
-<h4>Reading whole ELAN file</h4>
-<p>What there is in ELAN file can be thought in following terms:</p>
-<ul>
-<li>tiers which have identical basic structure
-<ul>
-<li>with the difference that some have references to the time codes</li>
-</ul></li>
-<li>in principle all tiers have time references, but those are accessible from their parent tiers (or their parents)
-<ul>
-<li>I mean that even with annotations on tiers like <strong>symbolic subdivision</strong> it is possible to locate the span during which they are located on recording (time span of their parent tier)</li>
-</ul></li>
-</ul>
 </div>
 </div>
 <div id="references" class="section level3 unnumbered">
