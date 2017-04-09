@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Niko Partanen" />
+
+
+<title>Continuation to description of Komi</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <!-- NOTE: add "navbar-inverse" class for an alternate navbar background -->
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Language Documentation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="old.html">All posts</a></li>
+           <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Related pages</a>
+                <ul class="dropdown-menu">
+            <li role="separator" class="divider"></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP-2</a></li>
+            <li><a href="http://saami.uni-freiburg.de/psdp/syntax/links.php?lang=EN">Pite Saami Syntax</a></li>
+            <li><a href="https://langdoc.github.io/RIGNE2016">RIGNE 2016</a></li>
+ <!--           <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>-->
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/langdoc">GitHub</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Continuation to description of Komi</h1>
+<h4 class="author"><em>Niko Partanen</em></h4>
+
+</div>
+
+
+<div id="new-project-starts-soon" class="section level3">
+<h3>New project starts soon</h3>
+<p>With Rogier Blokland and Michael Rießler we are now starting a new continuation for our language documentation project with Komi, and as lots of changes have been taking place, it is a good moment to go over a bit what is the current situation. Our three year long work with Iźva Komi has now ended, but in many ways the work is just starting. The new project, <a href="https://langdoc.github.io/IKDP-2/">Language Documentation meets Language Technology</a> aims to work onward with annotating the previously created corpus. However, one aim is to explore into which degree the annotations can be created automatically. One of the choices done in earlier project, <a href="https://langdoc.github.io/IKDP-2/">IKDP</a>, was to create only relatively shallow annotations, mainly transcriptions and translations, as this probably allows maximal usability of the corpus later. This has been combined to a model where annotations are created as needed, for example, by demands of specific research questions.</p>
+</div>
+<div id="constraint-grammar" class="section level3">
+<h3>Constraint Grammar</h3>
+<p>Similarly there is already rather mature language technology infrastructure for written Komi, and we are currently working with adapting this to more non-standard spoken varieties, which also includes large degree of mixture with Russian. The initial idea, which is still central for our work, is to disambiguate currently existing Finite State Transducer output for Komi with Constraint Grammar rules. With written Komi the current analysator reaches already very satisfactory results, but there is lots of ambiguity. The poster presentation Ciprian Gerstenberger, Niko Partanen and Michael Rießler had recently <span class="citation">(2017)</span> describes the workflow well. PDF is available in <a href="https://www.researchgate.net/publication/314497257_Instant_annotations_in_ELAN_corpora_of_spoken_and_written_Komi-Zyrian_an_endangered_language_of_the_Barents_Sea_region_Russia">ResearchGate</a> and also openly downloadable from <a href="media/pdf/gerstenbergerEtAl2017c.pdf">here</a>.</p>
+<p>With Constraint Grammar rules it is possible to eliminate the results which are impossible in the given context, which also produces a very formal syntactic description. However, since Constraint Grammar describes the constructions which <strong>are not possible</strong>, it approaches syntax from somewhat unusual angle. To complement the rules we are also producing a more traditional syntactic description of Komi, but also with this we are looking for something new, which in this case comes in form of exploring possibilities for open publishing practices.</p>
+</div>
+<div id="different-tools-in-test" class="section level3">
+<h3>Different tools in test</h3>
+<p>We have received occasional comments that these rule based approaches are not necessarily the current state of the art in natural language processing, but on the other hand rule based descriptions align well with traditional approaches to grammatical description. Especially with lesser resourced languages there is an acute need to describe their grammatical systems properly, and formalizing the observations as a model for morphological analysis could be a very interesting way to go. And this doesn’t mean that we would be somehow against more statistical methods, quite the contrary! For six months, starting in April 2017, Niko Partanen will be working in <a href="http://www.lattice.cnrs.fr/">LATTICE</a> laboratory in Paris, and one explicit goal of this work is to produce an annotated gold corpus of Komi which can be used to train more statistical taggers.</p>
+<p>One trivial benefit of statistical model could be that if we want to manually disambiguate the results, then a model like this can be used to suggest the most likely selection first. Probably software like FLEx and Toolbox does something like this at the background, but for us it is important to be able to express these processes in a way that can be observed, examined and run again in different environments. Language documentation as a field is still stuck to lots of very dysfunctional software and semi-manual solutions, as it seems that Toolbox, FLEx and Arbil are still very much the standard everyone uses. We hope our work would eventually lead into finding new ways to work with our data and manage language documentation corpora more efficiently.</p>
+</div>
+<div id="forthcoming" class="section level3">
+<h3>Forthcoming</h3>
+<p>New fieldwork as such is not planned for this project period, but Niko Partanen will be teaching a seminar in Syktyvkar in June 2017, with the goal to teach use of ELAN and other contemporary tools used in language documentation to Komi students and researchers. This means that new Komi data will be coming, and probably staying some weeks in Syktyvkar gives also a good possibility to record some new material, at least to elicitate a bit to get answer into few unanswered questions. We try to widen our collaboration with researchers who work with languages spoken especially in Barents Region and Northern Russia, but as many issues in language documentation are probably somewhat universally shared, we do not want to limit our collaboration to any geographic area as such, this is just where our own expertise primarily stands.</p>
+</div>
+<div id="references" class="section level3 unnumbered">
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-gerstenbergerEtAl2017c">
+<p>Gerstenberger, Ciprian, Niko Partanen, and Michael Rießler. 2017. “Instant Annotations in ELAN Corpora of Spoken and Written Komi-Zyrian, an Endangered Language of the Barents Sea Region (Russia).” Poster at ComputEL-2, March 6–7, 2017, Honolulu, Hawai’i. doi:<a href="https://doi.org/10.13140/RG.2.2.14503.34727">10.13140/RG.2.2.14503.34727</a>.</p>
+</div>
+</div>
+</div>
+
+<hr>
+<p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
