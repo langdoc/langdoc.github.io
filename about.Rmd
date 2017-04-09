@@ -1,20 +1,28 @@
 ---
-bibliography: ~/FRibliography/bibtex/FRibliography.bib
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
 ---
 
 </br>
 
 <center>
 <figure>
-<img src="media/images/we_in_izhma.jpg" alt="Hard working linguists in Dijur, spring 2014" style="width:700px">
+<img src="https://langdoc.github.io/IKDP-2/media/boompole.jpg" alt="Working in Ivanovka, summer 2016" style="width:700px">
 </br>
-<figcaption>Hard working linguists in Dijur, spring 2014</figcaption>
+<figcaption>Working in Ivanovka, summer 2016</figcaption>
 </figure>
 </center>
 
 </br>
 
-This website is maintained by [Niko Partanen](https://www.slm.uni-hamburg.de/ifuu/personen/niko-partanen.html) and [Michael Rießler](https://www.skandinavistik.uni-freiburg.de/institut/mitarbeiter/riessler/). We have started this page as an open platform for technical documentation as well as a news forum for language documentation and corpus building projects affiliated with the [Freiburg Research Group in Saami Studies](http://saami.uni-freiburg.de/). 
+This website is maintained by [Niko Partanen](https://www.slm.uni-hamburg.de/ifuu/personen/niko-partanen.html) and [Michael Rießler](https://www.skandinavistik.uni-freiburg.de/institut/mitarbeiter/riessler/). We have started this page as an open platform for technical documentation as well as a news forum for language documentation and corpus building projects affiliated with the [Freiburg Research Group in Saami Studies](http://saami.uni-freiburg.de/) and other institutions we collaborate with.
+
+We collect our technical documentation to this GitHub [Wiki page](https://github.com/langdoc/FRechdoc/wiki) and everyone is welcome to contribute. We try not to duplicate work already done, so instead of general tool listings we try to gather resources and information directly related to our research practices and questions. This includes introductions, explanations and resources that we have found useful and want to share with the wider audience. One resource we are very eager to share consists from templates, which we currently have for ELAN files and also, for example, linguistic papers written in XeLaTeX and RMarkdown. With more technical tools that can be used in linguistic research we plan to collect also more detailed compilation and use instructions on Wiki, especially in the case the exact approach we take is not documented elsewhere. In those cases we naturally just link to already existing resources.
+
+The main project the work has been taking place are [Iźva Komi Documentation Project](https://langdoc.github.io/IKDP/) funded by Kone Foundation in 2014-2016, and the continuation project [Language Documentation meets Language Technology](https://langdoc.github.io/IKDP-2/), also funded by them on period 2017-2020.
+
+Another collaborating project is [Syntactic patterns in Pite Saami](http://saami.uni-freiburg.de/psdp/syntax/) led by Joshua Wilbur. Some results of Wilbur's ongoing work can be seen on [Pitesamiska stavningsregler website](http://saami.uni-freiburg.de/psdp/stavningsregler/main.php) and in [this dictionary](http://saami.uni-freiburg.de/psdp/pite-lex/simple_search.php?searchMode=off&lang=Swe). In the long term the intention is to move larger part of our research infrastructure into open GitHub repositories.
+
+[Ob-Ugric Database](http://www.babel.gwi.uni-muenchen.de/) is another collaboration partner, which continues a longer work done with Ob-Ugric languages. The project is led from universities of Munchen and Vienna.
 
 </br>
 
@@ -25,8 +33,9 @@ We use the `rmarkdown` package for building the site. The main reason for this i
 * Writing all content in simple RMD text files, which has many advantages
     + Can be read and used as-is outside the website context 
     + Easily compiled into HTML, PDF, ODT, DOC or other formats
-    + Easy to embed R (or almost any other) code
+    + Easy to embed R (or other) code
 * Allows access to bibliographies
 * Keeps the website structure extremely simple
-* Pretty fast to compile
-* And it still looks pretty good!
+* Fast to compile
+
+We are also interested about developing new open research practices and discussing the work we do and data we use with a wider linguistic audience. Although we still primarily publish in academic journals, there is wealth of scientific work that could also be communicated through other channels.
