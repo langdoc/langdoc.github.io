@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -19,12 +19,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -95,6 +94,7 @@ button.code-folding-btn:focus {
 }
 </style>
 
+
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
@@ -151,7 +151,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.0/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -179,20 +178,19 @@ $(document).ready(function () {
       <ul class="nav navbar-nav">
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
-        <li><a href="old.html">All Texts</a></li>
-<!-- These come back later
+        <li><a href="old.html">All posts</a></li>
            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Subpages</a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Related pages</a>
                 <ul class="dropdown-menu">
-            <li><a href="http://izvakomi.github.io/">Iźva Komi Documentation Project</a></li>
-            <li><a href="http://langdoc.github.io/downrivervashka">Down River Vashka</a></li>
-            <li><a href="http://nikopartanen.github.io/sle2016partanen">Niko Partanen's SLE 2016 paper</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="#">Micha's conference page</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP-2</a></li>
+            <li><a href="http://saami.uni-freiburg.de/psdp/syntax/links.php?lang=EN">Pite Saami Syntax</a></li>
+            <li><a href="https://langdoc.github.io/RIGNE2016">RIGNE 2016</a></li>
+ <!--           <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>-->
           </ul>
-        </li> -->
+        </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="https://github.com/langdoc">GitHub</a></li>
@@ -212,14 +210,18 @@ $(document).ready(function () {
 <p></br></p>
 <center>
 <figure>
-<img src="media/images/we_in_izhma.jpg" alt="Hard working linguists in Dijur, spring 2014" style="width:700px"> </br>
+<img src="https://langdoc.github.io/IKDP-2/media/boompole.jpg" alt="Working in Ivanovka, summer 2016" style="width:700px"> </br>
 <figcaption>
-Hard working linguists in Dijur, spring 2014
+Working in Ivanovka, summer 2016
 </figcaption>
 </figure>
 </center>
 <p></br></p>
-<p>This website is maintained by <a href="https://www.slm.uni-hamburg.de/ifuu/personen/niko-partanen.html">Niko Partanen</a> and <a href="https://www.skandinavistik.uni-freiburg.de/institut/mitarbeiter/riessler/">Michael Rießler</a>. We have started this page as an open platform for technical documentation as well as a news forum for language documentation and corpus building projects affiliated with the <a href="http://saami.uni-freiburg.de/">Freiburg Research Group in Saami Studies</a>.</p>
+<p>This website is maintained by <a href="https://www.slm.uni-hamburg.de/ifuu/personen/niko-partanen.html">Niko Partanen</a> and <a href="https://www.skandinavistik.uni-freiburg.de/institut/mitarbeiter/riessler/">Michael Rießler</a>. We have started this page as an open platform for technical documentation as well as a news forum for language documentation and corpus building projects affiliated with the <a href="http://saami.uni-freiburg.de/">Freiburg Research Group in Saami Studies</a> and other institutions we collaborate with.</p>
+<p>We collect our technical documentation to this GitHub <a href="https://github.com/langdoc/FRechdoc/wiki">Wiki page</a> and everyone is welcome to contribute. We try not to duplicate work already done, so instead of general tool listings we try to gather resources and information directly related to our research practices and questions. This includes introductions, explanations and resources that we have found useful and want to share with the wider audience. One resource we are very eager to share consists from templates, which we currently have for ELAN files and also, for example, linguistic papers written in XeLaTeX and RMarkdown. With more technical tools that can be used in linguistic research we plan to collect also more detailed compilation and use instructions on Wiki, especially in the case the exact approach we take is not documented elsewhere. In those cases we naturally just link to already existing resources.</p>
+<p>The main project the work has been taking place are <a href="https://langdoc.github.io/IKDP/">Iźva Komi Documentation Project</a> funded by Kone Foundation in 2014-2016, and the continuation project <a href="https://langdoc.github.io/IKDP-2/">Language Documentation meets Language Technology</a>, also funded by them on period 2017-2020.</p>
+<p>Another collaborating project is <a href="http://saami.uni-freiburg.de/psdp/syntax/">Syntactic patterns in Pite Saami</a> led by Joshua Wilbur. Some results of Wilbur’s ongoing work can be seen on <a href="http://saami.uni-freiburg.de/psdp/stavningsregler/main.php">Pitesamiska stavningsregler website</a> and in <a href="http://saami.uni-freiburg.de/psdp/pite-lex/simple_search.php?searchMode=off&amp;lang=Swe">this dictionary</a>. In the long term the intention is to move larger part of our research infrastructure into open GitHub repositories.</p>
+<p><a href="http://www.babel.gwi.uni-muenchen.de/">Ob-Ugric Database</a> is another collaboration partner, which continues a longer work done with Ob-Ugric languages. The project is led from universities of Munchen and Vienna.</p>
 <p></br></p>
 <p>However, since posts related to other projects carried out at institutions elsewhere are also published, our website is not strictly connected to any specific project or institution.</p>
 <p>We use the <code>rmarkdown</code> package for building the site. The main reason for this is that <a href="http://rmarkdown.rstudio.com/">R Markdown</a> allows:</p>
@@ -228,16 +230,13 @@ Hard working linguists in Dijur, spring 2014
 <ul>
 <li>Can be read and used as-is outside the website context</li>
 <li>Easily compiled into HTML, PDF, ODT, DOC or other formats</li>
-<li>Easy to embed R (or almost any other) code</li>
+<li>Easy to embed R (or other) code</li>
 </ul></li>
 <li>Allows access to bibliographies</li>
 <li>Keeps the website structure extremely simple</li>
-<li>Pretty fast to compile</li>
-<li>And it still looks pretty good!</li>
+<li>Fast to compile</li>
 </ul>
-<div id="refs" class="references">
-
-</div>
+<p>We are also interested about developing new open research practices and discussing the work we do and data we use with a wider linguistic audience. Although we still primarily publish in academic journals, there is wealth of scientific work that could also be communicated through other channels.</p>
 
 <hr>
 <p>Copyright &copy; 2016 CC-BY Niko Partanen or individual writers.</p>
@@ -249,9 +248,13 @@ Hard working linguists in Dijur, spring 2014
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
+
 
 </script>
 

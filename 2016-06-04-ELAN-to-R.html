@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -15,20 +15,19 @@
 <title>Reading ELAN files to R</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -99,6 +98,7 @@ button.code-folding-btn:focus {
 }
 </style>
 
+
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
@@ -155,7 +155,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.0/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -181,7 +180,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
@@ -205,6 +204,7 @@ $(document).ready(function ()  {
   width: 100%;
 }
 }
+
 
 .toc-content {
   padding-left: 30px;
@@ -239,8 +239,9 @@ div.tocify {
 }
 
 .tocify-subheader .tocify-item {
-  font-size: 0.9em;
-  padding-left: 5px;
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -276,20 +277,19 @@ div.tocify {
       <ul class="nav navbar-nav">
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
-        <li><a href="old.html">All Texts</a></li>
-<!-- These come back later
+        <li><a href="old.html">All posts</a></li>
            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Subpages</a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Related pages</a>
                 <ul class="dropdown-menu">
-            <li><a href="http://izvakomi.github.io/">Iźva Komi Documentation Project</a></li>
-            <li><a href="http://langdoc.github.io/downrivervashka">Down River Vashka</a></li>
-            <li><a href="http://nikopartanen.github.io/sle2016partanen">Niko Partanen's SLE 2016 paper</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="#">Micha's conference page</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP-2</a></li>
+            <li><a href="http://saami.uni-freiburg.de/psdp/syntax/links.php?lang=EN">Pite Saami Syntax</a></li>
+            <li><a href="https://langdoc.github.io/RIGNE2016">RIGNE 2016</a></li>
+ <!--           <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>-->
           </ul>
-        </li> -->
+        </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="https://github.com/langdoc">GitHub</a></li>
@@ -395,7 +395,7 @@ library(dplyr)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">Пожняысь</td>
-<td align="left">a3613</td>
+<td align="left">a21587</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -405,7 +405,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">,</td>
-<td align="left">a3614</td>
+<td align="left">a21588</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -415,7 +415,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">Пожня</td>
-<td align="left">a3615</td>
+<td align="left">a21589</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -425,7 +425,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">,</td>
-<td align="left">a3616</td>
+<td align="left">a21590</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -435,7 +435,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">Пожня</td>
-<td align="left">a3617</td>
+<td align="left">a21591</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -445,7 +445,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">,</td>
-<td align="left">a3618</td>
+<td align="left">a21592</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -455,7 +455,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">Пожня</td>
-<td align="left">a3619</td>
+<td align="left">a21593</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -465,7 +465,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">сиктысь</td>
-<td align="left">a3620</td>
+<td align="left">a21594</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -475,7 +475,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">,</td>
-<td align="left">a3621</td>
+<td align="left">a21595</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -485,7 +485,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">да</td>
-<td align="left">a3622</td>
+<td align="left">a21596</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -495,7 +495,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">.</td>
-<td align="left">a3623</td>
+<td align="left">a21597</td>
 <td align="left">a224</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -505,7 +505,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">Да</td>
-<td align="left">a3624</td>
+<td align="left">a21598</td>
 <td align="left">a902</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -515,7 +515,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">,</td>
-<td align="left">a3625</td>
+<td align="left">a21599</td>
 <td align="left">a902</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -525,7 +525,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">уджалі</td>
-<td align="left">a3626</td>
+<td align="left">a21600</td>
 <td align="left">a902</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -535,7 +535,7 @@ library(dplyr)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">.</td>
-<td align="left">a3627</td>
+<td align="left">a21601</td>
 <td align="left">a902</td>
 <td align="left">JAI-M-1939</td>
 <td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
@@ -641,8 +641,8 @@ library(dplyr)</code></pre>
         dplyr::left_join(FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;refT&quot;)) %&gt;%
         dplyr::select(token, utterance, content, participant, time_slot_1, time_slot_2) %&gt;%
         dplyr::rename(reference = content)</code></pre>
-<pre><code>## Joining by: c(&quot;annot_id&quot;, &quot;participant&quot;)</code></pre>
-<pre><code>## Joining by: c(&quot;participant&quot;, &quot;annot_id&quot;)</code></pre>
+<pre><code>## Joining, by = c(&quot;annot_id&quot;, &quot;participant&quot;)</code></pre>
+<pre><code>## Joining, by = c(&quot;participant&quot;, &quot;annot_id&quot;)</code></pre>
 <pre class="r"><code>elan_file %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
@@ -935,7 +935,7 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">JAI-M-1939</td>
-<td align="right">5507</td>
+<td align="right">5471</td>
 </tr>
 <tr class="even">
 <td align="left">NTP-M-1986</td>
@@ -947,17 +947,16 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <p>I hope this excersice has been useful for someone. If there are questions please don’t hesitate to contact me by email (<a href="mailto:nikotapiopartanen@gmail.com">nikotapiopartanen@gmail.com</a>). I’ve been working with R and ELAN for several years now, but in many ways I’m also just discovering new possibilities every day. The treatment I’ve presented here is quite satisfactory in the sense that I believe it is elegant enough that one should avoid many parsing errors with heterogenous ELAN corpora. However, I think that detecting and fixing errors in ELAN files is certainly a topic worth its own longer posting. I have added below couple of functions which can be combined in different ways to find out some properties of ELAN files. I think usually the problems in ELAN files are connected to missing or wrongly named tiers or types.</p>
 <p>There are also lots of ways to search from the result:</p>
 <pre class="r"><code>elan_content %&gt;% find_token(&quot;.+иг.+&quot;)</code></pre>
-<pre><code>## Source: local data frame [5 x 6]
-## 
+<pre><code>## # A tibble: 5 × 6
 ##             token
-##             (chr)
+##             &lt;chr&gt;
 ## 1      кыпӧдчигас
 ## 2     Григорьевна
 ## 3         керигӧн
 ## 4     Григорьевна
 ## 5 оригинальнӧйӧсь
-## Variables not shown: utterance (chr), reference (chr), participant (chr),
-##   time_start (dbl), time_end (dbl)</code></pre>
+## # ... with 5 more variables: utterance &lt;chr&gt;, reference &lt;chr&gt;,
+## #   participant &lt;chr&gt;, time_start &lt;dbl&gt;, time_end &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="helper-function" class="section level3">
@@ -966,15 +965,16 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <h4>Testing if tier exists</h4>
 <p>I’m always ranting about the lack of uniformity in corpora, so let’s come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.</p>
 <pre class="r"><code>FRelan::tier_exists</code></pre>
-<pre><code>## function(eaf_file, tier){
-## 
-##         match &lt;- xml2::read_xml(eaf_file) %&gt;%
-##                 xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]&quot;))
-##         if (length(match) &gt;= 1){
-##                 TRUE
-##         } else {
-##                 FALSE
-##         }
+<pre><code>## function (eaf_file, tier) 
+## {
+##     match &lt;- xml2::read_xml(eaf_file) %&gt;% xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, 
+##         tier, &quot;&#39;]&quot;))
+##     if (length(match) &gt;= 1) {
+##         TRUE
+##     }
+##     else {
+##         FALSE
+##     }
 ## }
 ## &lt;environment: namespace:FRelan&gt;</code></pre>
 <pre class="r"><code>tier_exists(eaf_file = test_file, 
@@ -988,54 +988,52 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <h4>Testing if tier is empty</h4>
 <p>This little function does two things – and can be used uncountable ways! If the value is specified as <code>TRUE</code>, it gives the number of items on that tier. This is often useful to know! However, it can also just tell us whether the tier is empty or not. For example, one could easily loop this across the files to find out all ELAN files where the tier that is supposed to contain the tokenized words has not been populated by the tokens.</p>
 <pre class="r"><code>FRelan::tier_has_content</code></pre>
-<pre><code>## function(eaf_file, tier, value = F){
-## 
-##         if (tier_exists(eaf_file = eaf_file, tier = tier) == F){
-##                 print(&quot;Tier doesn&#39;t exist!&quot;)
-##         } else {
-##                 tier_content &lt;- xml2::read_xml(eaf_file) %&gt;%
-##                         xml2::xml_find_all(
-##                                 xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;%
-##                         xml2::xml_text()
-##         }
-## 
-##         if (value == FALSE &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
-##                 result &lt;- length(tier_content) &gt; 0
-##                 print(result)
-##         }
-## 
-##         if (value == T &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == T) {
-##                 length(tier_content)
-##         }
+<pre><code>## function (eaf_file, tier, value = F) 
+## {
+##     `%&gt;%` &lt;- dplyr::`%&gt;%`
+##     if (tier_exists(eaf_file = eaf_file, tier = tier) == F) {
+##         FALSE
+##     }
+##     else {
+##         tier_content &lt;- xml2::read_xml(eaf_file) %&gt;% xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, 
+##             tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;% xml2::xml_text()
+##         tier_content
+##     }
+##     if (value == FALSE &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == 
+##         T) {
+##         result &lt;- length(tier_content) &gt; 0
+##         result
+##     }
+##     if (value == T &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == 
+##         T) {
+##         length(tier_content)
+##     }
 ## }
 ## &lt;environment: namespace:FRelan&gt;</code></pre>
 <pre class="r"><code># This tier has content
 tier_has_content(eaf_file = test_file, 
                  tier = &quot;word@JAI-M-1939&quot;, 
-                 value = F)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code># This tier exists, but has no content
+                 value = F)
+# This tier exists, but has no content
 tier_has_content(eaf_file = test_file, 
                  tier = &quot;phonet-UPA@JAI-M-1939&quot;, 
-                 value = F)</code></pre>
-<pre><code>## [1] FALSE</code></pre>
-<pre class="r"><code># This tier is full of content, actually
+                 value = F)
+# This tier is full of content, actually
 tier_has_content(eaf_file = test_file, 
                  tier = &quot;word@JAI-M-1939&quot;, 
                  value = T)</code></pre>
-<pre><code>## [1] 5507</code></pre>
+<pre><code>## [1] 5471</code></pre>
 <pre class="r"><code># This tier doesn&#39;t exist
 tier_has_content(eaf_file = test_file, 
                  tier = &quot;token@JAI-M-1939&quot;, 
                  value = T)</code></pre>
-<pre><code>## [1] &quot;Tier doesn&#39;t exist!&quot;</code></pre>
 </div>
 </div>
 <div id="references" class="section level3 unnumbered">
 <h3>References</h3>
 <div id="refs" class="references">
 <div id="ref-nagyEtAl2015a">
-<p>Nagy, Naomi, and Miriam Meyerhoff. 2015. “Extending ELAN into Quantitative Sociolinguistics.” <em>Linguistics Vanguard</em> 1 (1): 271–81.</p>
+<p>Nagy, Naomi, and Miriam Meyerhoff. 2015. “Extending ELAN into Variationist Sociolinguistics.” <em>Linguistics Vanguard</em> 1 (1): 271–81. doi:<a href="https://doi.org/DOI 10.1515/lingvan-2015-001">DOI 10.1515/lingvan-2015-001</a>.</p>
 </div>
 <div id="ref-wickham2014a">
 <p>Wickham, Hadley. 2014. “Tidy Data.” <em>Journal of Statistical Software</em> 59 (10).</p>
@@ -1058,9 +1056,13 @@ tier_has_content(eaf_file = test_file,
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
+
 
 </script>
 

@@ -7,7 +7,7 @@ output:
     toc_float: true
     toc_depth: 4
 excerpt_separator: <!--more-->
-bibliography: ~/FRibliography/bibtex/FRibliography.bib
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
 ---
 
 ```{r, echo=F}
@@ -62,7 +62,7 @@ In this tutorial I use ELAN file called `kpv_izva20140404IgusevJA.eaf`, which is
     test_file <- "kpv_izva20140404IgusevJA.eaf"
 
 ```{r, echo=F}
-test_file <- "/Volumes/langdoc/langs/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA-ipa.eaf"
+test_file <- "~/langdoc/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf"
 ```
 
 
