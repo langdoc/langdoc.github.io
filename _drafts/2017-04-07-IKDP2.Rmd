@@ -20,7 +20,7 @@ Similarly there is already rather mature language technology infrastructure for 
 
 With Constraint Grammar rules it is possible to eliminate the results which are impossible in the given context, which also produces a very formal syntactic description. However, since Constraint Grammar describes the constructions which **are not possible**, it approaches syntax from somewhat unusual angle. To complement the rules we are also producing a more traditional syntactic description of Komi, but also with this we are looking for something new, which in this case comes in form of exploring possibilities for open publishing practices.
 
-### Different tools in test
+### Comparing rule based and statistical tools
 
 We have received occasional comments that these rule based approaches are not necessarily the current state of the art in natural language processing, but on the other hand rule based descriptions align well with traditional approaches to grammatical description. Especially with lesser resourced languages there is an acute need to describe their grammatical systems properly, and formalizing the observations as a model for morphological analysis could be a very interesting way to go. And this doesn't mean that we would be somehow against more statistical methods, quite the contrary! For six months, starting in April 2017, Niko Partanen will be working in [LATTICE](http://www.lattice.cnrs.fr/) laboratory in Paris, and one explicit goal of this work is to produce an annotated gold corpus of Komi which can be used to train more statistical taggers.
 
