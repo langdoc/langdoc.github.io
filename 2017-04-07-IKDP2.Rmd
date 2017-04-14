@@ -17,6 +17,19 @@ With Rogier Blokland and Michael Rießler we are now starting a new continuation
 
 Similarly there is already rather mature language technology infrastructure for written Komi, and we are currently working with adapting this to more non-standard spoken varieties, which also includes large degree of mixture with Russian. The initial idea, which is still central for our work, is to disambiguate currently existing Finite State Transducer output for Komi with Constraint Grammar rules. With written Komi the current analysator reaches already very satisfactory results, but there is lots of ambiguity. The poster presentation Ciprian Gerstenberger, Niko Partanen and Michael Rießler had recently [-@gerstenbergerEtAl2017c] describes the workflow well. PDF is available in [ResearchGate](https://www.researchgate.net/publication/314497257_Instant_annotations_in_ELAN_corpora_of_spoken_and_written_Komi-Zyrian_an_endangered_language_of_the_Barents_Sea_region_Russia) and also openly downloadable from [here](media/pdf/gerstenbergerEtAl2017c.pdf).
 
+The image from the poster is reproduced here:
+
+![](media/komi_pipeline_new.jpg)
+
+It illustrates our approach where following parts of annotation process are done automatically:
+
+1. Tokenization
+2. Lemmatization
+3. POS-tagging
+4. Disambiguation (as far as possible)
+
+The manually corrected / inspected annotations are copied to the tier tagged with prefix part `-gold-`, which prevents them being rewritten anew. We are still experimenting with the best practices and working with the technical implementation, but approach like this offers lots of new possibilities. Already doing the tokenization automatically would increase the consistency of the corpora a lot, as now it is common that tokenization is done manually every time the transcription tier is edited, and ELAN does not store information about the specific set of punctuation tokens user has selected when tokenizing given tier.
+
 With Constraint Grammar rules it is possible to eliminate the results which are impossible in the given context, which also produces a very formal syntactic description. However, since Constraint Grammar describes the constructions which **are not possible**, it approaches syntax from somewhat unusual angle. To complement the rules we are also producing a more traditional syntactic description of Komi, but also with this we are looking for something new, which in this case comes in form of exploring possibilities for open publishing practices.
 
 ### Comparing rule based and statistical tools

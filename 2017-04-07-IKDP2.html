@@ -315,10 +315,23 @@ div.tocify {
 <div id="constraint-grammar" class="section level3">
 <h3>Constraint Grammar</h3>
 <p>Similarly there is already rather mature language technology infrastructure for written Komi, and we are currently working with adapting this to more non-standard spoken varieties, which also includes large degree of mixture with Russian. The initial idea, which is still central for our work, is to disambiguate currently existing Finite State Transducer output for Komi with Constraint Grammar rules. With written Komi the current analysator reaches already very satisfactory results, but there is lots of ambiguity. The poster presentation Ciprian Gerstenberger, Niko Partanen and Michael Rießler had recently <span class="citation">(2017)</span> describes the workflow well. PDF is available in <a href="https://www.researchgate.net/publication/314497257_Instant_annotations_in_ELAN_corpora_of_spoken_and_written_Komi-Zyrian_an_endangered_language_of_the_Barents_Sea_region_Russia">ResearchGate</a> and also openly downloadable from <a href="media/pdf/gerstenbergerEtAl2017c.pdf">here</a>.</p>
+<p>The image from the poster is reproduced here:</p>
+<div class="figure">
+<img src="media/komi_pipeline_new.jpg" />
+
+</div>
+<p>It illustrates our approach where following parts of annotation process are done automatically:</p>
+<ol style="list-style-type: decimal">
+<li>Tokenization</li>
+<li>Lemmatization</li>
+<li>POS-tagging</li>
+<li>Disambiguation (as far as possible)</li>
+</ol>
+<p>The manually corrected / inspected annotations are copied to the tier tagged with prefix part <code>-gold-</code>, which prevents them being rewritten anew. We are still experimenting with the best practices and working with the technical implementation, but approach like this offers lots of new possibilities. Already doing the tokenization automatically would increase the consistency of the corpora a lot, as now it is common that tokenization is done manually every time the transcription tier is edited, and ELAN does not store information about the specific set of punctuation tokens user has selected when tokenizing given tier.</p>
 <p>With Constraint Grammar rules it is possible to eliminate the results which are impossible in the given context, which also produces a very formal syntactic description. However, since Constraint Grammar describes the constructions which <strong>are not possible</strong>, it approaches syntax from somewhat unusual angle. To complement the rules we are also producing a more traditional syntactic description of Komi, but also with this we are looking for something new, which in this case comes in form of exploring possibilities for open publishing practices.</p>
 </div>
-<div id="different-tools-in-test" class="section level3">
-<h3>Different tools in test</h3>
+<div id="comparing-rule-based-and-statistical-tools" class="section level3">
+<h3>Comparing rule based and statistical tools</h3>
 <p>We have received occasional comments that these rule based approaches are not necessarily the current state of the art in natural language processing, but on the other hand rule based descriptions align well with traditional approaches to grammatical description. Especially with lesser resourced languages there is an acute need to describe their grammatical systems properly, and formalizing the observations as a model for morphological analysis could be a very interesting way to go. And this doesn’t mean that we would be somehow against more statistical methods, quite the contrary! For six months, starting in April 2017, Niko Partanen will be working in <a href="http://www.lattice.cnrs.fr/">LATTICE</a> laboratory in Paris, and one explicit goal of this work is to produce an annotated gold corpus of Komi which can be used to train more statistical taggers.</p>
 <p>One trivial benefit of statistical model could be that if we want to manually disambiguate the results, then a model like this can be used to suggest the most likely selection first. Probably software like FLEx and Toolbox does something like this at the background, but for us it is important to be able to express these processes in a way that can be observed, examined and run again in different environments. Language documentation as a field is still stuck to lots of very dysfunctional software and semi-manual solutions, as it seems that Toolbox, FLEx and Arbil are still very much the standard everyone uses. We hope our work would eventually lead into finding new ways to work with our data and manage language documentation corpora more efficiently.</p>
 </div>
