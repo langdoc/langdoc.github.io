@@ -308,8 +308,18 @@ div.tocify {
 </div>
 
 
+<pre><code>## Loading tidyverse: ggplot2
+## Loading tidyverse: tibble
+## Loading tidyverse: tidyr
+## Loading tidyverse: readr
+## Loading tidyverse: purrr
+## Loading tidyverse: dplyr</code></pre>
+<pre><code>## Conflicts with tidy packages ----------------------------------------------</code></pre>
+<pre><code>## filter(): dplyr, stats
+## lag():    dplyr, stats</code></pre>
 <div id="what-this-is-about" class="section level3">
 <h3>What this is about</h3>
+<p>Update from May 2017: Lots of things have changed, for example, at the moment I would prefer doing things with <code>purrr::map</code> instead of <code>plyr</code>, on the other hand this would leave complete rewrite of many functions and the <code>purrr</code> approach just is so convenient. Even more, the list columns in dataframes have been gaining popularity lately, and that may be very convenient for language documentation data as well, which doesn’t necessarily fit so neatly into a tabular representation.</p>
 <p>This treatment may appear little bit chaotic and unstructured, but this is only because the topic in hand is relatively complicated. I try to explain it to different audiences, but I also understand that following the whole text demands knowledge about some documentary linguistic practices and programming language R. The main idea is to present ways to use R to work with ELAN files. The main idea is to get from something like this:</p>
 <div class="figure">
 <img src="media/elan1.png" alt="Elan file" />
@@ -333,11 +343,11 @@ devtools::install_github(&quot;langdoc/FRelan&quot;)</code></pre>
                         pattern = &quot;eaf$&quot;, 
                         full.names = T, 
                         recursive = T, )
-corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf)</code></pre>
+corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf) # could be nicer with purrr::map</code></pre>
 <p>What happens here is also relatively simple. I use <code>list.files</code> function to find all ELAN files recursively. Those files are stored in a character vector which has one element for each ELAN file. After that I use <code>ldply</code> function from <code>plyr</code> package, which basically loops the function <code>read_eaf</code> across each path stored in <code>eaf_files</code> and coerces the result into a dataframe. In this point the data frame <code>corpus</code> one row for each token in the ELAN files with all information that is present in those files. However, reality is often less beautiful, and the parsing tends to be interrupted in one point or another. If each ELAN file would be perfectly similar in their structure, the loop would work. The majority of problems arise from tiny hidden inconsistencies which at least my files tend to be ridden with. I would call these an <strong>invisible problem</strong>, because they never really pop up in our daily work with ELAN corpus, but actually cause very large number of issues behind the scenes. So in the end very much about <strong>parsing ELAN files into R</strong> is actually about <strong>finding out which ELAN files are inconsistent with R</strong>.</p>
-<p>Lots of common tasks use packages <code>plyr</code>, <code>dplyr</code>, <code>xml2</code> and <code>XML</code>, so installing those is necessary. Especially two first mentioned are very useful in general.</p>
-<pre><code>library(plyr)
-library(dplyr)</code></pre>
+<p>Lots of common tasks use packages <code>plyr</code>, <code>dplyr</code>, <code>xml2</code> and <code>XML</code>, so installing those is necessary. Especially two first mentioned are very useful in general. Update from 2017: Now it is possible to install most of these with <code>install.packages('tidyverse')</code>. It is good to note that <code>plyr</code> is not part of <a href="http://tidyverse.org/">tidyverse</a>, although few years ago it was the most convenient tool for plenty of tasks.</p>
+<pre><code>library(tidyverse)
+librar(FRelan)</code></pre>
 <p>In this tutorial I use ELAN file called <code>kpv_izva20140404IgusevJA.eaf</code>, which is a long interview I made with Komi researcher Jevgeni Aleksandrovich Igushev in 2014.</p>
 <pre><code>test_file &lt;- &quot;kpv_izva20140404IgusevJA.eaf&quot;</code></pre>
 </div>
@@ -946,7 +956,7 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <p>Or let’s say we have some arbitrary metadata. Sex, age – which in this case already hide in the naming convention – education level, birthplace, language acquisition history, any variables like these can be easily merged with the data from the ELAN files. And the best part is that the feedback is instant. If we modify ELAN files we can always just parse them again and evaluate the results with the changed files.</p>
 <p>I hope this excersice has been useful for someone. If there are questions please don’t hesitate to contact me by email (<a href="mailto:nikotapiopartanen@gmail.com">nikotapiopartanen@gmail.com</a>). I’ve been working with R and ELAN for several years now, but in many ways I’m also just discovering new possibilities every day. The treatment I’ve presented here is quite satisfactory in the sense that I believe it is elegant enough that one should avoid many parsing errors with heterogenous ELAN corpora. However, I think that detecting and fixing errors in ELAN files is certainly a topic worth its own longer posting. I have added below couple of functions which can be combined in different ways to find out some properties of ELAN files. I think usually the problems in ELAN files are connected to missing or wrongly named tiers or types.</p>
 <p>There are also lots of ways to search from the result:</p>
-<pre class="r"><code>elan_content %&gt;% find_token(&quot;.+иг.+&quot;)</code></pre>
+<pre class="r"><code>elan_content %&gt;% FRelan::find_token(&quot;.+иг.+&quot;)</code></pre>
 <pre><code>## # A tibble: 5 × 6
 ##             token
 ##             &lt;chr&gt;
@@ -957,76 +967,117 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 ## 5 оригинальнӧйӧсь
 ## # ... with 5 more variables: utterance &lt;chr&gt;, reference &lt;chr&gt;,
 ## #   participant &lt;chr&gt;, time_start &lt;dbl&gt;, time_end &lt;dbl&gt;</code></pre>
-</div>
-</div>
-<div id="helper-function" class="section level3">
-<h3>Helper function</h3>
-<div id="testing-if-tier-exists" class="section level4">
-<h4>Testing if tier exists</h4>
-<p>I’m always ranting about the lack of uniformity in corpora, so let’s come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.</p>
-<pre class="r"><code>FRelan::tier_exists</code></pre>
-<pre><code>## function (eaf_file, tier) 
+<pre class="r"><code># About the same as:
+# elan_content %&gt;% filter(str_detect(token, &#39;.+иг&#39;))</code></pre>
+<!--
+
+
+
+### Helper function
+
+#### Testing if tier exists
+
+I'm always ranting about the lack of uniformity in corpora, so let's come up first with some tools we can use to make the actual parsing of ELAN files more reliable. First of all we need something to check whether a tier exists. This is already very useful, for example, while looping across the files and trying to sniff the files which are missing some crucial tiers. Or maybe we want to get rid of some tiers! Whatever the goal, this helps to hunt them down.
+
+
+```r
+FRelan::tier_exists
+```
+
+```
+## function (eaf_file, tier) 
 ## {
-##     match &lt;- xml2::read_xml(eaf_file) %&gt;% xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, 
-##         tier, &quot;&#39;]&quot;))
-##     if (length(match) &gt;= 1) {
+##     match <- xml2::read_xml(eaf_file) %>% xml2::xml_find_all(xpath = paste0("//TIER[@TIER_ID='", 
+##         tier, "']"))
+##     if (length(match) >= 1) {
 ##         TRUE
 ##     }
 ##     else {
 ##         FALSE
 ##     }
 ## }
-## &lt;environment: namespace:FRelan&gt;</code></pre>
-<pre class="r"><code>tier_exists(eaf_file = test_file, 
-            tier = &quot;word@JAI-M-1939&quot;)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<pre class="r"><code>tier_exists(eaf_file = test_file, 
-            tier = &quot;token@JAI-M-1939&quot;)</code></pre>
-<pre><code>## [1] FALSE</code></pre>
-</div>
-<div id="testing-if-tier-is-empty" class="section level4">
-<h4>Testing if tier is empty</h4>
-<p>This little function does two things – and can be used uncountable ways! If the value is specified as <code>TRUE</code>, it gives the number of items on that tier. This is often useful to know! However, it can also just tell us whether the tier is empty or not. For example, one could easily loop this across the files to find out all ELAN files where the tier that is supposed to contain the tokenized words has not been populated by the tokens.</p>
-<pre class="r"><code>FRelan::tier_has_content</code></pre>
-<pre><code>## function (eaf_file, tier, value = F) 
+## <environment: namespace:FRelan>
+```
+
+```r
+tier_exists(eaf_file = test_file, 
+            tier = "word@JAI-M-1939")
+```
+
+```
+## [1] TRUE
+```
+
+```r
+tier_exists(eaf_file = test_file, 
+            tier = "token@JAI-M-1939")
+```
+
+```
+## [1] FALSE
+```
+
+#### Testing if tier is empty
+
+This little function does two things -- and can be used uncountable ways! If the value is specified as `TRUE`, it gives the number of items on that tier. This is often useful to know! However, it can also just tell us whether the tier is empty or not. For example, one could easily loop this across the files to find out all ELAN files where the tier that is supposed to contain the tokenized words has not been populated by the tokens.
+
+
+```r
+FRelan::tier_has_content
+```
+
+```
+## function (eaf_file, tier, value = F) 
 ## {
-##     `%&gt;%` &lt;- dplyr::`%&gt;%`
+##     `%>%` <- dplyr::`%>%`
 ##     if (tier_exists(eaf_file = eaf_file, tier = tier) == F) {
 ##         FALSE
 ##     }
 ##     else {
-##         tier_content &lt;- xml2::read_xml(eaf_file) %&gt;% xml2::xml_find_all(xpath = paste0(&quot;//TIER[@TIER_ID=&#39;&quot;, 
-##             tier, &quot;&#39;]/ANNOTATION/*/ANNOTATION_VALUE&quot;)) %&gt;% xml2::xml_text()
+##         tier_content <- xml2::read_xml(eaf_file) %>% xml2::xml_find_all(xpath = paste0("//TIER[@TIER_ID='", 
+##             tier, "']/ANNOTATION/*/ANNOTATION_VALUE")) %>% xml2::xml_text()
 ##         tier_content
 ##     }
-##     if (value == FALSE &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == 
+##     if (value == FALSE && tier_exists(eaf_file = eaf_file, tier = tier) == 
 ##         T) {
-##         result &lt;- length(tier_content) &gt; 0
+##         result <- length(tier_content) > 0
 ##         result
 ##     }
-##     if (value == T &amp;&amp; tier_exists(eaf_file = eaf_file, tier = tier) == 
+##     if (value == T && tier_exists(eaf_file = eaf_file, tier = tier) == 
 ##         T) {
 ##         length(tier_content)
 ##     }
 ## }
-## &lt;environment: namespace:FRelan&gt;</code></pre>
-<pre class="r"><code># This tier has content
+## <environment: namespace:FRelan>
+```
+
+```r
+# This tier has content
 tier_has_content(eaf_file = test_file, 
-                 tier = &quot;word@JAI-M-1939&quot;, 
+                 tier = "word@JAI-M-1939", 
                  value = F)
 # This tier exists, but has no content
 tier_has_content(eaf_file = test_file, 
-                 tier = &quot;phonet-UPA@JAI-M-1939&quot;, 
+                 tier = "phonet-UPA@JAI-M-1939", 
                  value = F)
 # This tier is full of content, actually
 tier_has_content(eaf_file = test_file, 
-                 tier = &quot;word@JAI-M-1939&quot;, 
-                 value = T)</code></pre>
-<pre><code>## [1] 5471</code></pre>
-<pre class="r"><code># This tier doesn&#39;t exist
+                 tier = "word@JAI-M-1939", 
+                 value = T)
+```
+
+```
+## [1] 5471
+```
+
+```r
+# This tier doesn't exist
 tier_has_content(eaf_file = test_file, 
-                 tier = &quot;token@JAI-M-1939&quot;, 
-                 value = T)</code></pre>
+                 tier = "token@JAI-M-1939", 
+                 value = T)
+```
+
+-->
 </div>
 </div>
 <div id="references" class="section level3 unnumbered">
