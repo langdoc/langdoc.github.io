@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Niko Partanen" />
+
+
+<title>Parameterized corpus reports</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <!-- NOTE: add "navbar-inverse" class for an alternate navbar background -->
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Language Documentation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="old.html">All posts</a></li>
+           <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Related pages</a>
+                <ul class="dropdown-menu">
+            <li role="separator" class="divider"></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP-2</a></li>
+            <li><a href="http://saami.uni-freiburg.de/psdp/syntax/links.php?lang=EN">Pite Saami Syntax</a></li>
+            <li><a href="https://langdoc.github.io/RIGNE2016">RIGNE 2016</a></li>
+ <!--           <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>-->
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/langdoc">GitHub</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Parameterized corpus reports</h1>
+<h4 class="author"><em>Niko Partanen</em></h4>
+
+</div>
+
+
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>I created in 2016 a parameterized RMarkdown corpus report, which is a document that accesses the corpus while it is being compiled, and thereby allows reporting automatically the changed status of different features of the corpus. This is very much a work in progress, but one of the more important ideas is that this kind of report can be customized so that adapting it into different corpora is easily possible. Thereby the same template can, with marginal modifications, be used to compare corpora. The full IKDP project corpus report can be read <a href="http://langdoc.github.io/kpv/">here</a>.</p>
+<p>However, that is already a bit more complex piece of work, so I present here a simpler case.</p>
+</div>
+<div id="template-structure" class="section level3">
+<h3>Template structure</h3>
+<p>The idea is to use the RMarkdown file presented below as kind of a skeleton around which the report is built. This means that we cannot necessarily use very corpus specific information if the goal is to have some solutions that could be used everywhere. This also takes us fast to deeper questions such as how different the corpora actually are?</p>
+<pre class="rmarkdown">---
+params:
+   author: 'Niko Partanen'
+   language: 'Some language'
+   project: 'Some project'
+   directory: '.'
+   tier_prefix: 'word@'
+   eaf_filter: '.+'
+author: '`r params$author`'
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Used libraries
+library(tidyverse)
+library(xml2)
+library(stringr)
+```
+
+## `r params$language` status report
+
+```{r, echo=FALSE}
+
+# This downloads the punctuation token file
+
+punct &lt;- read_lines('https://raw.githubusercontent.com/langdoc/FRechdoc/master/transcription/punctuation.txt')
+
+# In principle the whole XPATH could be a parameter,
+# now it is only the tier prefix up to @ character
+
+token_xpath &lt;- paste0("//TIER[starts-with(@TIER_ID, '", params$tier_prefix, "')]/ANNOTATION/*/ANNOTATION_VALUE")
+
+# This finds all ELAN files
+
+eaf_files &lt;- dir(path = params$directory, pattern = 'eaf$', full.names = T, recursive = T)
+
+# This builds a data frame out of them
+
+corpus &lt;- eaf_files %&gt;% 
+        keep(., ~ str_detect(.x, params$eaf_filter)) %&gt;%
+        map(read_xml) %&gt;%
+        discard(., ~ .x %&gt;% 
+                        xml_find_all(token_xpath) %&gt;% 
+                        length == 0) %&gt;%
+        map_df(., ~ tibble(token = .x %&gt;% 
+                                xml_find_all(token_xpath) %&gt;% 
+                                xml_text)) %&gt;%
+        bind_rows()
+
+```
+
+This is a report on `r params$language` corpus built within `r params$project` project.
+
+The corpus contains currently, `r Sys.Date()`, `r nrow(corpus)` tokens, of which `r corpus %&gt;% filter(! token %in% punct) %&gt;% nrow` are word tokens.
+
+The most common word tokens are:
+
+```{r, echo=FALSE}
+
+# This builds a table with most common word tokens,
+# please notice quite a bit is done in this point too
+
+corpus %&gt;% 
+        filter(! token %in% punct) %&gt;% # remove punctuation characters
+        mutate(token = str_trim(token)) %&gt;% # trimming whitespace
+        mutate(token = tolower(token)) %&gt;% # lowercase
+        filter(token != ' +') %&gt;% # remove spaces if around
+        filter(token != '') %&gt;% # remove empty tokens
+        count(token) %&gt;% # counting tokens
+        arrange(desc(n)) %&gt;% # most common tokens first
+        slice(1:10) %&gt;% # slice ten most common
+        knitr::kable()
+
+```
+
+</pre>
+<p>So the code consists of several chunks</p>
+<p>In R, these parameters are passed to compilation in a following manner:</p>
+<pre class="r"><code> rmarkdown::render(&#39;langdoc-params.Rmd&#39;, output_file = &#39;langdoc-IKDP.html&#39;, params = list(
+        language = &#39;Iźva Komi&#39;,
+        project = &#39;IKDP&#39;,
+        directory = &#39;~/path/to/KSDP/corpus&#39;,
+        eaf_filter = &#39;kpv_izva.+&#39;,
+        tier_prefix = &#39;word@&#39;
+))</code></pre>
+<p>And this results in an HTML page like this:</p>
+<div class="figure">
+<img src="http://i.imgur.com/YewuS3i.png" />
+
+</div>
+<p>Similarly, the parameters can be adjusted for another corpus. Again, the input file is same, only the parameters are customized:</p>
+<pre class="r"><code>rmarkdown::render(&#39;langdoc-params.Rmd&#39;, output_file = &#39;langdoc-KSDP.html&#39;, params = list(
+        language = &#39;Kildin Saami&#39;,
+        project = &#39;KSDP&#39;,
+        directory = &#39;~/path/to/KSDP/corpus&#39;,
+        eaf_filter = &#39;.+&#39;,
+        tier_prefix = &#39;word@&#39;
+))</code></pre>
+<p>Which gives us this:</p>
+<div class="figure">
+<img src="http://i.imgur.com/thk7UKR.png" />
+
+</div>
+<p>Of course this example is only rudimentary, and the <a href="http://langdoc.github.io/kpv/">IKDP corpus report</a> already exemplifies more complex use. Generating error reports is especially useful, but this may also be something that we want in different document from the corpus report, although as we are dealing with a very new concept here, the best practices probably have not yet emerged.</p>
+<p>One of the most intriguing possibilities could be direct corpus comparison, so that the report could take as parameters several corpora and their information, or even better, the technical specifications could be read from an external documentation. This example is limited to ELAN corpora, although there are no strong structural demands, but the same principle applies to another datasets too. One could pass as a parameter a custom function that would parse a corpus of EXMARaLDA or Praat files, and return a simple data frame with columns for token and filename. Despite different sources, these two structures would already be entirely comparable.</p>
+<p>We have started to collect both LaTeX and RMarkdown templates for linguistic articles <a href="https://github.com/langdoc/FRechdoc/tree/master/prose">here</a> in repository associated with our Wiki, and both example files discussed here can be found there.</p>
+</div>
+<div id="assumptions" class="section level3">
+<h3>Assumptions</h3>
+<p>Every time we try to automatize something we have to rely on assumptions that there is some specific structure in the data we work with. It is possible to set up exceptions for the things we know about, for example, the code used here silently discards all files which have no tiers starting with the prefix <code>word</code>. Besides this, there are several other assumptions going on here:</p>
+<ul>
+<li>The punctuation characters are read from an <a href="https://github.com/langdoc/FRechdoc/blob/master/transcription/punctuation.txt">external documentation in FRechdoc Wiki</a>, so it is assumed the punctuation set used in ELAN file tokenization is available elsewhere</li>
+<li>All ELAN files should have the tokens on tier starting with prefix <code>word</code></li>
+<li>Empty elements on those tiers can be disgarded (common in non-finished files)</li>
+</ul>
+<p>So the corpus report is now built with following parameters:</p>
+<ul>
+<li>Language name</li>
+<li>Project name</li>
+<li>Token tier prefix</li>
+<li>Optional filter to restrict the report to specific files</li>
+</ul>
+</div>
+<div id="possible-use-scenarios" class="section level3">
+<h3>Possible use scenarios</h3>
+<p>We have succesfully used this approach in our projects with following tasks:</p>
+<ul>
+<li>Detecting files with incorrect tokenization</li>
+<li>Detecting files which have missing tiers</li>
+<li>Detecting files which have speakers that are not present in the metadata</li>
+<li>Detecting which languages different parts of the transcriptions contain</li>
+<li>Estimating completeness of segmentation, translations and other annotations</li>
+</ul>
+<p>There are more complex tasks which we have not yet implemented, but which are easy to imagine could be useful:</p>
+<ul>
+<li>Detecting typos</li>
+<li>Detecting irregularities on the annotations</li>
+<li>Connecting the report generation to a Git hook so it is run every time there is a change</li>
+<li>Automatically updating the report and emailing it to the project leaders and coordinators</li>
+<li>In the perfect world, when the project ends, one could just adjust a parameter and a Git hook could send the project report to the funders as well (assuming that the checks for all open issues pass)</li>
+</ul>
+</div>
+
+<hr>
+<p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

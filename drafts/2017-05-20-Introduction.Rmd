@@ -1,0 +1,12 @@
+---
+title: "Langdoc website"
+author: "Rogier Blokland, Niko Partanen, Michael Rießler, Joshua Wilbur"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+---
+
+In last years there have been several efforts to create collaborative practices between different language documentation projects. This website aims to discuss issues related to our work, and it connects closely to work that can be found from our [langdoc GitHub repository](https://github.com/langdoc). Some of the work is in private repositories, especially when it comes to sensitive corpus data, but we try to maximize the amount of openly available data as well.

@@ -1,0 +1,102 @@
+---
+title: "Parameterized corpus reports"
+author: "Niko Partanen"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+---
+
+```{r libraries, echo=FALSE}
+library(tidyverse)
+library(FRelan)
+```
+
+### Introduction
+
+I created in 2016 a parameterized RMarkdown corpus report, which is a document that accesses the corpus while it is being compiled, and thereby allows reporting automatically the changed status of different features of the corpus. This is very much a work in progress, but one of the more important ideas is that this kind of report can be customized so that adapting it into different corpora is easily possible. Thereby the same template can, with marginal modifications, be used to compare corpora. The full IKDP project corpus report can be read [here](http://langdoc.github.io/kpv/).
+
+However, that is already a bit more complex piece of work, so I present here a simpler case.
+
+### Template structure
+
+The idea is to use the RMarkdown file presented below as kind of a skeleton around which the report is built. This means that we cannot necessarily use very corpus specific information if the goal is to have some solutions that could be used everywhere. This also takes us fast to deeper questions such as how different the corpora actually are?
+
+```{r template, results='asis', echo=FALSE}
+shiny::pre(read_file('https://raw.githubusercontent.com/langdoc/FRechdoc/master/prose/langdoc-params.Rmd'), class='rmarkdown')
+```
+
+So the code consists of several chunks
+
+In R, these parameters are passed to compilation in a following manner:
+
+```{r ikdp_build, eval = FALSE}
+ rmarkdown::render('langdoc-params.Rmd', output_file = 'langdoc-IKDP.html', params = list(
+        language = 'Iźva Komi',
+        project = 'IKDP',
+        directory = '~/path/to/KSDP/corpus',
+        eaf_filter = 'kpv_izva.+',
+        tier_prefix = 'word@'
+))
+```
+
+And this results in an HTML page like this:
+
+![](http://i.imgur.com/YewuS3i.png)
+
+Similarly, the parameters can be adjusted for another corpus. Again, the input file is same, only the parameters are customized:
+
+```{r ksdp_build, eval = FALSE}
+rmarkdown::render('langdoc-params.Rmd', output_file = 'langdoc-KSDP.html', params = list(
+        language = 'Kildin Saami',
+        project = 'KSDP',
+        directory = '~/path/to/KSDP/corpus',
+        eaf_filter = '.+',
+        tier_prefix = 'word@'
+))
+```
+
+Which gives us this:
+
+![](http://i.imgur.com/thk7UKR.png)
+
+Of course this example is only rudimentary, and the [IKDP corpus report](http://langdoc.github.io/kpv/) already exemplifies more complex use. Generating error reports is especially useful, but this may also be something that we want in different document from the corpus report, although as we are dealing with a very new concept here, the best practices probably have not yet emerged.
+
+One of the most intriguing possibilities could be direct corpus comparison, so that the report could take as parameters several corpora and their information, or even better, the technical specifications could be read from an external documentation. This example is limited to ELAN corpora, although there are no strong structural demands, but the same principle applies to another datasets too. One could pass as a parameter a custom function that would parse a corpus of EXMARaLDA or Praat files, and return a simple data frame with columns for token and filename. Despite different sources, these two structures would already be entirely comparable. 
+
+We have started to collect both LaTeX and RMarkdown templates for linguistic articles [here](https://github.com/langdoc/FRechdoc/tree/master/prose) in repository associated with our Wiki, and both example files discussed here can be found there.
+
+### Assumptions
+
+Every time we try to automatize something we have to rely on assumptions that there is some specific structure in the data we work with. It is possible to set up exceptions for the things we know about, for example, the code used here silently discards all files which have no tiers starting with the prefix `word`. Besides this, there are several other assumptions going on here:
+
+- The punctuation characters are read from an [external documentation in FRechdoc Wiki](https://github.com/langdoc/FRechdoc/blob/master/transcription/punctuation.txt), so it is assumed the punctuation set used in ELAN file tokenization is available elsewhere
+- All ELAN files should have the tokens on tier starting with prefix `word`
+- Empty elements on those tiers can be disgarded (common in non-finished files)
+
+So the corpus report is now built with following parameters:
+
+- Language name
+- Project name
+- Token tier prefix
+- Optional filter to restrict the report to specific files
+
+### Possible use scenarios
+
+We have succesfully used this approach in our projects with following tasks:
+
+- Detecting files with incorrect tokenization
+- Detecting files which have missing tiers
+- Detecting files which have speakers that are not present in the metadata
+- Detecting which languages different parts of the transcriptions contain
+- Estimating completeness of segmentation, translations and other annotations
+
+There are more complex tasks which we have not yet implemented, but which are easy to imagine could be useful:
+
+- Detecting typos
+- Detecting irregularities on the annotations
+- Connecting the report generation to a Git hook so it is run every time there is a change
+- Automatically updating the report and emailing it to the project leaders and coordinators
+- In the perfect world, when the project ends, one could just adjust a parameter and a Git hook could send the project report to the funders as well (assuming that the checks for all open issues pass)
