@@ -1,0 +1,138 @@
+---
+title: "ELAN course in Syktyvkar"
+author: "Niko Partanen"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+excerpt_separator: <!--more-->
+fig_caption: true
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_eaf, echo=FALSE, fig.cap='Map of villages from which data was selected'}
+
+`%>%` <- dplyr::`%>%`
+
+elan_files <- dir('~/github/sgu/', pattern = 'eaf$', full.names = T) 
+
+sgu_eaf <- elan_files %>% 
+  purrr::map_df(., ~ FRelan::read_tier(.x, linguistic_type =  'word-kntT') %>% 
+                        dplyr::mutate(file = .x))
+
+sgu_eaf <- sgu_eaf %>% dplyr::mutate(аудио = stringr::str_replace(file, '.+//(.+).eaf', '\\1'))
+
+```
+
+## Introduction
+
+I was teaching in Syktyvkar 1.6.-9.6., as we had a practice seminar with the second year students. This practice has been arranged differently along the years, and I have also participated to these few times earlier. The idea is that the students from Komi department of Syktyvkar State University either go to do fieldwork practice, or they work on already existing recordings at the University. This year the method was latter, and I was invited to teach how to make transcriptions in ELAN. I was very glad to have such an opportunity, and I'm hopeful we will have more possibilities in the future to continue this kind of work.
+
+The students worked either alone or in pairs. The idea was that each group transcribes around 45 minutes, and those who are alone bit less. In practice this resulted in around 2000 transcribed tokens by one student. This was all bit experimental, but even though we still have not totally finished the coursework, it seems we ended up with around 20,000 transcribed tokens, which is a very good result in my opinion. Of course, it is most important that the students get accustomed to work with ELAN, but having something concrete in hand makes one also glad. 
+
+The course had few distinct parts, one was the segmentation and annotation part, after which we moved into analysis section. This was relatively short and shallow part, but we explored different ways to make multi-layered searches in ELAN and went through the basics of regular expressions. We also fixed some regularly occurring mistakes automatically with regular expression search and replaces, which maybe helped in part to show what is the point of this. Similarly we used additional tier for notes and encouraged everyone to use it, which also gives one model for later annotating some features on their distinct tiers as part of research practice with ELAN corpus.
+
+## The course in practice
+
+We were lucky that most of the students had their own laptops, and I had some headphones and similar equipments with me as well. So every group was well equipped to their task.
+
+In order to make the learning materials easily accessible, I put everything online on [a course website](https://langdoc.github.io/elan_kurs/). Everything was also shown on projector in class with ELAN open, but I thought having screenshots for all most important tasks could be one way to ensure that everyone can follow.
+
+![](http://i.imgur.com/e3ZX3zx.png)
+
+The transcription system we used is called Scientific Komi Transcription (Коми научнӧй транскрипчия). It is a transcription system used commonly with Permic languages, and it is normally used on this course. So it was logical for us to use this also this time. One of the advantages it has is that the students were able to use the Cyrillic keyboard they commonly used, with just a few additional characters, most of which are already in official Komi keyboard. 
+
+![](http://i.imgur.com/zpfpKA1.jpg)
+
+So with help of Jeremy Bradley we added those characters into Russian keyboard after discussing with the students which locations they would find most useful. Besides these we still had to add `'` as it doesn't exist in the Russian keyboard.
+
+The course started with segmenting the files, which were assigned and matched with groups on a Google Spreadsheet where we generally followed the status of different tasks and files.
+
+After segmenting we moved into transcription, with the result that different groups were in different phases in different times, which was not really a problem anyway. The actual course plan for receiving a grade is following:
+
+- Transcribing the file up to demanded point
+- Returning the file
+- Receiving a list of corrections, partially noted on note-tier, but recurring mistakes would be mentioned only once
+- Sending back the corrected version
+
+So now we are in the point where everyone has returned the file, and director of Komi department, Rimma Pavlovna Popova, and I will continue to mark the parts which still need some supervision.
+
+## Result
+
+One of the most important result is that we have a group of young Komi students who are familiar with transcribing and ELAN, but also the data we received will be very useful. We are still discussing what is the best way to distribute this data, and it will take some time to make the corrections to some of them, but we can already observe the preliminary results.
+
+We can first examine the most common tokens:
+
+```{r top_table, echo=FALSE}
+dummies <- c('/', '//', '(...)', '.')
+sgu_eaf <- sgu_eaf %>% dplyr::filter(! content %in% dummies) 
+sgu_eaf %>% dplyr::count(content) %>% 
+        dplyr::arrange(desc(n)) %>% 
+        dplyr::slice(1:10) %>%
+        knitr::kable()
+```
+
+This looks like the most common words in any other Komi corpus, I would say. Then what is the geographical distibution? We were transcribing files from Užga, Koygorodok, Myrponaib, Obyachevo, Shoshka, Ust'-Nem and Körtkerös.
+
+```{r leaflet_map, echo=FALSE}
+# library(googlesheets)
+# sheet <- gs_title('sgu_kurs')
+# sgu <- gs_read(ss = sheet, ws = 'гижӧдъяс', skip = 0)
+# sgu <- sgu %>% filter(stringr::str_detect(коммент, 'гӧтӧв'))
+# readr::write_csv(sgu, 'sgu.csv')
+sgu_table <- readr::read_csv('sgu.csv', col_types = 'ccccccc')
+
+places <- dplyr::data_frame(ин = c('Шошка', 'Койгородок', 'Объячего', 'Усть-Нем', 'Кӧрткерӧс', 'Ужга', 'Мырпонаиб'),
+           lat = c(62.703972, 60.4563994, 60.3472489, 61.36514522233486, 61.81713560000001, 60.51615945517946, 60.50999124658545),
+           lon = c(50.698666, 50.990716099999986, 49.62928850000003, 55.10467529296875, 51.55686930000002, 51.02977752685547, 51.07372283935547))
+
+sgu_places <- sgu_table %>% dplyr::left_join(places, by = 'ин') %>% 
+        dplyr::filter(! is.na(lat))
+sgu <- dplyr::left_join(sgu_eaf, sgu_places, by = 'аудио')
+
+#sgu_places %>% View
+#sgu %>% View
+
+sgu <- sgu %>% dplyr::group_by(ин) %>%
+        dplyr::mutate(tokens = n()) %>%
+        dplyr::ungroup()
+
+#sgu %>% filter(is.na(ин)) %>% View
+
+komi_dialects <- geojsonio::geojson_read('https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kpv.geojson', what = 'sp')
+
+leaflet::leaflet(data = sgu) %>% 
+        leaflet::setView(lng = 50.482177734375, lat = 61.39671887310411, zoom = 6) %>%
+        leaflet::addTiles() %>% 
+        leaflet::addPolygons(data = komi_dialects, 
+                             stroke = FALSE, 
+                             smoothFactor = 0.3, 
+                             fillOpacity = 0.2,
+                             fillColor = 'blue')  %>% 
+        leaflet::addCircleMarkers(lng = ~lon, 
+                                  lat = ~lat, 
+                                  stroke = FALSE, 
+                                  radius = 4, 
+                                  fillColor = 'blue', 
+                                  fillOpacity = 0.6, 
+                                  popup = ~glue::glue('{диалект} диалект вылын расшифруйтӧма {tokens} кыв {ин} сиктысь.'))
+
+```
+
+So we have been covering nicely the Southern Komi-Zyrian dialects, with some varieties missing, but still having quite nice coverage of different dialects.
+
+Most of the recordings are old C-cassettes, so the quality is not as high as one could hope. Exception to this comes from Upper-Sysola recordings from 2012, which are generally of a good quality. This is very good, since Upper-Sysola has several phonological developments which deserve further attention.
+
+## What to do differently
+
+I have not had that much teaching experience, so I was positively surprised how well everything eventually turned out. What I would like to change or improve upon are maybe following things:
+
+- Use of version control should had been introduced immediately, for example by students just dragging their files to GitHub in the end of the day. We didn't have reliable internet connection so we didn't do that, but this is still quite realistically done.
+- Strickt rule that no file is to be renamed. This created a bit of hassle when students were returning files with totally different filenames, which made it hard to keep track of files, and also created danger that something is messed up or lost.
+- Next time we have to take more time before the course to exactly choose the files which we want to work with, also when we have more experience it will be easier to say what is the most realistic result for one group and so on. I'm personally very interested about the question what is a normal and non-exhaustive working pace for transcription work by a native speaker who is familiar with the task and software.
+- Get the students more engaged with the course program. Maybe I should had opened a VKontakte group for the course? I guess this is not allowed in all countries, but I'm rather confident in this context it would had been ok. 

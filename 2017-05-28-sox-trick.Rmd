@@ -1,0 +1,36 @@
+---
+title: "Fixing broken WAV files with SoX"
+author: "Niko Partanen"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+---
+
+## Command line tools in language documentation
+
+As far as I see, there are few command line tools that are irreplaceable in language documentation work. These are [imagemagick](http://www.imagemagick.org) for images, [SoX](http://sox.sourceforge.net/) for audio files, [ffmpeg](https://ffmpeg.org/) for video files and [pandoc](http://pandoc.org/) for general file conversions. Each of these is so useful that they could merit complete books to be written about them, but I just share here one useful trick how SoX can be used.
+
+## Corrupted WAV files
+
+I don't know at all how common this problem is. I suspect fairly common, but it is hard to say. With some recorders, at least on Edirol R-09 which I have used for many years, if the battery dies or the recorder falls or for some other reason the recording is interrupted, it is fairly common that the WAV file becomes corrupted. It doesn't open, it can't be previewed, on Mac Finder it looks as if it had no length. This whole "corruption" means in this case, as far as I understand, that the recorder didn't finish writing the file properly and left something out from the WAV header. All the recorded content is there in the file, but the file isn't really finalized. Mysteriously some programs can open these files, for example, I've often been able to listen them on VLC player.
+
+Many ways to fix these files involve opening it as RAW audio file in Audacity and saving that into a new file. This works well. However, you can also use following command in SoX:
+
+    sox --ignore-length corrupted.wav fixed.wav
+
+So any SoX command that copies the file but does nothing to the content should do quite same, as long as it ends up rewriting the header. `--ignore-length` doesn't really have any real purpose here, but I think otherwise SoX would get stuck to the way how corrupted file seemingly has the length of 0:00.
+
+I'm assuming it would be entirely safe to remove the corrupted files, but actually I have for now kept those as well. I don't know if this makes sense, but I'm anyway quite paranoid about having backups and deleting files always feels bit hazardous. Anyway I wanted to share this procedure here as it is regularly occurring problem, at least for me. I think I've used somewhat different SoX commands in the past as well, but I had to Google this again now when I was working with some older recordings, and ended up with this. This leads of course into more complex question of how we actually store in machine readable format all manipulations which we have done in different software, but this is another topic already…
+
+SoX has tons of parameters that can be tweaked and taken use of. For example, with command:
+
+    soxi file.wav
+
+It is easy to get information about the audio file. Another case is that some tools may need very specific version of the wav file, and this can be acquired, for example, like this:
+
+    sox normal.wav -b 16 -r 16000 -c 1 specific.wav
+
+Among other tools, some speaker diarization tools from Aalto University demand this kind of files. I think SoX can also be called from R with [seewave](http://rug.mnhn.fr/seewave/) package, and there seems to be a [Python wrapper](https://pypi.python.org/pypi/sox) as well.
