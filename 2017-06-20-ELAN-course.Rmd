@@ -43,11 +43,11 @@ We were lucky that most of the students had their own laptops, and I had some he
 
 In order to make the learning materials easily accessible, I put everything online on [a course website](https://langdoc.github.io/elan_kurs/). Everything was also shown on projector in class with ELAN open, but I thought having screenshots for all most important tasks could be one way to ensure that everyone can follow.
 
-![](http://i.imgur.com/e3ZX3zx.png)
+![Hard working Komi students](http://i.imgur.com/e3ZX3zx.png)
 
 The transcription system we used is called Scientific Komi Transcription (Коми научнӧй транскрипчия). It is a transcription system used commonly with Permic languages, and it is normally used on this course. So it was logical for us to use this also this time. One of the advantages it has is that the students were able to use the Cyrillic keyboard they commonly used, with just a few additional characters, most of which are already in official Komi keyboard. 
 
-![](http://i.imgur.com/zpfpKA1.jpg)
+![Plan for keyboard layout](http://i.imgur.com/zpfpKA1.jpg)
 
 So with help of Jeremy Bradley we added those characters into Russian keyboard after discussing with the students which locations they would find most useful. Besides these we still had to add `'` as it doesn't exist in the Russian keyboard.
 
@@ -76,10 +76,14 @@ sgu_eaf <- sgu_eaf %>% dplyr::filter(! content %in% dummies)
 sgu_eaf %>% dplyr::count(content) %>% 
         dplyr::arrange(desc(n)) %>% 
         dplyr::slice(1:10) %>%
-        knitr::kable()
+        knitr::kable(caption = 'Most common words in transcriptions')
 ```
 
-This looks like the most common words in any other Komi corpus, I would say. Then what is the geographical distibution? We were transcribing files from Užga, Koygorodok, Myrponaib, Obyachevo, Shoshka, Ust'-Nem and Körtkerös.
+This looks like the most common words in any other Komi corpus, I would say. All in all there are `r nrow(sgu_eaf)` transcribed word tokens.
+
+## Geographical distribution
+
+Then what is the geographical distibution? We were transcribing files from Užga, Koygorodok, Myrponaib, Obyachevo, Shoshka, Ust'-Nem and Körtkerös.
 
 ```{r leaflet_map, echo=FALSE, fig.cap='Map of villages from which data was selected'}
 # library(googlesheets)
