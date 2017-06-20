@@ -957,7 +957,7 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <p>I hope this excersice has been useful for someone. If there are questions please don’t hesitate to contact me by email (<a href="mailto:nikotapiopartanen@gmail.com">nikotapiopartanen@gmail.com</a>). I’ve been working with R and ELAN for several years now, but in many ways I’m also just discovering new possibilities every day. The treatment I’ve presented here is quite satisfactory in the sense that I believe it is elegant enough that one should avoid many parsing errors with heterogenous ELAN corpora. However, I think that detecting and fixing errors in ELAN files is certainly a topic worth its own longer posting. I have added below couple of functions which can be combined in different ways to find out some properties of ELAN files. I think usually the problems in ELAN files are connected to missing or wrongly named tiers or types.</p>
 <p>There are also lots of ways to search from the result:</p>
 <pre class="r"><code>elan_content %&gt;% FRelan::find_token(&quot;.+иг.+&quot;)</code></pre>
-<pre><code>## # A tibble: 5 × 6
+<pre><code>## # A tibble: 5 x 6
 ##             token
 ##             &lt;chr&gt;
 ## 1      кыпӧдчигас
@@ -1122,7 +1122,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
