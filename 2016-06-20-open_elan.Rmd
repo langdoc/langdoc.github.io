@@ -1,0 +1,80 @@
+---
+title: "Opening ELAN file from R"
+author: "Niko Partanen"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+---
+
+```{r eval=F, include=F}
+# bibliography: /Volumes/langdoc/compile_corpus/sessions.bib
+```
+
+
+## Introduction
+
+ELAN is not really programmable in the same sense as Praat, for example, but still something can be done to control is from outside. It is a common situation that I want to open ELAN file from a specific point, and this point can be changed by adjusting the `.pfsx` file programmatically before opening the file.
+
+Even when one would like to use R to work with ELAN corpus, there is continuous need to work with ELAN itself. The files have to be adjusted and read again into R, since especially when something is done with the corpus all small faults tend to come visible. Also one often wants to listen the files to check something. Motives are endless. The workflow I'm suggesting and recommending is based to parsing ELAN files directly into R without exporting, so in some sense the dialogue between raw data and analysis is very direct. Changes in ELAN files are instantly reflected in the analysis, which in my opinion encourages to make small adjustments whenever there is a need for that. Spoken language corpora are never static, since there is so much interpretation when the data is created and inevitably some interpretations end up being inaccurate. Large ELAN corpus often ends up having a folder structure which is not that easy to navigate, at least when the corpus size has grown over critical point. However, one could also argue that the way we used corpora should not be based to navigating some file structure, or nodes in a tree as one has to do with IMDI Browser, but to some more user friendly and straightforward methods to move into what we find interesting. I explain here how ELAN files can be opened directly from R, but unfortunately this workflow seems to be somewhat Mac specific. If someone is interested about modifying it work on Linux and Windows, please [contribute](https://github.com/langdoc/FRelan/blob/master/R/open_eaf.R). I would assume that making it work also on Linux should be very easy, but I have no ideas about the situation with Windows.
+
+In `FRelan` R package there is a function `open_eaf()`. It assumes that ELAN files have already been read to R with `read_tier()` or `read_eaf()` functions. However, the only real expectation it is that there should be a column called `filename`. The name is maybe misleading, maybe it should be called `full_path` or something, as there should be complete path to the file. For more complete use there should be also columns called `time_start` and `time_end`, which have the segment's start and end time as milliseconds.
+
+```{r}
+library(tidyverse)
+library(FRelan)
+```
+
+
+```{r}
+eaf_test <- read_eaf("~/langdoc/kpv/kpv_izva20150703-01/kpv_izva20150703-01-b/kpv_izva20150703-01-b.eaf")
+```
+
+This gives us all information that is in the ELAN file as a data frame. Let's say we want to find something, for example, some verb forms. This can now be done by simple search.
+
+```{r}
+eaf_test %>% find_token(".+(а|и|і)с?ныс?$") %>% select(token, reference) %>% knitr::kable()
+```
+
+Then in many cases there are transcriptions which don't exactly look as one would expect, or for whatever other reason one would like to take a better look to the raw data. Because the data contains columns `filename`, it is trivially easy to open this file from command line. However, there are some more complications, mainly that the file has to be opened from the right place. This is easy to accomplish as the `.psfx` file associated with the ELAN file contains the information from where it should be opened. Although one should be careful while editing ELAN files themselves programmatically, there is little information to lost even though something would go wrong with PSFX files as they mainly contain the user settings for the specific file. Of course all files are under version control, so there is no real threat that something would be overwritten without corpus maintainers seeing it, but still one should maybe have healthy suspicion when running scripts or functions which directly modify the files.
+
+The function `open_eaf()` rewrites the PSFX file just before the file is opened, and takes the right time codes from the dataframe. This means that one cannot forward into `open_eaf()` function a data frame which lacks attributes like `filename`, as the function needs to know what file to open. The file opens fine without the time start and end as well, but the work is more straightforward when one doesn't need to look around the file to find the wanted spot.
+
+The function is used in the following manner. We saw above that there was one verb form which doesn't follow the pattern in other similar forms. Let's check that out!
+
+```{r, eval=F}
+eaf_test %>% find_token(".+(а|и|і)сныс?$") %>% open_eaf(1)
+```
+
+Please note that the **1** here refers to the row number within the current selection. This opens instantly something like this [@kpv_izva20150703-01-b] ^[Thanks to Irina Gavrilovna Terentyeva who is being interviewed on the video].
+
+![Opened ELAN file](media/images/open_eaf_elan.png)
+
+Of course when one sees the file it is obvious that the different tokens are produced by different speakers. This would had been obvious, had one filtered it little bit like this to start with: 
+
+```{r}
+eaf_test %>% find_token(".+(а|и|і)с?ныс?$") %>% select(token, reference, participant) %>% knitr::kable()
+```
+
+But this was all done just to demonstrate how to open an ELAN file from R. There is one more trick though. There are times when we don't want to open ELAN file in ELAN, but would prefer to edit XML manually. This can be done by providing argument `program`.
+
+```{r, eval=FALSE}
+eaf_test %>% find_token(".+(а|и|і)сныс?$") %>% open_eaf(1, program = "subethaedit")
+```
+
+![ELAN XML in Subethaedit](media/images/open_eaf_subethaedit.png)
+
+Of course in this case the line number in itself is not used, as the XML file is opened straight from the beginning and this is probably what one usually wants, but the line number is still needed to specify which file should be opened. It is very common that in one data frame there are tokens from different files, so in principle in this situation the line number is used to point just to that file in general, although the row contains also some information more.
+
+Opening ELAN file outside ELAN is often quite useful, especially in cases like changing participant ID's. In ELAN there is no easy way to change the name in all places it occurs, so searching and replacing in XML file itself is usually fastest.
+
+## Session info
+
+```{r session_info, include=TRUE, echo=TRUE, results='markup'}
+devtools::session_info()
+```
+
+## References
+

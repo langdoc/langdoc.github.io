@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Niko Partanen" />
+
+
+<title>Opening ELAN file from R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <!-- NOTE: add "navbar-inverse" class for an alternate navbar background -->
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Language Documentation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="old.html">All posts</a></li>
+           <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Related pages</a>
+                <ul class="dropdown-menu">
+            <li role="separator" class="divider"></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP-2</a></li>
+            <li><a href="http://saami.uni-freiburg.de/psdp/syntax/links.php?lang=EN">Pite Saami Syntax</a></li>
+            <li><a href="https://langdoc.github.io/RIGNE2016">RIGNE 2016</a></li>
+ <!--           <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>-->
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/langdoc">GitHub</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Opening ELAN file from R</h1>
+<h4 class="author"><em>Niko Partanen</em></h4>
+
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>ELAN is not really programmable in the same sense as Praat, for example, but still something can be done to control is from outside. It is a common situation that I want to open ELAN file from a specific point, and this point can be changed by adjusting the <code>.pfsx</code> file programmatically before opening the file.</p>
+<p>Even when one would like to use R to work with ELAN corpus, there is continuous need to work with ELAN itself. The files have to be adjusted and read again into R, since especially when something is done with the corpus all small faults tend to come visible. Also one often wants to listen the files to check something. Motives are endless. The workflow I’m suggesting and recommending is based to parsing ELAN files directly into R without exporting, so in some sense the dialogue between raw data and analysis is very direct. Changes in ELAN files are instantly reflected in the analysis, which in my opinion encourages to make small adjustments whenever there is a need for that. Spoken language corpora are never static, since there is so much interpretation when the data is created and inevitably some interpretations end up being inaccurate. Large ELAN corpus often ends up having a folder structure which is not that easy to navigate, at least when the corpus size has grown over critical point. However, one could also argue that the way we used corpora should not be based to navigating some file structure, or nodes in a tree as one has to do with IMDI Browser, but to some more user friendly and straightforward methods to move into what we find interesting. I explain here how ELAN files can be opened directly from R, but unfortunately this workflow seems to be somewhat Mac specific. If someone is interested about modifying it work on Linux and Windows, please <a href="https://github.com/langdoc/FRelan/blob/master/R/open_eaf.R">contribute</a>. I would assume that making it work also on Linux should be very easy, but I have no ideas about the situation with Windows.</p>
+<p>In <code>FRelan</code> R package there is a function <code>open_eaf()</code>. It assumes that ELAN files have already been read to R with <code>read_tier()</code> or <code>read_eaf()</code> functions. However, the only real expectation it is that there should be a column called <code>filename</code>. The name is maybe misleading, maybe it should be called <code>full_path</code> or something, as there should be complete path to the file. For more complete use there should be also columns called <code>time_start</code> and <code>time_end</code>, which have the segment’s start and end time as milliseconds.</p>
+<pre class="r"><code>library(tidyverse)
+library(FRelan)</code></pre>
+<pre class="r"><code>eaf_test &lt;- read_eaf(&quot;~/langdoc/kpv/kpv_izva20150703-01/kpv_izva20150703-01-b/kpv_izva20150703-01-b.eaf&quot;)</code></pre>
+<p>This gives us all information that is in the ELAN file as a data frame. Let’s say we want to find something, for example, some verb forms. This can now be done by simple search.</p>
+<pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)с?ныс?$&quot;) %&gt;% select(token, reference) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">token</th>
+<th align="left">reference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">вӧлісны</td>
+<td align="left">kpv_izva20150703-01-b-099</td>
+</tr>
+<tr class="even">
+<td align="left">вӧлісныс</td>
+<td align="left">kpv_izva20150703-01-b-038</td>
+</tr>
+<tr class="odd">
+<td align="left">корисныс</td>
+<td align="left">kpv_izva20150703-01-b-078</td>
+</tr>
+<tr class="even">
+<td align="left">корисныс</td>
+<td align="left">kpv_izva20150703-01-b-113</td>
+</tr>
+<tr class="odd">
+<td align="left">воисныс</td>
+<td align="left">kpv_izva20150703-01-b-132</td>
+</tr>
+</tbody>
+</table>
+<p>Then in many cases there are transcriptions which don’t exactly look as one would expect, or for whatever other reason one would like to take a better look to the raw data. Because the data contains columns <code>filename</code>, it is trivially easy to open this file from command line. However, there are some more complications, mainly that the file has to be opened from the right place. This is easy to accomplish as the <code>.psfx</code> file associated with the ELAN file contains the information from where it should be opened. Although one should be careful while editing ELAN files themselves programmatically, there is little information to lost even though something would go wrong with PSFX files as they mainly contain the user settings for the specific file. Of course all files are under version control, so there is no real threat that something would be overwritten without corpus maintainers seeing it, but still one should maybe have healthy suspicion when running scripts or functions which directly modify the files.</p>
+<p>The function <code>open_eaf()</code> rewrites the PSFX file just before the file is opened, and takes the right time codes from the dataframe. This means that one cannot forward into <code>open_eaf()</code> function a data frame which lacks attributes like <code>filename</code>, as the function needs to know what file to open. The file opens fine without the time start and end as well, but the work is more straightforward when one doesn’t need to look around the file to find the wanted spot.</p>
+<p>The function is used in the following manner. We saw above that there was one verb form which doesn’t follow the pattern in other similar forms. Let’s check that out!</p>
+<pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)сныс?$&quot;) %&gt;% open_eaf(1)</code></pre>
+<p>Please note that the <strong>1</strong> here refers to the row number within the current selection. This opens instantly something like this <span class="citation">(<span class="citeproc-not-found" data-reference-id="kpv_izva20150703-01-b"><strong>???</strong></span>)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<div class="figure">
+<img src="media/images/open_eaf_elan.png" alt="Opened ELAN file" />
+<p class="caption">Opened ELAN file</p>
+</div>
+<p>Of course when one sees the file it is obvious that the different tokens are produced by different speakers. This would had been obvious, had one filtered it little bit like this to start with:</p>
+<pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)с?ныс?$&quot;) %&gt;% select(token, reference, participant) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">token</th>
+<th align="left">reference</th>
+<th align="left">participant</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">вӧлісны</td>
+<td align="left">kpv_izva20150703-01-b-099</td>
+<td align="left">VPC-M-1993</td>
+</tr>
+<tr class="even">
+<td align="left">вӧлісныс</td>
+<td align="left">kpv_izva20150703-01-b-038</td>
+<td align="left">IGT-F-1996</td>
+</tr>
+<tr class="odd">
+<td align="left">корисныс</td>
+<td align="left">kpv_izva20150703-01-b-078</td>
+<td align="left">IGT-F-1996</td>
+</tr>
+<tr class="even">
+<td align="left">корисныс</td>
+<td align="left">kpv_izva20150703-01-b-113</td>
+<td align="left">IGT-F-1996</td>
+</tr>
+<tr class="odd">
+<td align="left">воисныс</td>
+<td align="left">kpv_izva20150703-01-b-132</td>
+<td align="left">IGT-F-1996</td>
+</tr>
+</tbody>
+</table>
+<p>But this was all done just to demonstrate how to open an ELAN file from R. There is one more trick though. There are times when we don’t want to open ELAN file in ELAN, but would prefer to edit XML manually. This can be done by providing argument <code>program</code>.</p>
+<pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)сныс?$&quot;) %&gt;% open_eaf(1, program = &quot;subethaedit&quot;)</code></pre>
+<div class="figure">
+<img src="media/images/open_eaf_subethaedit.png" alt="ELAN XML in Subethaedit" />
+<p class="caption">ELAN XML in Subethaedit</p>
+</div>
+<p>Of course in this case the line number in itself is not used, as the XML file is opened straight from the beginning and this is probably what one usually wants, but the line number is still needed to specify which file should be opened. It is very common that in one data frame there are tokens from different files, so in principle in this situation the line number is used to point just to that file in general, although the row contains also some information more.</p>
+<p>Opening ELAN file outside ELAN is often quite useful, especially in cases like changing participant ID’s. In ELAN there is no easy way to change the name in all places it occurs, so searching and replacing in XML file itself is usually fastest.</p>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session info</h2>
+<pre class="r"><code>devtools::session_info()</code></pre>
+<pre><code>## Session info --------------------------------------------------------------</code></pre>
+<pre><code>##  setting  value                       
+##  version  R version 3.3.3 (2017-03-06)
+##  system   x86_64, darwin13.4.0        
+##  ui       RStudio (1.0.143)           
+##  language (EN)                        
+##  collate  en_US.UTF-8                 
+##  tz       Europe/Paris                
+##  date     2017-08-04</code></pre>
+<pre><code>## Packages ------------------------------------------------------------------</code></pre>
+<pre><code>##  package    * version    date       source                            
+##  assertthat   0.2.0      2017-04-11 cran (@0.2.0)                     
+##  backports    1.0.5      2017-01-18 cran (@1.0.5)                     
+##  bindr        0.1        2016-11-13 cran (@0.1)                       
+##  bindrcpp   * 0.2        2017-06-17 cran (@0.2)                       
+##  broom        0.4.2      2017-02-13 CRAN (R 3.3.2)                    
+##  colorspace   1.3-2      2016-12-14 CRAN (R 3.3.2)                    
+##  devtools     1.12.0     2016-06-24 CRAN (R 3.3.0)                    
+##  digest       0.6.12     2017-01-27 CRAN (R 3.3.2)                    
+##  dplyr      * 0.7.1      2017-06-22 cran (@0.7.1)                     
+##  evaluate     0.10.1     2017-06-24 cran (@0.10.1)                    
+##  forcats      0.2.0      2017-01-23 CRAN (R 3.3.2)                    
+##  foreign      0.8-67     2016-09-13 CRAN (R 3.3.3)                    
+##  FRelan     * 0.36       2017-03-22 Github (langdoc/FRelan@ab52344)   
+##  ggplot2    * 2.2.1      2016-12-30 CRAN (R 3.3.2)                    
+##  glue         1.1.1      2017-06-21 cran (@1.1.1)                     
+##  gtable       0.2.0      2016-02-26 CRAN (R 3.3.0)                    
+##  haven        1.0.0      2016-09-23 CRAN (R 3.3.0)                    
+##  highr        0.6        2016-05-09 cran (@0.6)                       
+##  hms          0.3        2016-11-22 CRAN (R 3.3.2)                    
+##  htmltools    0.3.6      2017-04-28 cran (@0.3.6)                     
+##  httr         1.2.1      2016-07-03 CRAN (R 3.3.0)                    
+##  jsonlite     1.5        2017-06-01 cran (@1.5)                       
+##  knitr        1.16.5     2017-07-10 Github (yihui/knitr@846c0a5)      
+##  lattice      0.20-34    2016-09-06 CRAN (R 3.3.3)                    
+##  lazyeval     0.2.0      2016-06-12 CRAN (R 3.3.0)                    
+##  lubridate    1.6.0      2016-09-13 CRAN (R 3.3.0)                    
+##  magrittr     1.5        2014-11-22 cran (@1.5)                       
+##  memoise      1.0.0      2016-01-29 CRAN (R 3.3.0)                    
+##  mnormt       1.5-5      2016-10-15 CRAN (R 3.3.0)                    
+##  modelr       0.1.0      2016-08-31 CRAN (R 3.3.0)                    
+##  munsell      0.4.3      2016-02-13 CRAN (R 3.3.0)                    
+##  nlme         3.1-131    2017-02-06 CRAN (R 3.3.3)                    
+##  pkgconfig    2.0.1      2017-03-21 cran (@2.0.1)                     
+##  plyr         1.8.4      2016-06-08 CRAN (R 3.3.0)                    
+##  psych        1.6.12     2017-01-08 CRAN (R 3.3.2)                    
+##  purrr      * 0.2.2      2016-06-18 CRAN (R 3.3.0)                    
+##  R6           2.2.2      2017-06-17 cran (@2.2.2)                     
+##  Rcpp         0.12.11    2017-05-22 cran (@0.12.11)                   
+##  readr      * 1.1.0      2017-03-22 cran (@1.1.0)                     
+##  readxl       0.1.1      2016-03-28 CRAN (R 3.3.0)                    
+##  reshape2     1.4.2      2016-10-22 CRAN (R 3.3.0)                    
+##  rlang        0.1.1      2017-05-18 cran (@0.1.1)                     
+##  rmarkdown    1.6.0.9001 2017-07-10 Github (rstudio/rmarkdown@8cfe0cb)
+##  rprojroot    1.2        2017-01-16 cran (@1.2)                       
+##  rvest        0.3.2      2016-06-17 CRAN (R 3.3.0)                    
+##  scales       0.4.1      2016-11-09 CRAN (R 3.3.2)                    
+##  stringi      1.1.5      2017-04-07 cran (@1.1.5)                     
+##  stringr      1.2.0      2017-02-18 cran (@1.2.0)                     
+##  tibble     * 1.3.3      2017-05-28 cran (@1.3.3)                     
+##  tidyr      * 0.6.1      2017-01-10 CRAN (R 3.3.2)                    
+##  tidyverse  * 1.1.1      2017-01-27 CRAN (R 3.3.2)                    
+##  withr        1.0.2      2016-06-20 CRAN (R 3.3.0)                    
+##  xml2         1.1.1      2017-01-24 CRAN (R 3.3.2)                    
+##  yaml         2.1.14     2016-11-12 cran (@2.1.14)</code></pre>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Thanks to Irina Gavrilovna Terentyeva who is being interviewed on the video<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+<hr>
+<p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
