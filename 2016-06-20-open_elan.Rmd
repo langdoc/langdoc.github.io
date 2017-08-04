@@ -70,11 +70,5 @@ Of course in this case the line number in itself is not used, as the XML file is
 
 Opening ELAN file outside ELAN is often quite useful, especially in cases like changing participant ID's. In ELAN there is no easy way to change the name in all places it occurs, so searching and replacing in XML file itself is usually fastest.
 
-## Session info
-
-```{r session_info, include=TRUE, echo=TRUE, results='markup'}
-devtools::session_info()
-```
-
 ## References
 
