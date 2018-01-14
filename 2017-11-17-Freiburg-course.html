@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Niko Partanen" />
+
+
+<title>Freiburg course</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <!-- NOTE: add "navbar-inverse" class for an alternate navbar background -->
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Language Documentation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="old.html">All posts</a></li>
+           <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Related pages</a>
+                <ul class="dropdown-menu">
+            <li role="separator" class="divider"></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP</a></li>
+            <li><a href="https://langdoc.github.io/IKDP">IKDP-2</a></li>
+            <li><a href="http://saami.uni-freiburg.de/psdp/syntax/links.php?lang=EN">Pite Saami Syntax</a></li>
+            <li><a href="https://langdoc.github.io/RIGNE2016">RIGNE 2016</a></li>
+ <!--           <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>-->
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="https://github.com/langdoc">GitHub</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Freiburg course</h1>
+<h4 class="author"><em>Niko Partanen</em></h4>
+
+</div>
+
+
+<p>Michael Riessler arranged in Freiburg a two-day workshop called <a href="https://github.com/langdoc/elan_lectures">Advanced analysis and manipulation of ELAN corpus data with R and Python</a>. Eventually we had much more focus in R than Python, but I think we discussed quite thoroughly topics related to the use of both languages and their respective strenghts and weaknesses. On the other hand, my own stance is that these languages often co-exist in harmony, and we as linguists should often just use the one that has something we want to do readily implemented.</p>
+<p><img src="https://imgur.com/V7m4vP4.png" /></p>
+<p>Thursday evening Mark Davies had a presentation about the corpus studies that can be done with massive historical corpora, having examples from older historical corpora and tracing change in those, but he also showed some interesting work that can be done with continuously updating corpora which receive millions of new tokens every day. It is a good point that even though we could make corpora of Uralic languages that are tens of millions of tokens large, and we can, and <a href="https://komicorpora.ru">are already doing</a>, even this is in the end “small” when compared to some truly massive datasets.</p>
+<p>Davies also pointed out that for lots of practical purposes you often want to work with smaller datasets: this is when every token matters, as he put it. I have very much the same experience myself, that actually it is most convenient to work with smaller sample that is somehow balanced and logically sampled, than to try to analyze everything in a very large corpus. Of course, you need a large corpus to be able to create that nice smaller subcorpus, usually.</p>
+<figure>
+<img src="https://imgur.com/jh7GsEv.png" alt="Ruprecht von Waldenfels talks about his metadata" /><figcaption>Ruprecht von Waldenfels talks about his metadata</figcaption>
+</figure>
+<p>At Friday Ruprecht von Waldenfels presented his work, in connection to which we had an useful discussion about mapping concepts between different metadata fields. Certainly, language documenters around the globe are still certainly strugling with all the same problems, even with basic issues such as metadata. It is also obvious that traditional large scale attempts to organize metadata standards has failed, and I would assume we need some entirely different approach to whole question. Probably one just needs a de-centralized open source project into which anyone who wants to get into can add their things, without any kind of heavy infrastructure around it. In this vein, I started to <a href="https://github.com/langdoc/metadata-concepts">map the metadata concepts</a> we use in <a href="https://langdoc.github.io/IKDP">IKDP</a> and <a href="https://langdoc.github.io/IKDP-2">IKDP-2</a> projects into one another, which has for now been done only internally.</p>
+<p>Talking about small data, the corpus we worked was a <a href="https://github.com/langdoc/testcorpus">Komi-Zyrian Test Corpus</a>, which contains 595 tokens, so the data hardly gets smaller than that. That said, our analysis shows it contains 1934 distinct phonemes, out of which 831 are vowels, and 831 consonants. It also seems that an average length of a vowel there is 0.0850019 seconds, although this is on non-manually checked data, so let’s be very cautious. Nevertheless, there are things one can do with this tiny data too. For example, this quite beautiful vowel plot is directly from there:</p>
+<p><img src="2017-11-17-Freiburg-course_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Did we do everything in the most elegant way possible? Certainly no! Did I abuse PraatScript when I ran it with relatively vague understanding of what it does? Without doubt! But the idea was not so much to do hard sciencing but more to look into what all is possible with the current tools.</p>
+<p>So how do we know all these things about vowels and stuff? Anyone can check what we did with <a href="">emuR</a> R package from <a href="">these slides</a>, all the way through sending data to BAS web services and then building a small user interface into data through Shiny. The general discussion about the course and examples can be seen <a href="">here</a>, it also works as a light introduction.</p>
+<figure>
+<img src="https://imgur.com/KiRLlT0.png" alt="Niko Partanen explains purrr::walk function" /><figcaption>Niko Partanen explains purrr::walk function</figcaption>
+</figure>
+<p>Kind of culmination of connecting more complex parts into one another was creation of a tiny application which we can use to move between R and Praat. So basically we plot the content that PraatScript has extracted, then we have a script to open Praat through another PraatScript call from within the Shiny application. Sounds bit hacky, but it isn’t too complicated, in the end the whole app is only few hundreds of lines of code.</p>
+<p>Following GIF shows how it works:</p>
+<p>Not bad! And the same concept can be applied to virtually anything. And the best part is that once you figure out how to write these apps, you can create a new one in just a matter of hours. This has the advantage of not needing to invest heavily into testing and prototyping this kind of tools. The application was put together just moments before the course, and it contains non-working buttons and non-used lines of code here and there, and is not really documented to any point, but for people who know Shiny the approach should be possible to follow, and if you are just starting with these tools, I think it is still an useful example of what can be done.</p>
+<p>I was bit unsure of how everything goes as I had never been teaching this kind of a course, but I think everyone had good and useful time, so I’m looking forward to do it again!</p>
+
+<hr>
+<p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
