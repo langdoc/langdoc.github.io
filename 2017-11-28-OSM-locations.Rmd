@@ -1,8 +1,12 @@
 ---
 title: "OpenStreetMap and linguistic data"
 author: "Niko Partanen"
-date: "11/27/2017"
-output: html_document
+date: "11/28/2017"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
 editor_options: 
   chunk_output_type: console
 ---
@@ -13,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-During the last four years [IKDP project](langdoc.github.io/IKDP) has been managing spatial data in different ways, and this blog post opens a small serie of texts that open and explore different approaches. We are currently restructuring our project metadata, and finding some good solutions in this domain is also highly needed.
+During the last four years [IKDP project](langdoc.github.io/IKDP) has been managing spatial data in different ways, and this blog post opens a small serie of texts that open and explore different approaches. We are currently restructuring our project metadata, and finding some good solutions in this domain is also highly needed. As far as we see, connecting the language documentation spatial data into OpenStreetMap is very promising and interesting possibility, but we are also currently in process of figuring out how this exactly should work.
 
 Managing geographical data is often very central for spoken language corpus building. All recordings have been done somewhere, and the speakers have attributes such as birth place and recording place. The way we have been managing this has been to maintain a database of settlements where Komi is spoken. This has not been an explicit goal in itself, but more of an inevitable result of having eventually enough locations to cover all settlements. Building a database like this from a scratch would not be sensical, but I'll get into alternatives soon.
 
@@ -29,13 +33,17 @@ There is already a geographic database that has all places we need, so I think t
 
 I'm not entirely sure what this means, but I assume then we would locate the settlement, for example, by using combination of its name and attributes such as being part of different higher level entities such as regions or counties. In Komi there are lots of villages that are called Ыб or Выльгорт, but maybe disambiguation would then be something like `Ыб, Удорский район, Республика Коми` and `Ыб, Сыктывдинский район, Республика Коми`. 
 
+## Examples
+
+In the first example I query from OSM database all different settlement types that are under the regions where Komi live. This returns a very long list of settlements and their coordinates, which can be easily plotted. Each settlement comes with variety of information, such as names in different languages, country and administrative regions, at times there is also population count etc. And the best part is that this data is absolutely free and can be modified and used by anyone.  
+
 ```{r}
 #devtools::install_github("hrbrmstr/overpass")
 library(overpass)
-library(ggmap)
 library(sf)
 ```
 
+The queries can be tested in [Overpass Turbo API](https://overpass-turbo.eu/#). If the returned data is very big, it makes sense to save that on disk instead of doing the query again. I also don't know exactly how fast the edits are updated in queries, but in my experience this shouldn't take very long.
 
 ```{r, eval=FALSE}
 kpv_settlements <- 'area[name~"Республика Коми|Ямало-Ненецкий автономный округ|Мурманская область|Ненецкий автономный округ|Ханты-Мансийский автономный округ - Югра"];
@@ -49,7 +57,9 @@ settlement_data <- st_as_sf(query_result)
 sf::st_write(settlement_data, "villages.geojson")
 ```
 
-```{r}
+This creates a map with polygons that present different Komi dialect areas with dots being settlements.
+
+```{r, message=FALSE}
 library(leaflet)
 
 settlement_data <- st_read('villages.geojson')
@@ -65,11 +75,11 @@ leaflet(data = settlement_data) %>%
 
 ```
 
-The black dots there are settlements or cities, and the blue areas are different dialect areas. The settlements that are not under the blue areas are founded under Soviet Union, often following railroads, and although they surely have Komi speakers living in them, they still don't really connect to "traditional" dialect areas. I haven't personally been in all parts of Komi, so certainly some areas are wrongly assigned.
+So the black dots are settlements or cities, and the blue areas are different dialect areas. The settlements that are not under the blue areas are founded under Soviet Union, often following railroads, and although they surely have Komi speakers living in them, they still don't really connect to "traditional" dialect areas. <!-- I'm not sure if this explanation makes sense or is necessary… --> Certainly some areas are wrongly assigned, but this is also work in progress.
 
-It is very important we have `abandoned:place` as part of the query. There are lots of important villages, for example Кӧрттувъя and Коздін in Komi which have had lots of speakers but are currently abandoned. Often we have texts or recordings from persons who have grown up there, and every now and then people still spend their summers in these places. The query used above doesn't contain that, but for this demonstration purpose this is maybe not necessary.
+In principle it is very important we have `abandoned:place` as part of the query. There are lots of important villages, for example Кӧрттувъя and Коздін in Komi which have had lots of speakers but are currently abandoned. Often we have texts or recordings from persons who have grown up there, and every now and then people still spend their summers in these places. The query used above doesn't contain that, but for this demonstration purpose this is maybe not necessary.
 
-Anyway I think this way it is possbile to locate almost all settlements, and if there are some missing, we can always add them into OpenStreetMap as abandoned settlements, even though nobody would live there any longer. There are also categories `isolated_dwelling`, `farm` and `allotment` which should cover more marginal forms of land use.
+Anyway I think this way it is possible to locate almost all settlements, and if there are some missing, we can always add them into OpenStreetMap as abandoned settlements, even though nobody would live there any longer. There are also categories `isolated_dwelling`, `farm` and `allotment` which should cover more marginal forms of land use.
 
 Benefit of this approach is that instead of endlessly complex geographical information we can store a simple reference into OpenStreetMap, and this redelegates and puts into already existing open source platform tons of our problems:
 
@@ -98,9 +108,9 @@ lf
 
 ```
 
-The red boxes match the houses exactly, which is to be expected as I queried here data from the same database (OSM) where the underlying images also come from. 
+The red boxes match the houses exactly, which is to be expected as I queried here data from the same database (OSM) where the underlying images also come from. The result should be similar enough with satellites or any other image sources.
 
-The village above is Сёрдла, located on Udora region of Komi Republic. I have been working there during multiple summers. The map is exact enough that, for example, photograph below is taken from the small road that goes to the forest in the southern part of the picture.
+The village above is Сёрдла, located on Udora region of Komi Republic. I have been working there during multiple summers. The map is exact enough that, for example, it is easy to figure out that photograph below is taken from the small road that goes to the forest in the southern part of the picture.
 
 ![](https://imgur.com/k3ibUz6.png)
 
