@@ -24,8 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -34,10 +34,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+  }
 }
 </script>
 
@@ -70,7 +72,7 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
+<link rel="stylesheet" href="styles.css" />
 
 </head>
 
@@ -308,7 +310,7 @@ div.tocify {
 </div>
 
 
-<div id="introduction" class="section level3">
+<section id="introduction" class="level3">
 <h3>Introduction</h3>
 <p>There are some posts about more important topics under preparation, but this is also something worth commenting, and as a rather small topic it is ecpecially suitable for an initial post.</p>
 <p>Using version control as our local working repository is in many ways crucial, especially under conditions where several team members collaboratively work with corpus building and we can’t permanently send the newest versions of our files to the language archive, where the finished corpus files are stored more persistantly.</p>
@@ -316,15 +318,15 @@ div.tocify {
 <p>However, if the version control isn’t really about backups (we can’t version all media files probably anyway) and it isn’t about archiving (there are real language archives out there for a reason), what it is good for? We think the main benefit is indeed that one can see what has been done. If every change to the corpus is associated with a comment, it is relatively easy to figure out what is generally going on. Just dumping things regularly into Git, though good as well, doesn’t really make that big difference, since everyone probably has yesterdays files on some external harddisk anyway.</p>
 <p>The main point here is that this idea has direct consequences to the way how Git is most useful for documentary linguistics. <strong>To get the most out of it, one should commit often and with small changes</strong>. I also do often commits with the messages like <em>did something</em>, but I also see there is some space for improvements here. There is also another reason why small commits may be the best way to go. The files we work with are usually such that comparing their differences works best with small changes. Let’s say you change few transcribed words in an ELAN file. This makes a difference in few XML nodes. However, if you transcribe, translate, fix few typos and segment a bit onward during the day and commit afterwards, the changes are going to be so overwhelming that it will not be obvious what small change actually caused what.</p>
 <p>So through versioning we can keep track about who has committed what changes in the data. Although it is often combined with other means of backup, it is also very useful to retrieve former versions, if necessary. There are all kind of - smaller and bigger - additions, changes and corrections we are permanently applying to our corpus files. After a certain amount of work has been done in these file and by several team members it gets rather difficult to correct back into former versions, in case there are second thoughts. For example, I’m currently doing a small study about Komi sibilant articulation, <!--we need a hyperlink here -- no we don't, that isn't ready enough! :) --> and while creating phonetic transcripts of specific word forms I often find out that one has to re-adjust some of the formerly transcribed words. If, for example, several transcribed words actually seem to represent shortened fast speech form. Now I could fix those while I am in it, but the fact remains that a native speaker had transcribed the complete form before. Having my changes explained in the version control history comes suddenly very valuable, since it wouldn’t be the first time my analysis is not the right one. However, this also demands that the commit message is somehow searchable and indicates that this kind of change took place (actually at the moment the comments in these changes have been very vague…).</p>
-</div>
-<div id="technical-part" class="section level3">
+</section>
+<section id="technical-part" class="level3">
 <h3>Technical part</h3>
-<div id="creating-a-repository" class="section level4">
+<section id="creating-a-repository" class="level4">
 <h4>Creating a repository</h4>
 <p>In the ideal world one would start with a empty repository when the project starts, but often we awake to this idea bit later. Luckily one can always just move into the main folder and run the command:</p>
 <pre><code>git init .</code></pre>
-</div>
-<div id="adding-.gitignore" class="section level4">
+</section>
+<section id="adding-.gitignore" class="level4">
 <h4>Adding .gitignore</h4>
 <p>This initiates an empty Git repository in the current folder. Now we don’t want all the files, in our case actually mainly ELAN files for the textual data. And maybe also CMDI or IMDI files for the metadata. We have to set up a <code>.gitignore</code> file with the following content:</p>
 <pre><code>*
@@ -337,8 +339,8 @@ div.tocify {
 - And don&#39;t ignore this file
 - And keep the ELAN files</code></pre>
 <p>I’m still a bit uncertain whether one should save the pfsx files (i.e. created by ELAN to store the last used preferences). I tend not to save them. Although they make cloning the repository much nicer as the files would appear correctly if opened in the ELAN program. On the other hand, they change all the time even when no real changes are done to the actual ELAN files. Therefore, perhaps, committing them to Git could be confusing? Or would it just be a good way to keep track of what was done? Maybe one could have a script which generates new .psfx-files with the individual preferences?</p>
-</div>
-<div id="cloning-the-repository" class="section level4">
+</section>
+<section id="cloning-the-repository" class="level4">
 <h4>Cloning the repository</h4>
 <p>Anyway, as Git works with the idea of different copies of the repository being in different places, we should create for this repository the master version. We can do it with this command, which creates that near my home folder. In principle this could be also on some other server.</p>
 <pre><code>git clone --bare . ~/.git_master/kpv</code></pre>
@@ -347,24 +349,24 @@ div.tocify {
 warning: You appear to have cloned an empty repository.
 done.</code></pre>
 <p>Flag <code>--bare</code> means that we have cloned a bare repository, which means a repository where all data and version information is being stored, but it doesn’t contain the files in actually browsable folder structure. You can copy the files from there any time using the command <code>git clone ~/.git_master/kpv</code>. However, one cannot just browse around there. I think this is quite good idea in the end, as it enforces the idea that the bare repository is kind of center where we send the information about changes without touching it ourselves. The next command sets the bare repository as the master of our working repository.</p>
-</div>
-<div id="setting-the-new-master" class="section level4">
+</section>
+<section id="setting-the-new-master" class="level4">
 <h4>Setting the new master</h4>
 <pre><code>git remote add origin ~/.git_master/kpv/</code></pre>
-</div>
-<div id="adding-the-files" class="section level4">
+</section>
+<section id="adding-the-files" class="level4">
 <h4>Adding the files</h4>
 <p>All ELAN files can be added with a simple command:</p>
 <pre><code>git add -A</code></pre>
 <p>This adds everything. However, it does that within the conditions specified in <code>.gitignore</code> file. Without that file it would add all audio and video files, and one can just imagine what a mess that would be. Normally it can be good to check what has changed (using the command <code>git status</code>) and maybe comment on those files one by one, but it is good to know this can also be used when the changes cover larger number of files in a way that is easily expressed in one comment. Even after running this <code>git status</code> would show what has been changing. After adding the files they have to be committed. In this phase one has to write a small log message, i.e. a comment about what was actually done. This is what the rant in the beginning was all about. As I mentioned, it is possible to do <code>git add</code> + <code>git commit -m &quot;...&quot;</code> for each file or groups of files, so they get their own messages in log.</p>
-</div>
-<div id="committing" class="section level4">
+</section>
+<section id="committing" class="level4">
 <h4>Committing</h4>
 <p>Committing is done following way:</p>
 <pre><code>git commit -m &quot;setting up the git repository&quot;</code></pre>
 <p>After committing we have to push the changes into the master repository. In the step above we just set the master, so simply typing:</p>
-</div>
-<div id="pushing" class="section level4">
+</section>
+<section id="pushing" class="level4">
 <h4>Pushing</h4>
 <pre><code>git push --set-upstream origin master</code></pre>
 <p>will send the files over there. After the initial commit it is enough to write <code>git push</code>. If we run <code>git status</code> instantly afterwards we will see:</p>
@@ -377,8 +379,8 @@ Changes not staged for commit:
 (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)
 modified:   kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf
 no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</code></pre>
-</div>
-<div id="comparing-differences" class="section level4">
+</section>
+<section id="comparing-differences" class="level4">
 <h4>Comparing differences</h4>
 <p>With the <code>git diff</code> command it is easy to see what exactly has changed:</p>
 <pre><code>git diff kpv_izva19590000IgusevJA/kpv_izva19590000IgusevJA.eaf</code></pre>
@@ -398,9 +400,9 @@ Author: nikopartanen &lt;nikotapiopartanen@gmail.com&gt;
 Date:   Sun May 15 19:03:18 2016 +0200
 did something with this file</code></pre>
 <p>Each commit gets a unique id, and it is rather easy to move back into that version with individual files or with the whole project. This is actually a wonderful way to keep track how the corpus data has been evolving during all the years the project is rolling.</p>
-</div>
-</div>
-<div id="getting-this-to-github" class="section level3">
+</section>
+</section>
+<section id="getting-this-to-github" class="level3">
 <h3>Getting this to GitHub</h3>
 <ul>
 <li>Create a repository</li>
@@ -408,8 +410,8 @@ did something with this file</code></pre>
 <p>git push –mirror <a href="https://github.com/user/repo.git" class="uri">https://github.com/user/repo.git</a></p></li>
 </ul>
 <p>That’s it! Please note that with the standard settings the GitHub repositories are public! So do not push there data that you have to keep protected. However, it is also possible to buy private GitHub repositories. It is good to know that with the private repositories <code>gh-pages</code> branches are still public. Those are good locations for project specific html files, for example.</p>
-</div>
-<div id="hardships" class="section level3">
+</section>
+<section id="hardships" class="level3">
 <h3>Hardships</h3>
 <p>Obviously it is difficult to get people committing their changes regularly! The rest is easy! But seriously there are few other issues:</p>
 <ul>
@@ -417,10 +419,10 @@ did something with this file</code></pre>
 <li>One main issue here is the enormous size of a contemporary multimedia corpus. Even a large harddisk of a few terabytes is filled with data quite easily. Thereby, backups including the actual file history must be done to the server;</li>
 <li>Git is also a relatively difficult system to learn, especially when working with branches and when lots of people collaboratively work on similar files. It is therefore important to understand the concepts behind Git. Not that I would know them perfectly either… But definitely, getting into this point takes some time.</li>
 </ul>
-</div>
-<div id="references" class="section level3">
+</section>
+<section id="references" class="level3">
 <h3>References</h3>
-</div>
+</section>
 
 <hr>
 <p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>

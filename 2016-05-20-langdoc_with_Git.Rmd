@@ -7,7 +7,7 @@ output:
     toc_float: true
     toc_depth: 4
 excerpt_separator: <!--more-->
-bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+bibliography: /Users/niko/langtech/art/FReiburg/bibtex/FRibliography.bib
 ---
 
 ### Introduction

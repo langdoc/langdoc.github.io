@@ -24,8 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -34,10 +34,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+  }
 }
 </script>
 
@@ -70,7 +72,7 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
+<link rel="stylesheet" href="styles.css" />
 
 </head>
 
@@ -308,28 +310,17 @@ div.tocify {
 </div>
 
 
-<pre><code>## Loading tidyverse: ggplot2
-## Loading tidyverse: tibble
-## Loading tidyverse: tidyr
-## Loading tidyverse: readr
-## Loading tidyverse: purrr
-## Loading tidyverse: dplyr</code></pre>
-<pre><code>## Conflicts with tidy packages ----------------------------------------------</code></pre>
-<pre><code>## filter(): dplyr, stats
-## lag():    dplyr, stats</code></pre>
-<div id="what-this-is-about" class="section level3">
+<section id="what-this-is-about" class="level3">
 <h3>What this is about</h3>
 <p>Update from May 2017: Lots of things have changed, for example, at the moment I would prefer doing things with <code>purrr::map</code> instead of <code>plyr</code>, on the other hand this would leave complete rewrite of many functions and the <code>purrr</code> approach just is so convenient. Even more, the list columns in dataframes have been gaining popularity lately, and that may be very convenient for language documentation data as well, which doesn’t necessarily fit so neatly into a tabular representation.</p>
 <p>This treatment may appear little bit chaotic and unstructured, but this is only because the topic in hand is relatively complicated. I try to explain it to different audiences, but I also understand that following the whole text demands knowledge about some documentary linguistic practices and programming language R. The main idea is to present ways to use R to work with ELAN files. The main idea is to get from something like this:</p>
-<div class="figure">
-<img src="media/elan1.png" alt="Elan file" />
-<p class="caption">Elan file</p>
-</div>
+<figure>
+<img src="media/elan1.png" alt="Elan file" /><figcaption>Elan file</figcaption>
+</figure>
 <p>Into something like this:</p>
-<div class="figure">
-<img src="media/images/elan-R.png" alt="Elan file and some metadata in R data frame" />
-<p class="caption">Elan file and some metadata in R data frame</p>
-</div>
+<figure>
+<img src="media/images/elan-R.png" alt="Elan file and some metadata in R data frame" /><figcaption>Elan file and some metadata in R data frame</figcaption>
+</figure>
 <p>As one can see, not all data in this data frame comes from ELAN file directly. In my opinion this is one of the major reasons to use R to work with ELAN files. Associating session name or speaker id with any arbitrary pieces of information suddenly become trivially easy. In this case I have just merged some metadata with the tokens, but naturally there is no end to what one can have there. I have sorted the data here by speaker and the time, whereas sorting it only with time would of course bring to the table the natural order in which the utterances were spoken. In principle one could use more complicated data structures to store the ELAN file’s content, but in my opinion a data frame is just fine since it is very easy to work with. I will go through now only how one reads ELAN files – metadata comes later. I can just say briefly that what I’m usually doing is to open database connection from R to FileMaker Pro and to read the metadata from there. Now perfect, but works fine and is easy.</p>
 <p>I wrote already some year ago a small R package that can be used to parse ELAN files. We’ve called it <code>FRelan</code>, as it is developed with Freiburg based language documentation traditions. There is just one small problem – it works out of the box only with our ELAN files. The reason is that ELAN files can be structured in almost any possible way. As far as I see it, it is almost impossible to write a package which would just work automatically. However, I think it is possible to write some kind of generic tools which can be adapted into most of the files, and following the same logic one can also parse more exotic tier structures if the need arises.</p>
 <p>FRelan package can be installed from GitHub with <code>devtools</code> package:</p>
@@ -350,8 +341,8 @@ corpus &lt;- plyr::ldply(eaf_files, FRelan::read_eaf) # could be nicer with purr
 librar(FRelan)</code></pre>
 <p>In this tutorial I use ELAN file called <code>kpv_izva20140404IgusevJA.eaf</code>, which is a long interview I made with Komi researcher Jevgeni Aleksandrovich Igushev in 2014.</p>
 <pre><code>test_file &lt;- &quot;kpv_izva20140404IgusevJA.eaf&quot;</code></pre>
-</div>
-<div id="introduction" class="section level3">
+</section>
+<section id="introduction" class="level3">
 <h3>Introduction</h3>
 <p>This writing is part of the wider topic of how to get documentary linguistic data into R. This means not only reading in ELAN files, but doing the same for metadata and other accompanying datasets we may have with our corpus. There are many reasons one may want to have documentary linguistic corpus in R. It makes searching the data very easy, and one is not limited to the predefined possibilities of individual user-interface. Besides this it is easy to make the study entirely reproducible, as there is no unnecessary mouse clicking involved. One can do at least the following tasks entirely in R:</p>
 <ul>
@@ -362,8 +353,8 @@ librar(FRelan)</code></pre>
 <li>Plotting the search results or corpus content in different ways</li>
 <li>Doing the statistical evaluations of your results</li>
 </ul>
-<p>R has already for many years been used in variationistic sociolinguistics, and also in that world use of ELAN has been around <span class="citation">(Nagy and Meyerhoff 2015)</span>. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).</p>
-<p>All treatments of data analysis with R start with the notion that one has to get the data into R (see, for example <span class="citation">(Wickham and Grolemund 2016)</span>). Getting data into R is basically a data transformation, and the method of doing the import is to define this transformation and run it whenever needed. So the question can also be turned into a statement: if data can be transformed, then it can be read into R. By transformation I mean any kind of operation where the data is parsed, in its totality or with some subset, and turned into whatever other data structure we need without information being lost. Or if the information is lost, it should be clearly understood and acknowledged.</p>
+<p>R has already for many years been used in variationistic sociolinguistics, and also in that world use of ELAN has been around <span class="citation" data-cites="nagyEtAl2015a">(Nagy and Meyerhoff 2015)</span>. In their present paper Nagy and Meyerhoff suggest a possible workflow. However, this workflow is also based upon exporting the ELAN files into CSV format, which is then being read into R. Reading these files into R is trivially easy, but it creates uneasy situation where doing changes in the data demands creation of a new export file. The situation gets even more problematic if there are further annotations done to those spreadsheets, as it can get quite messy to append the changes from modified ELAN files into annotated tables. This is very typical problem, in my opinion, and there are very few satisfactory solutions to the general problem (which also persists in ELAN when the transcriptions are modified but there are annotations already on the tiers below).</p>
+<p>All treatments of data analysis with R start with the notion that one has to get the data into R (see, for example <span class="citation" data-cites="wickhamEtAl2016a">(Wickham and Grolemund 2016)</span>). Getting data into R is basically a data transformation, and the method of doing the import is to define this transformation and run it whenever needed. So the question can also be turned into a statement: if data can be transformed, then it can be read into R. By transformation I mean any kind of operation where the data is parsed, in its totality or with some subset, and turned into whatever other data structure we need without information being lost. Or if the information is lost, it should be clearly understood and acknowledged.</p>
 <p>In order to be able to make this kind of transformations to the corpus, the data structures have to be perfectly described and systematically present in the files. Actually making sure that this is the case would be very easy, for example, with <a href="http://rmarkdown.rstudio.com/developer_parameterized_reports.html">parameterized RMarkdown reports</a>. The R functions to parse ELAN files are kind of backbones of this kind of testing, about which I should probably be writing more soon.</p>
 <p>I think often when there is talk about data formats there is some confusion over the fact that the data should be in different structures in different parts of its life. Of course these stages are not really distinct from one another, but there are clear conceptual differences and requirements which I try to outline below.</p>
 <ul>
@@ -371,9 +362,9 @@ librar(FRelan)</code></pre>
 <li>data archiving: maximal usability for different purposes</li>
 <li>data analysis: wide applicability for different statistics and plotting</li>
 </ul>
-<p>All these stages have different demands for the ideal data structures, and we should not imagine that there is just one solution for this. Naturally this is a two way street, so that during data analysis one often needs to edit the data and come back to analysis. If we think about the resulting dataset in terms of <strong>tidy data</strong>, where we would ideally have one row per one observation <span class="citation">(Wickham 2014)</span>, then I think we often should consider <strong>token</strong> as the basic unit here. The resulting data is relatively ineffective in the sense that the same information is repeated all over the place, but it is <strong>tidy</strong> according to some specifications. It can be described also as <strong>long</strong>, as there are relatively few columns and the data is stored along the rows. This kind of data structure is not supposed to be edited by human, but computers crunch it very happily.</p>
-</div>
-<div id="technical-part" class="section level3">
+<p>All these stages have different demands for the ideal data structures, and we should not imagine that there is just one solution for this. Naturally this is a two way street, so that during data analysis one often needs to edit the data and come back to analysis. If we think about the resulting dataset in terms of <strong>tidy data</strong>, where we would ideally have one row per one observation <span class="citation" data-cites="wickham2014a">(Wickham 2014)</span>, then I think we often should consider <strong>token</strong> as the basic unit here. The resulting data is relatively ineffective in the sense that the same information is repeated all over the place, but it is <strong>tidy</strong> according to some specifications. It can be described also as <strong>long</strong>, as there are relatively few columns and the data is stored along the rows. This kind of data structure is not supposed to be edited by human, but computers crunch it very happily.</p>
+</section>
+<section id="technical-part" class="level3">
 <h3>Technical part</h3>
 <p>There are many ways to parse ELAN file into R, and ultimately it boils down to the question <strong>what do you want to do</strong>? Usually I want to search from the data in R or I want to merge some content with metadata, either to make more complex searches or to check what is going on. However, the scope varies. If I think in terms of ELAN’s tier structure, there are following attributes we can use:</p>
 <ul>
@@ -383,7 +374,7 @@ librar(FRelan)</code></pre>
 </ul>
 <p>Reading ELAN files into R is not trivially easy and it gets fast very complicated. The main question is always how uniform the ELAN files are in their basic structure. This is really where all problems begin. If all ELAN files are identical, then one can just specify the pattern to parse one and loop it over all files. However, in reality the situation is much more complicated, and ELAN files tend to be somewhat heterogenic. There is nothing in ELAN that would prevent small creeping in here and there, and what may look harmless for a human, for example, slightly different name of a linguistic type, is of course impassable barrier for a computer which tries to read the file. So the code to parse ELAN files often needs to have all kinds of bells and whistles attached into it to handle errors, which makes the code very complicated and there is always possibility that something fails in a new way.</p>
 <p>However, this is what makes parsing ELAN files to R particularly rewarding as well. It tells where the problems are, and makes it easier to address them. It can thereby be tested also as a robust testing method which helps to keep ELAN files organized. As far as I see it, the fact that all files adhere to uniform structure should be among the most basic definitions we have for <strong>corpus</strong>, differentiating it from eclectic file collections. This comes back to what I was describing above: if corpus is parsable, it is also transformable, and this is actually guarantees its longevity. It is not likely that in thirty years we want data to be in exactly this kind of XML files, but if they are perfectly uniform doing the transformation will never be more than a fast and easy task, whereas currently that can be quite a nightmare.</p>
-<div id="reading-one-tier" class="section level4">
+<section id="reading-one-tier" class="level4">
 <h4>Reading one tier</h4>
 <p>I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.</p>
 <pre class="r"><code>FRelan::read_tier(eaf_file = test_file, linguistic_type = &quot;wordT&quot;) %&gt;% 
@@ -392,166 +383,166 @@ librar(FRelan)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">content</th>
-<th align="left">annot_id</th>
-<th align="left">ref_id</th>
-<th align="left">participant</th>
-<th align="left">tier_id</th>
-<th align="left">type</th>
-<th align="left">time_slot_1</th>
-<th align="left">time_slot_2</th>
+<th style="text-align: left;">content</th>
+<th style="text-align: left;">annot_id</th>
+<th style="text-align: left;">ref_id</th>
+<th style="text-align: left;">participant</th>
+<th style="text-align: left;">tier_id</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">time_slot_1</th>
+<th style="text-align: left;">time_slot_2</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Пожняысь</td>
-<td align="left">a21587</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">Пожняысь</td>
+<td style="text-align: left;">a21587</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">a21588</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">a21588</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">a21589</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">a21589</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">a21590</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">a21590</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">a21591</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">a21591</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">a21592</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">a21592</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">a21593</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">a21593</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">сиктысь</td>
-<td align="left">a21594</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">сиктысь</td>
+<td style="text-align: left;">a21594</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">,</td>
-<td align="left">a21595</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">a21595</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">да</td>
-<td align="left">a21596</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">да</td>
+<td style="text-align: left;">a21596</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">.</td>
-<td align="left">a21597</td>
-<td align="left">a224</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">a21597</td>
+<td style="text-align: left;">a224</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">Да</td>
-<td align="left">a21598</td>
-<td align="left">a902</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">Да</td>
+<td style="text-align: left;">a21598</td>
+<td style="text-align: left;">a902</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">,</td>
-<td align="left">a21599</td>
-<td align="left">a902</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">a21599</td>
+<td style="text-align: left;">a902</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td align="left">уджалі</td>
-<td align="left">a21600</td>
-<td align="left">a902</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">уджалі</td>
+<td style="text-align: left;">a21600</td>
+<td style="text-align: left;">a902</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">.</td>
-<td align="left">a21601</td>
-<td align="left">a902</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
-<td align="left">wordT</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">a21601</td>
+<td style="text-align: left;">a902</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:word@JAI-M-1939">word@JAI-M-1939</a></td>
+<td style="text-align: left;">wordT</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
 </tr>
 </tbody>
 </table>
@@ -561,73 +552,73 @@ librar(FRelan)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">content</th>
-<th align="left">annot_id</th>
-<th align="left">ref_id</th>
-<th align="left">participant</th>
-<th align="left">tier_id</th>
-<th align="left">type</th>
-<th align="left">time_slot_1</th>
-<th align="left">time_slot_2</th>
+<th style="text-align: left;">content</th>
+<th style="text-align: left;">annot_id</th>
+<th style="text-align: left;">ref_id</th>
+<th style="text-align: left;">participant</th>
+<th style="text-align: left;">tier_id</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">time_slot_1</th>
+<th style="text-align: left;">time_slot_2</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">a2</td>
-<td align="left">NA</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
-<td align="left">refT</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">a2</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td style="text-align: left;">refT</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">a3</td>
-<td align="left">NA</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
-<td align="left">refT</td>
-<td align="left">ts23</td>
-<td align="left">ts24</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">a3</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td style="text-align: left;">refT</td>
+<td style="text-align: left;">ts23</td>
+<td style="text-align: left;">ts24</td>
 </tr>
 <tr class="odd">
-<td align="left">kpv_izva20140404IgusevJA-b-013</td>
-<td align="left">a4</td>
-<td align="left">NA</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
-<td align="left">refT</td>
-<td align="left">ts29</td>
-<td align="left">ts30</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-013</td>
+<td style="text-align: left;">a4</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td style="text-align: left;">refT</td>
+<td style="text-align: left;">ts29</td>
+<td style="text-align: left;">ts30</td>
 </tr>
 <tr class="even">
-<td align="left">kpv_izva20140404IgusevJA-b-014</td>
-<td align="left">a5</td>
-<td align="left">NA</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
-<td align="left">refT</td>
-<td align="left">ts31</td>
-<td align="left">ts32</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-014</td>
+<td style="text-align: left;">a5</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td style="text-align: left;">refT</td>
+<td style="text-align: left;">ts31</td>
+<td style="text-align: left;">ts32</td>
 </tr>
 <tr class="odd">
-<td align="left">kpv_izva20140404IgusevJA-b-015</td>
-<td align="left">a6</td>
-<td align="left">NA</td>
-<td align="left">JAI-M-1939</td>
-<td align="left"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
-<td align="left">refT</td>
-<td align="left">ts33</td>
-<td align="left">ts34</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-015</td>
+<td style="text-align: left;">a6</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;"><a href="mailto:ref@JAI-M-1939">ref@JAI-M-1939</a></td>
+<td style="text-align: left;">refT</td>
+<td style="text-align: left;">ts33</td>
+<td style="text-align: left;">ts34</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code># kable() thinks the id&#39;s are email addresses, have to look into that in some point...</code></pre>
 <p>The trick here is that the result is a data frame which contains all crucial information from the individual tiers. And as we are familiar with the tier hierarchy we can combine the results of different <code>read_tier()</code> functions to eventually get the whole file. Only difficulty will be with getting the actual time slots, but on the other hand that is also trivially easy, since that is expressed the same way in each and every ELAN file. In <code>FRelan</code> package there is a function <code>read_timeslots()</code> which can be used to match those values.</p>
-</div>
-<div id="reading-whole-elan-file" class="section level4">
+</section>
+<section id="reading-whole-elan-file" class="level4">
 <h4>Reading whole ELAN file</h4>
 <p>Reading the whole ELAN file is essentially about figuring out the pattern how the tiers connect by their id’s and imitate this pattern when joining different data frames. Of course there are many other things we want to do, for example, it makes sense to process and tidy the output already while it is being parsed. There are things such as right and left context, removing empty values, making some first calculations about the occurrences etc. This can be done automatically, but starting to set this up very easily leads into a situation where the model is clearly project specific, and not easily extended to be used by others. However, the model I propose here for joining the files tier by tier should be pretty bullet proof.</p>
 <p>Structure of the ELAN file we are using with Komi is basically like this:</p>
@@ -657,134 +648,134 @@ librar(FRelan)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">token</th>
-<th align="left">utterance</th>
-<th align="left">reference</th>
-<th align="left">participant</th>
-<th align="left">time_slot_1</th>
-<th align="left">time_slot_2</th>
+<th style="text-align: left;">token</th>
+<th style="text-align: left;">utterance</th>
+<th style="text-align: left;">reference</th>
+<th style="text-align: left;">participant</th>
+<th style="text-align: left;">time_slot_1</th>
+<th style="text-align: left;">time_slot_2</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Пожняысь</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">Пожняысь</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">сиктысь</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">сиктысь</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="odd">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">да</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">да</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="odd">
-<td align="left">.</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts7</td>
-<td align="left">ts16</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts7</td>
+<td style="text-align: left;">ts16</td>
 </tr>
 <tr class="even">
-<td align="left">Да</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts23</td>
-<td align="left">ts24</td>
+<td style="text-align: left;">Да</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts23</td>
+<td style="text-align: left;">ts24</td>
 </tr>
 <tr class="odd">
-<td align="left">,</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts23</td>
-<td align="left">ts24</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts23</td>
+<td style="text-align: left;">ts24</td>
 </tr>
 <tr class="even">
-<td align="left">уджалі</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts23</td>
-<td align="left">ts24</td>
+<td style="text-align: left;">уджалі</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts23</td>
+<td style="text-align: left;">ts24</td>
 </tr>
 <tr class="odd">
-<td align="left">.</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="left">ts23</td>
-<td align="left">ts24</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: left;">ts23</td>
+<td style="text-align: left;">ts24</td>
 </tr>
 </tbody>
 </table>
@@ -802,134 +793,134 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">token</th>
-<th align="left">utterance</th>
-<th align="left">reference</th>
-<th align="left">participant</th>
-<th align="right">time_start</th>
-<th align="right">time_end</th>
+<th style="text-align: left;">token</th>
+<th style="text-align: left;">utterance</th>
+<th style="text-align: left;">reference</th>
+<th style="text-align: left;">participant</th>
+<th style="text-align: right;">time_start</th>
+<th style="text-align: right;">time_end</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Пожняысь</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">Пожняысь</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="even">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="odd">
-<td align="left">Пожня</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">Пожня</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="even">
-<td align="left">сиктысь</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">сиктысь</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="odd">
-<td align="left">,</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="even">
-<td align="left">да</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">да</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="odd">
-<td align="left">.</td>
-<td align="left">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-004</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">29728</td>
-<td align="right">32233</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">Пожняысь, Пожня, Пожня, Пожня сиктысь, да.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-004</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">29728</td>
+<td style="text-align: right;">32233</td>
 </tr>
 <tr class="even">
-<td align="left">Да</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">40165</td>
-<td align="right">40953</td>
+<td style="text-align: left;">Да</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">40165</td>
+<td style="text-align: right;">40953</td>
 </tr>
 <tr class="odd">
-<td align="left">,</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">40165</td>
-<td align="right">40953</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">40165</td>
+<td style="text-align: right;">40953</td>
 </tr>
 <tr class="even">
-<td align="left">уджалі</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">40165</td>
-<td align="right">40953</td>
+<td style="text-align: left;">уджалі</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">40165</td>
+<td style="text-align: right;">40953</td>
 </tr>
 <tr class="odd">
-<td align="left">.</td>
-<td align="left">Да, уджалі.</td>
-<td align="left">kpv_izva20140404IgusevJA-b-010</td>
-<td align="left">JAI-M-1939</td>
-<td align="right">40165</td>
-<td align="right">40953</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">Да, уджалі.</td>
+<td style="text-align: left;">kpv_izva20140404IgusevJA-b-010</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">40165</td>
+<td style="text-align: right;">40953</td>
 </tr>
 </tbody>
 </table>
@@ -938,18 +929,18 @@ elan_content %&gt;% dplyr::slice(1:15) %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">participant</th>
-<th align="right">n</th>
+<th style="text-align: left;">participant</th>
+<th style="text-align: right;">n</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">JAI-M-1939</td>
-<td align="right">5471</td>
+<td style="text-align: left;">JAI-M-1939</td>
+<td style="text-align: right;">5471</td>
 </tr>
 <tr class="even">
-<td align="left">NTP-M-1986</td>
-<td align="right">1416</td>
+<td style="text-align: left;">NTP-M-1986</td>
+<td style="text-align: right;">1416</td>
 </tr>
 </tbody>
 </table>
@@ -985,16 +976,15 @@ FRelan::tier_exists
 ```
 
 ```
-## function (eaf_file, tier) 
-## {
-##     match <- xml2::read_xml(eaf_file) %>% xml2::xml_find_all(xpath = paste0("//TIER[@TIER_ID='", 
-##         tier, "']"))
-##     if (length(match) >= 1) {
-##         TRUE
-##     }
-##     else {
-##         FALSE
-##     }
+## function(eaf_file, tier){
+## 
+##         match <- xml2::read_xml(eaf_file) %>%
+##                 xml2::xml_find_all(xpath = paste0("//TIER[@TIER_ID='", tier, "']"))
+##         if (length(match) >= 1){
+##                 TRUE
+##         } else {
+##                 FALSE
+##         }
 ## }
 ## <environment: namespace:FRelan>
 ```
@@ -1027,26 +1017,28 @@ FRelan::tier_has_content
 ```
 
 ```
-## function (eaf_file, tier, value = F) 
-## {
-##     `%>%` <- dplyr::`%>%`
-##     if (tier_exists(eaf_file = eaf_file, tier = tier) == F) {
-##         FALSE
-##     }
-##     else {
-##         tier_content <- xml2::read_xml(eaf_file) %>% xml2::xml_find_all(xpath = paste0("//TIER[@TIER_ID='", 
-##             tier, "']/ANNOTATION/*/ANNOTATION_VALUE")) %>% xml2::xml_text()
-##         tier_content
-##     }
-##     if (value == FALSE && tier_exists(eaf_file = eaf_file, tier = tier) == 
-##         T) {
-##         result <- length(tier_content) > 0
-##         result
-##     }
-##     if (value == T && tier_exists(eaf_file = eaf_file, tier = tier) == 
-##         T) {
-##         length(tier_content)
-##     }
+## function(eaf_file, tier, value = F){
+## 
+##         `%>%` <- dplyr::`%>%`
+## 
+##         if (tier_exists(eaf_file = eaf_file, tier = tier) == F){
+##                 FALSE
+##         } else {
+##                 tier_content <- xml2::read_xml(eaf_file) %>%
+##                         xml2::xml_find_all(
+##                                 xpath = paste0("//TIER[@TIER_ID='", tier, "']/ANNOTATION/*/ANNOTATION_VALUE")) %>%
+##                         xml2::xml_text()
+##                 tier_content
+##                 }
+## 
+##         if (value == FALSE && tier_exists(eaf_file = eaf_file, tier = tier) == T) {
+##                 result <- length(tier_content) > 0
+##                 result
+##         }
+## 
+##         if (value == T && tier_exists(eaf_file = eaf_file, tier = tier) == T) {
+##                 length(tier_content)
+##         }
 ## }
 ## <environment: namespace:FRelan>
 ```
@@ -1078,9 +1070,9 @@ tier_has_content(eaf_file = test_file,
 ```
 
 -->
-</div>
-</div>
-<div id="references" class="section level3 unnumbered">
+</section>
+</section>
+<section id="references" class="level3 unnumbered">
 <h3>References</h3>
 <div id="refs" class="references">
 <div id="ref-nagyEtAl2015a">
@@ -1093,7 +1085,7 @@ tier_has_content(eaf_file = test_file,
 <p>Wickham, Hadley, and Garrett Grolemund. 2016. <em>R for Data Science: Visualize, Model, Transform, Tidy, and Import Data</em>. O’Reilly. <a href="http://r4ds.had.co.nz/" class="uri">http://r4ds.had.co.nz/</a>.</p>
 </div>
 </div>
-</div>
+</section>
 
 <hr>
 <p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>

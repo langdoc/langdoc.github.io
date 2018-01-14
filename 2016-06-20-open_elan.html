@@ -24,8 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -34,10 +34,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+  }
 }
 </script>
 
@@ -70,7 +72,7 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
+<link rel="stylesheet" href="styles.css" />
 
 </head>
 
@@ -308,7 +310,7 @@ div.tocify {
 </div>
 
 
-<div id="introduction" class="section level2">
+<section id="introduction" class="level2">
 <h2>Introduction</h2>
 <p>ELAN is not really programmable in the same sense as Praat, for example, but still something can be done to control is from outside. It is a common situation that I want to open ELAN file from a specific point, and this point can be changed by adjusting the <code>.pfsx</code> file programmatically before opening the file.</p>
 <p>Even when one would like to use R to work with ELAN corpus, there is continuous need to work with ELAN itself. The files have to be adjusted and read again into R, since especially when something is done with the corpus all small faults tend to come visible. Also one often wants to listen the files to check something. Motives are endless. The workflow I’m suggesting and recommending is based to parsing ELAN files directly into R without exporting, so in some sense the dialogue between raw data and analysis is very direct. Changes in ELAN files are instantly reflected in the analysis, which in my opinion encourages to make small adjustments whenever there is a need for that. Spoken language corpora are never static, since there is so much interpretation when the data is created and inevitably some interpretations end up being inaccurate. Large ELAN corpus often ends up having a folder structure which is not that easy to navigate, at least when the corpus size has grown over critical point. However, one could also argue that the way we used corpora should not be based to navigating some file structure, or nodes in a tree as one has to do with IMDI Browser, but to some more user friendly and straightforward methods to move into what we find interesting. I explain here how ELAN files can be opened directly from R, but unfortunately this workflow seems to be somewhat Mac specific. If someone is interested about modifying it work on Linux and Windows, please <a href="https://github.com/langdoc/FRelan/blob/master/R/open_eaf.R">contribute</a>. I would assume that making it work also on Linux should be very easy, but I have no ideas about the situation with Windows.</p>
@@ -321,30 +323,30 @@ library(FRelan)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">token</th>
-<th align="left">reference</th>
+<th style="text-align: left;">token</th>
+<th style="text-align: left;">reference</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">вӧлісны</td>
-<td align="left">kpv_izva20150703-01-b-099</td>
+<td style="text-align: left;">вӧлісны</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-099</td>
 </tr>
 <tr class="even">
-<td align="left">вӧлісныс</td>
-<td align="left">kpv_izva20150703-01-b-038</td>
+<td style="text-align: left;">вӧлісныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-038</td>
 </tr>
 <tr class="odd">
-<td align="left">корисныс</td>
-<td align="left">kpv_izva20150703-01-b-078</td>
+<td style="text-align: left;">корисныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-078</td>
 </tr>
 <tr class="even">
-<td align="left">корисныс</td>
-<td align="left">kpv_izva20150703-01-b-113</td>
+<td style="text-align: left;">корисныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-113</td>
 </tr>
 <tr class="odd">
-<td align="left">воисныс</td>
-<td align="left">kpv_izva20150703-01-b-132</td>
+<td style="text-align: left;">воисныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-132</td>
 </tr>
 </tbody>
 </table>
@@ -352,67 +354,65 @@ library(FRelan)</code></pre>
 <p>The function <code>open_eaf()</code> rewrites the PSFX file just before the file is opened, and takes the right time codes from the dataframe. This means that one cannot forward into <code>open_eaf()</code> function a data frame which lacks attributes like <code>filename</code>, as the function needs to know what file to open. The file opens fine without the time start and end as well, but the work is more straightforward when one doesn’t need to look around the file to find the wanted spot.</p>
 <p>The function is used in the following manner. We saw above that there was one verb form which doesn’t follow the pattern in other similar forms. Let’s check that out!</p>
 <pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)сныс?$&quot;) %&gt;% open_eaf(1)</code></pre>
-<p>Please note that the <strong>1</strong> here refers to the row number within the current selection. This opens instantly something like this <span class="citation">(<span class="citeproc-not-found" data-reference-id="kpv_izva20150703-01-b"><strong>???</strong></span>)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-<div class="figure">
-<img src="media/images/open_eaf_elan.png" alt="Opened ELAN file" />
-<p class="caption">Opened ELAN file</p>
-</div>
+<p>Please note that the <strong>1</strong> here refers to the row number within the current selection. This opens instantly something like this <span class="citation" data-cites="kpv_izva20150703-01-b">(<span class="citeproc-not-found" data-reference-id="kpv_izva20150703-01-b"><strong>???</strong></span>)</span>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<figure>
+<img src="media/images/open_eaf_elan.png" alt="Opened ELAN file" /><figcaption>Opened ELAN file</figcaption>
+</figure>
 <p>Of course when one sees the file it is obvious that the different tokens are produced by different speakers. This would had been obvious, had one filtered it little bit like this to start with:</p>
 <pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)с?ныс?$&quot;) %&gt;% select(token, reference, participant) %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">token</th>
-<th align="left">reference</th>
-<th align="left">participant</th>
+<th style="text-align: left;">token</th>
+<th style="text-align: left;">reference</th>
+<th style="text-align: left;">participant</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">вӧлісны</td>
-<td align="left">kpv_izva20150703-01-b-099</td>
-<td align="left">VPC-M-1993</td>
+<td style="text-align: left;">вӧлісны</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-099</td>
+<td style="text-align: left;">VPC-M-1993</td>
 </tr>
 <tr class="even">
-<td align="left">вӧлісныс</td>
-<td align="left">kpv_izva20150703-01-b-038</td>
-<td align="left">IGT-F-1996</td>
+<td style="text-align: left;">вӧлісныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-038</td>
+<td style="text-align: left;">IGT-F-1996</td>
 </tr>
 <tr class="odd">
-<td align="left">корисныс</td>
-<td align="left">kpv_izva20150703-01-b-078</td>
-<td align="left">IGT-F-1996</td>
+<td style="text-align: left;">корисныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-078</td>
+<td style="text-align: left;">IGT-F-1996</td>
 </tr>
 <tr class="even">
-<td align="left">корисныс</td>
-<td align="left">kpv_izva20150703-01-b-113</td>
-<td align="left">IGT-F-1996</td>
+<td style="text-align: left;">корисныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-113</td>
+<td style="text-align: left;">IGT-F-1996</td>
 </tr>
 <tr class="odd">
-<td align="left">воисныс</td>
-<td align="left">kpv_izva20150703-01-b-132</td>
-<td align="left">IGT-F-1996</td>
+<td style="text-align: left;">воисныс</td>
+<td style="text-align: left;">kpv_izva20150703-01-b-132</td>
+<td style="text-align: left;">IGT-F-1996</td>
 </tr>
 </tbody>
 </table>
 <p>But this was all done just to demonstrate how to open an ELAN file from R. There is one more trick though. There are times when we don’t want to open ELAN file in ELAN, but would prefer to edit XML manually. This can be done by providing argument <code>program</code>.</p>
 <pre class="r"><code>eaf_test %&gt;% find_token(&quot;.+(а|и|і)сныс?$&quot;) %&gt;% open_eaf(1, program = &quot;subethaedit&quot;)</code></pre>
-<div class="figure">
-<img src="media/images/open_eaf_subethaedit.png" alt="ELAN XML in Subethaedit" />
-<p class="caption">ELAN XML in Subethaedit</p>
-</div>
+<figure>
+<img src="media/images/open_eaf_subethaedit.png" alt="ELAN XML in Subethaedit" /><figcaption>ELAN XML in Subethaedit</figcaption>
+</figure>
 <p>Of course in this case the line number in itself is not used, as the XML file is opened straight from the beginning and this is probably what one usually wants, but the line number is still needed to specify which file should be opened. It is very common that in one data frame there are tokens from different files, so in principle in this situation the line number is used to point just to that file in general, although the row contains also some information more.</p>
 <p>Opening ELAN file outside ELAN is often quite useful, especially in cases like changing participant ID’s. In ELAN there is no easy way to change the name in all places it occurs, so searching and replacing in XML file itself is usually fastest.</p>
-</div>
-<div id="references" class="section level2">
+</section>
+<section id="references" class="level2">
 <h2>References</h2>
-</div>
-<div class="footnotes">
+</section>
+<section class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Thanks to Irina Gavrilovna Terentyeva who is being interviewed on the video<a href="#fnref1">↩</a></p></li>
+<li id="fn1"><p>Thanks to Irina Gavrilovna Terentyeva who is being interviewed on the video<a href="#fnref1" class="footnote-back">↩</a></p></li>
 </ol>
-</div>
+</section>
 
 <hr>
 <p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>

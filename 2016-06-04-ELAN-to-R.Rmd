@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float: true
     toc_depth: 4
-bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+bibliography: /Users/niko/langtech/art/FReiburg/bibtex/FRibliography.bib
 ---
 
 ```{r, echo=FALSE}

@@ -8,7 +8,9 @@ output:
     toc_depth: 4
 excerpt_separator: <!--more-->
 fig_caption: true
-bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+bibliography: /Users/niko/langtech/art/FReiburg/bibtex/FRibliography.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -19,13 +21,15 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 `%>%` <- dplyr::`%>%`
 
-elan_files <- dir('~/github/sgu/', pattern = 'eaf$', full.names = T) 
+elan_files <- dir('~/Dropbox/sgu/', pattern = 'eaf$', full.names = T) 
 
 sgu_eaf <- elan_files %>% 
   purrr::map_df(., ~ FRelan::read_tier(.x, linguistic_type =  'word-kntT') %>% 
                         dplyr::mutate(file = .x))
 
 sgu_eaf <- sgu_eaf %>% dplyr::mutate(аудио = stringr::str_replace(file, '.+//(.+).eaf', '\\1'))
+
+sgu_eaf %>% mutate(token = tolower(content)) %>% count(token, sort = TRUE) %>% write_csv('~/Dropbox/sgu/frequencies.csv')
 
 ```
 
@@ -91,7 +95,7 @@ Then what is the geographical distibution? We were transcribing files from Užga
 # sgu <- gs_read(ss = sheet, ws = 'гижӧдъяс', skip = 0)
 # sgu <- sgu %>% filter(stringr::str_detect(коммент, 'гӧтӧв'))
 # readr::write_csv(sgu, 'sgu.csv')
-sgu_table <- readr::read_csv('sgu.csv', col_types = 'ccccccc')
+sgu_table <- readr::read_csv('~/github/langdoc.github.io/sgu.csv', col_types = 'ccccccc')
 
 places <- dplyr::data_frame(ин = c('Шошка', 'Койгородок', 'Объячего', 'Усть-Нем', 'Кӧрткерӧс', 'Ужга', 'Мырпонаиб'),
            lat = c(62.703972, 60.4563994, 60.3472489, 61.36514522233486, 61.81713560000001, 60.51615945517946, 60.50999124658545),
@@ -115,11 +119,11 @@ komi_dialects <- geojsonio::geojson_read('https://raw.githubusercontent.com/niko
 leaflet::leaflet(data = sgu) %>% 
         leaflet::setView(lng = 50.482177734375, lat = 61.39671887310411, zoom = 6) %>%
         leaflet::addTiles() %>% 
-        leaflet::addPolygons(data = komi_dialects, 
-                             stroke = FALSE, 
-                             smoothFactor = 0.3, 
-                             fillOpacity = 0.2,
-                             fillColor = 'blue')  %>% 
+        # leaflet::addPolygons(data = komi_dialects, 
+        #                      stroke = FALSE, 
+        #                      smoothFactor = 0.3, 
+        #                      fillOpacity = 0.2,
+        #                      fillColor = 'blue')  %>% 
         leaflet::addCircleMarkers(lng = ~lon, 
                                   lat = ~lat, 
                                   stroke = FALSE, 

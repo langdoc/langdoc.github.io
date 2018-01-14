@@ -24,8 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -34,10 +34,12 @@
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+  }
 }
 </script>
 
@@ -70,7 +72,7 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
+<link rel="stylesheet" href="styles.css" />
 
 </head>
 
@@ -308,11 +310,11 @@ div.tocify {
 </div>
 
 
-<div id="command-line-tools-in-language-documentation" class="section level2">
+<section id="command-line-tools-in-language-documentation" class="level2">
 <h2>Command line tools in language documentation</h2>
 <p>As far as I see, there are few command line tools that are irreplaceable in language documentation work. These are <a href="http://www.imagemagick.org">imagemagick</a> for images, <a href="http://sox.sourceforge.net/">SoX</a> for audio files, <a href="https://ffmpeg.org/">ffmpeg</a> for video files and <a href="http://pandoc.org/">pandoc</a> for general file conversions. Each of these is so useful that they could merit complete books to be written about them, but I just share here one useful trick how SoX can be used.</p>
-</div>
-<div id="corrupted-wav-files" class="section level2">
+</section>
+<section id="corrupted-wav-files" class="level2">
 <h2>Corrupted WAV files</h2>
 <p>I don’t know at all how common this problem is. I suspect fairly common, but it is hard to say. With some recorders, at least on Edirol R-09 which I have used for many years, if the battery dies or the recorder falls or for some other reason the recording is interrupted, it is fairly common that the WAV file becomes corrupted. It doesn’t open, it can’t be previewed, on Mac Finder it looks as if it had no length. This whole “corruption” means in this case, as far as I understand, that the recorder didn’t finish writing the file properly and left something out from the WAV header. All the recorded content is there in the file, but the file isn’t really finalized. Mysteriously some programs can open these files, for example, I’ve often been able to listen them on VLC player.</p>
 <p>Many ways to fix these files involve opening it as RAW audio file in Audacity and saving that into a new file. This works well. However, you can also use following command in SoX:</p>
@@ -324,7 +326,7 @@ div.tocify {
 <p>It is easy to get information about the audio file. Another case is that some tools may need very specific version of the wav file, and this can be acquired, for example, like this:</p>
 <pre><code>sox normal.wav -b 16 -r 16000 -c 1 specific.wav</code></pre>
 <p>Among other tools, some speaker diarization tools from Aalto University demand this kind of files. I think SoX can also be called from R with <a href="http://rug.mnhn.fr/seewave/">seewave</a> package, and there seems to be a <a href="https://pypi.python.org/pypi/sox">Python wrapper</a> as well.</p>
-</div>
+</section>
 
 <hr>
 <p><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="44" height="15"></a> 2016 Niko Partanen or individual writers.</p>
