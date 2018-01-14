@@ -1,0 +1,89 @@
+---
+title: "Untitled"
+author: "Niko Partanen"
+date: "11/27/2017"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Managing geographical data is often very central for spoken language corpus building. All recordings have been done somewhere, and the speakers have attributes such as birth place and recording place. The way we have been managing this in [IKDP project](langdoc.github.io/IKDP) has been to maintain a database of settlements where Komi is spoken. This has not been an explicit goal in itself, but more of an inevitable result of having eventually enough locations to cover all settlements. Building a database like this from a scratch would not be sensical, but I'll get into alternatives soon.
+
+As far as I see, especially when we speak about languages spoken by sedentary groups, it is often a good starting point to work from settlements onward. Of course we can define polygons under which the languages are spoken, but not all settlements under the polygon will be ones where the language in question is spoken. On the other hand, we can use the points to derive a polygon that covers the maximal area of the language. However, I think at times polygons and points have very different strengths and weaknesses, and depending from the use case there may be need to use one or another, or different combinations.
+
+Of course things get complicated with more northern populations that have more nomadic lifestyle, the sparse population density adding more issues into this, so it becomes difficult to represent on a map that on this enormous area the language is spoken, but actually by a very small population. What I'm trying to say is that both polygons and points have their strenghts, and there are numerous ways to combine these two to present what we want. One useful trick is to take attributes from polygons into points, so that we can assign points into areal deliminations without specifying that into each point separately. This is practical, for example, when working with things like dialect areas.
+
+## OpenStreetMap
+
+There is already a geographic database that has all places we need, so I think the ideal solution would be to tie our linguistic data into [OpenStreetMap](https://www.openstreetmap.org/). The problem I have had with this is that the ID's used in OpenStreetMap are not permanent, but when the features are edited, the ID's continuously change. This makes it challenging to have persistent reference. However, it seems this problem is well understood, and [there are ways to achieve this](http://wiki.openstreetmap.org/wiki/Overpass_API/Permanent_ID).
+
+> The solution is to link to the object with a certain property, usually a certain combination of tags. 
+
+I'm not entirely sure what this means, but I assume then we would locate the settlement, for example, by using combination of its name and attributes such as being part of different higher level entities such as regions or counties. In Komi there are lots of villages that are called Ыб or Выльгорт, but maybe disambiguation would then be something like `Ыб, Удорский район, Республика Коми` and `Ыб, Сыктывдинский район, Республика Коми`. 
+
+```{r, eval=FALSE}
+#devtools::install_github("hrbrmstr/overpass")
+library(overpass)
+library(ggmap)
+library(sf)
+kpv_settlements <- 'area[name~"Республика Коми|Ямало-Ненецкий автономный округ|Мурманская область|Ненецкий автономный округ|Ханты-Мансийский автономный округ - Югра"];
+(node["place"~"city|village|town|hamlet|isolated_dwelling"](area););
+out;'
+
+query_result <- overpass_query(kpv_settlements)
+
+settlement_data <- st_as_sf(query_result)
+
+sf::st_write(settlement_data, "villages.geojson")
+```
+
+```{r}
+library(leaflet)
+
+settlement_data <- st_read('villages.geojson')
+
+komi_area <- geojsonio::geojson_read("https://raw.githubusercontent.com/nikopartanen/language_maps/master/geojson/kom.geojson",
+  what = "sp")
+
+leaflet(data = settlement_data) %>% 
+        setView(53, 62, 6) %>%
+        addTiles() %>%
+        addCircleMarkers(radius = 1.7, stroke = 0, color = "black", popup = ~name) %>%
+        addPolygons(data = komi_area, stroke = 0, opacity = .7, fill = "blue")
+
+```
+
+The black dots there are settlements or cities, and the blue areas are different dialect areas. The settlements that are not under the blue areas are founded under Soviet Union, often following railroads, and although they surely have Komi speakers living in them, they still don't really connect to "traditional" dialect areas. I haven't personally been in all parts of Komi, so certainly some areas are wrongly assigned.
+
+It is very important we have `abandoned:place` as part of the query. There are lots of important villages, for example Кӧрттувъя and Коздін in Komi which have had lots of speakers but are currently abandoned. Often we have texts or recordings from persons who have grown up there, and every now and then people still spend their summers in these places. The query used above doesn't contain that, but for this demonstration purpose this is maybe not necessary.
+
+Anyway I think this way it is possbile to locate almost all settlements, and if there are some missing, we can always add them into OpenStreetMap as abandoned settlements, even though nobody would live there any longer. There are also categories `isolated_dwelling`, `farm` and `allotment` which should cover more marginal forms of land use.
+
+Benefit of this approach is that instead of endlessly complex geographical information we can store a simple reference into OpenStreetMap, and this redelegates and puts into already existing open source platform tons of our problems:
+
+- We don't need to store place names in several languages
+    - We may need to add those into OpenStreetMap
+- We don't need to store information about administrative units
+- Data we use and produce is more clearly connected to real world locations
+
+## Contemporarity of OSM
+
+As far as I understand, OpenStreetMap attempts to document the world as it is now. The map is continuously edited to reflect the current changes, and although there are conventions to mark abandoned places, I assume that if a village is built over by a city, then we can't refer to that village as such but must point into whatever that location is now. I'm not totally sure about this though.
+
+I have discussed this some time with Markus Juutinen, and he has pointed out that often when he works with lake related toponymies in Karelia he is actually dealing with features that are currently tens of meters below the lake surface. Indeed, OSM doesn't have information about the features half a century ago, and this connects to the problem in the earlier paragraph: there are limitations in how well we can use OSM to point into historical data.
+
+That said, I think language documentation projects are by their very nature rather contemporary work. The whole idea of language documentation was born some 20 years ago, and it seems to me that working closely with earlier archival data has been more of an exception than a rule. I may be wrong with this too, but as far as I see, being familiar with the archival data from the language one works with is very central for everything, so maybe everyone is actually doing this already.
+
+## Ethical questions
+
+I've at times seen or heard discussions about ethical questions related to geographical data. I can't even remember where this has come up, but occasionally there seems to be an opinion that this kind of information has to be shared sparsingly and that there are numerous ethical considerations. Well, I think that train has really left already, and the global geographical data is already online in OSM for good. Nobody asked me if my home should be there, but there it is. Most of the Komi villages were not in OSM in 2012 -- now almost all buildings of all of them are. This will certainly happen, if has not happened, in all corners of the Earth, no matter how remote. 
+
+So the question is not so much whether this data can be shared: it is shared already. Thereby the issue is more about things like **is it certain this information is correct** than **who has the right to add this settlement here**. Of course OSM has some clear rules about this: nobody is supposed to add your private pool or garden path into the map, and it is a good question how this actually reflects into more indigenous context.
+
+In this vein one could say that linguists also have some responsibilities in this, and one of those could be to make sure the native names are correctly represented in OSM. At the moment Komi villages have mainly Russian names, but there is no problem in adding a field `name.kv`, or maybe `name.kpv`. The name system in OSM is bit complicated and I'm not entirely familiar with it myself yet. However, since this data is now so widely used, I can imagine that adding native language place names as widely as possible will also eventually enable multilinguality of different applications where this data is used. You cannot navigate into a Komi village now with the Komi name, but once this data is added into OSM database, it is probably just a matter of time before this comes possible. 

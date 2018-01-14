@@ -1,0 +1,146 @@
+---
+title: "Freiburg course"
+author: "Niko Partanen"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Michael Riessler arranged in Freiburg a two-day workshop called [Advanced analysis and manipulation of ELAN corpus data with R and Python](https://github.com/langdoc/elan_lectures). Eventually we had much more focus in R than Python, but I think we discussed quite thoroughly topics related to the use of both languages and their respective strenghts and weaknesses. On the other hand, my own stance is that these languages often co-exist in harmony, and we as linguists should often just use the one that has something we want to do readily implemented.
+
+![](https://imgur.com/V7m4vP4.png)
+
+Thursday evening Mark Davies had a presentation about the corpus studies that can be done with massive historical corpora, having examples from older historical corpora and tracing change in those, but he also showed some interesting work that can be done with continuously updating corpora which receive millions of new tokens every day. It is a good point that even though we could make corpora of Uralic languages that are tens of millions of tokens large, and we can, and [are already doing](https://komicorpora.ru), even this is in the end "small" when compared to some truly massive datasets.
+
+Davies also pointed out that for lots of practical purposes you often want to work with smaller datasets: this is when every token matters, as he put it. I have very much the same experience myself, that actually it is most convenient to work with smaller sample that is somehow balanced and logically sampled, than to try to analyze everything in a very large corpus. Of course, you need a large corpus to be able to create that nice smaller subcorpus, usually.
+
+![Ruprecht von Waldenfels talks about his metadata](https://imgur.com/jh7GsEv.png)
+
+At Friday Ruprecht von Waldenfels presented his work, in connection to which we had an useful discussion about mapping concepts between different metadata fields. Certainly, language documenters around the globe are still certainly strugling with all the same problems, even with basic issues such as metadata. It is also obvious that traditional large scale attempts to organize metadata standards has failed, and I would assume we need some entirely different approach to whole question. Probably one just needs a de-centralized open source project into which anyone who wants to get into can add their things, without any kind of heavy infrastructure around it. In this vein, I started to [map the metadata concepts](https://github.com/langdoc/metadata-concepts) we use in [IKDP](https://langdoc.github.io/IKDP) and [IKDP-2](https://langdoc.github.io/IKDP-2) projects into one another, which has for now been done only internally.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(FRelan)
+corpus <- dir('../testcorpus', "eaf$", full.names = TRUE, recursive = TRUE) %>%
+        map(read_eaf) %>%
+        bind_rows()
+read_formants <- function(formant_file){
+  suppressWarnings(read_tsv(formant_file,
+                            skip = 1,
+                            col_names = c('time', 'type', 'filename', 'token', 'phoneme', 'f1', 'f2', 'f3', 'missing1', 'missing2', 'missing3'))) %>%
+    filter(! is.na(token)) %>%
+    select(-missing1, -missing2, -missing3) %>%
+    select(phoneme, token, type, time, f1, f2, f3, filename) %>%
+    filter(! phoneme == 'Avg') %>%
+    mutate(id = rep(1:(n()/4), each=4)) %>%
+    # gather(variable, value, -(phoneme:token))
+    gather(var, val, time:f3) %>%
+    #  distinct(id, var, val) %>%
+    unite(var2, type, var) %>%
+    spread(var2, val) %>%
+    arrange(id) %>%
+    mutate(before = lag(phoneme)) %>%
+    mutate(after = lead(phoneme)) %>%
+#    filter(phoneme %in% c('a', 'i', 'e', 'u', 'e~', '1', 'o')) %>%
+    select(before, phoneme, after, everything(), filename) %>%
+    mutate(f1 = as.double(midpoint_f1),
+           f2 = as.double(midpoint_f2),
+           filename = stringr::str_replace(filename, '.+/', '')) %>%
+    mutate(filename = stringr::str_replace(filename, '.wav', '')) %>%
+    mutate(duration = as.double(end_time) - as.double(start_time))
+}
+
+phonemes <- read_formants(formant_file = "../testcorpus/praat/formants.txt")
+
+phonemes <- phonemes %>% 
+        mutate(type = if_else(phoneme %in% c('a', 'i', 'e', 'u', 'e~', '1', 'o'), "vowel", "consonant"))
+
+```
+
+
+Talking about small data, the corpus we worked was a [Komi-Zyrian Test Corpus](https://github.com/langdoc/testcorpus), which contains `r nrow(corpus)` tokens, so the data hardly gets smaller than that. That said, our analysis shows it contains `r nrow(phonemes)` distinct phonemes, out of which `r phonemes %>% filter(type == "vowel") %>% nrow()` are vowels, and `r phonemes %>% filter(type == "vowel") %>% nrow()` consonants. It also seems that an average length of a vowel there is `r mean(phonemes %>% filter(type == "vowel") %>% pull(duration))` seconds, although this is on non-manually checked data, so let's be very cautious. Nevertheless, there are things one can do with this tiny data too. For example, this quite beautiful vowel plot is directly from there:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(glue)
+
+main_folder <- '..'
+formant_file_path <- glue('{main_folder}/testcorpus/praat/formants.txt')
+
+read_formants <- function(formant_file){
+  suppressWarnings(read_tsv(formant_file,
+                            skip = 1,
+                            col_names = c('time', 'type', 'filename', 'token', 'phoneme', 'f1', 'f2', 'f3', 'missing1', 'missing2', 'missing3'))) %>%
+    filter(! is.na(token)) %>%
+    select(-missing1, -missing2, -missing3) %>%
+    select(phoneme, token, type, time, f1, f2, f3, filename) %>%
+    filter(! phoneme == 'Avg') %>%
+    mutate(id = rep(1:(n()/4), each=4)) %>%
+    # gather(variable, value, -(phoneme:token))
+    gather(var, val, time:f3) %>%
+    #  distinct(id, var, val) %>%
+    unite(var2, type, var) %>%
+    spread(var2, val) %>%
+    arrange(id) %>%
+    mutate(before = lag(phoneme)) %>%
+    mutate(after = lead(phoneme)) %>%
+    filter(phoneme %in% c('a', 'i', 'e', 'u', 'e~', '1', 'o')) %>%
+    select(before, phoneme, after, everything(), filename) %>%
+    mutate(f1 = as.double(midpoint_f1),
+           f2 = as.double(midpoint_f2),
+           filename = stringr::str_replace(filename, '.+/', '')) %>%
+    mutate(filename = stringr::str_replace(filename, '.wav', '')) %>%
+    mutate(duration = as.double(end_time) - as.double(start_time))
+}
+
+vowels <- read_formants(formant_file = '../testcorpus/praat/formants.txt')
+vowels <- vowels %>% filter(f1 < 1300)
+
+library(geofacet)
+
+mygrid <- data.frame(
+  code = c("i", "e", "ɨ", "ə", "a", "o", "u"),
+  name = c("i", "e", "ɨ", "ə", "a", "o", "u"),
+  row = c(1, 2, 1, 2, 3, 2, 1),
+  col = c(1, 1, 2, 2, 2, 3, 3),
+  stringsAsFactors = FALSE
+)
+#geofacet::grid_preview(mygrid)
+
+vowels_bg <- vowels %>% select(-phoneme)
+
+vowels <- vowels %>% mutate(phoneme = str_replace_all(phoneme, c("1" = "ɨ", "^e$" = "ə", "e~" = "e")))
+
+
+ggplot(data = vowels,
+                    aes(x=f2, y=f1)) +
+  geom_point(data = vowels_bg, 
+             size = .5, 
+             color = "grey", 
+             alpha = .5) +
+  geom_point(size = .8) +
+  scale_x_reverse(name="F2 (Hz)") + 
+  scale_y_reverse(name="F1 (Hz)") +
+  stat_ellipse() +
+  theme_bw() +
+  guides(fill = FALSE) +
+  facet_geo(~ phoneme, grid = mygrid)
+
+```
+
+Did we do everything in the most elegant way possible? Certainly no! Did I abuse PraatScript when I ran it with relatively vague understanding of what it does? Without doubt! But the idea was not so much to do hard sciencing but more to look into what all is possible with the current tools.
+
+So how do we know all these things about vowels and stuff? Anyone can check what we did with [emuR]() R package from [these slides](), all the way through sending data to BAS web services and then building a small user interface into data through Shiny. The general discussion about the course and examples can be seen [here](), it also works as a light introduction.
+
+![Niko Partanen explains purrr::walk function](https://imgur.com/KiRLlT0.png)
+
+Kind of culmination of connecting more complex parts into one another was creation of a tiny application which we can use to move between R and Praat. So basically we plot the content that PraatScript has extracted, then we have a script to open Praat through another PraatScript call from within the Shiny application. Sounds bit hacky, but it isn't too complicated, in the end the whole app is only few hundreds of lines of code.
+
+Following GIF shows how it works:
+
+Not bad! And the same concept can be applied to virtually anything. And the best part is that once you figure out how to write these apps, you can create a new one in just a matter of hours. This has the advantage of not needing to invest heavily into testing and prototyping this kind of tools. The application was put together just moments before the course, and it contains non-working buttons and non-used lines of code here and there, and is not really documented to any point, but for people who know Shiny the approach should be possible to follow, and if you are just starting with these tools, I think it is still an useful example of what can be done.
+
+I was bit unsure of how everything goes as I had never been teaching this kind of a course, but I think everyone had good and useful time, so I'm looking forward to do it again!
