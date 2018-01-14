@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "OpenStreetMap and linguistic data"
 author: "Niko Partanen"
 date: "11/27/2017"
 output: html_document
@@ -27,11 +27,15 @@ There is already a geographic database that has all places we need, so I think t
 
 I'm not entirely sure what this means, but I assume then we would locate the settlement, for example, by using combination of its name and attributes such as being part of different higher level entities such as regions or counties. In Komi there are lots of villages that are called Ыб or Выльгорт, but maybe disambiguation would then be something like `Ыб, Удорский район, Республика Коми` and `Ыб, Сыктывдинский район, Республика Коми`. 
 
-```{r, eval=FALSE}
+```{r}
 #devtools::install_github("hrbrmstr/overpass")
 library(overpass)
 library(ggmap)
 library(sf)
+```
+
+
+```{r, eval=FALSE}
 kpv_settlements <- 'area[name~"Республика Коми|Ямало-Ненецкий автономный округ|Мурманская область|Ненецкий автономный округ|Ханты-Мансийский автономный округ - Югра"];
 (node["place"~"city|village|town|hamlet|isolated_dwelling"](area););
 out;'
