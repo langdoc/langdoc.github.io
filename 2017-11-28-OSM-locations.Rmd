@@ -17,6 +17,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
+**This is a draft that is currently being written!**
+
 During the last four years [IKDP project](langdoc.github.io/IKDP) has been managing spatial data in different ways, and this blog post opens a small serie of texts that open and explore different approaches. We are currently restructuring our project metadata, and finding some good solutions in this domain is also highly needed. As far as we see, connecting the language documentation spatial data into OpenStreetMap is very promising and interesting possibility, but we are also currently in process of figuring out how this exactly should work.
 
 Managing geographical data is often very central for spoken language corpus building. All recordings have been done somewhere, and the speakers have attributes such as birth place and recording place. The way we have been managing this has been to maintain a database of settlements where Komi is spoken. This has not been an explicit goal in itself, but more of an inevitable result of having eventually enough locations to cover all settlements. Building a database like this from a scratch would not be sensical, but I'll get into alternatives soon.
