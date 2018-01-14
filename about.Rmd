@@ -1,5 +1,5 @@
 ---
-bibliography: ~/langtech/art/FReiburg/bibtex/FRibliography.bib
+bibliography: /Users/niko/langtech/art/FReiburg/bibtex/FRibliography.bib
 ---
 
 </br>
