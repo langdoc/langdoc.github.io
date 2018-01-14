@@ -13,7 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Managing geographical data is often very central for spoken language corpus building. All recordings have been done somewhere, and the speakers have attributes such as birth place and recording place. The way we have been managing this in [IKDP project](langdoc.github.io/IKDP) has been to maintain a database of settlements where Komi is spoken. This has not been an explicit goal in itself, but more of an inevitable result of having eventually enough locations to cover all settlements. Building a database like this from a scratch would not be sensical, but I'll get into alternatives soon.
+During the last four years [IKDP project](langdoc.github.io/IKDP) has been managing spatial data in different ways, and this blog post opens a small serie of texts that open and explore different approaches. We are currently restructuring our project metadata, and finding some good solutions in this domain is also highly needed.
+
+Managing geographical data is often very central for spoken language corpus building. All recordings have been done somewhere, and the speakers have attributes such as birth place and recording place. The way we have been managing this has been to maintain a database of settlements where Komi is spoken. This has not been an explicit goal in itself, but more of an inevitable result of having eventually enough locations to cover all settlements. Building a database like this from a scratch would not be sensical, but I'll get into alternatives soon.
 
 As far as I see, especially when we speak about languages spoken by sedentary groups, it is often a good starting point to work from settlements onward. Of course we can define polygons under which the languages are spoken, but not all settlements under the polygon will be ones where the language in question is spoken. On the other hand, we can use the points to derive a polygon that covers the maximal area of the language. However, I think at times polygons and points have very different strengths and weaknesses, and depending from the use case there may be need to use one or another, or different combinations.
 
@@ -75,6 +77,34 @@ Benefit of this approach is that instead of endlessly complex geographical infor
     - We may need to add those into OpenStreetMap
 - We don't need to store information about administrative units
 - Data we use and produce is more clearly connected to real world locations
+
+Of course the exactness in OpenStreetMap goes further than into individual villages. For example, it is possible to find locations of individual houses (example taken from [here](https://rpubs.com/hrbrmstr/overpass), there are maybe easier ways to add these on leaflet map at the moment):
+
+```{r}
+syordla <- '[out:xml];
+        area["name"~"Шиляево"];
+        way(area)["building"~"."];
+        (._;>;);
+        out;'
+
+syordla_result <- overpass_query(syordla, quiet = T) 
+
+lf <- leaflet() %>% 
+        addTiles()
+for (i in 1:length(syordla_result@lines)) {
+  lf <- lf %>% addPolylines(data = syordla_result@lines[[i]], weight = 3, color  = "red", fill = TRUE, fillOpacity = 1)
+}
+lf
+
+```
+
+The red boxes match the houses exactly, which is to be expected as I queried here data from the same database (OSM) where the underlying images also come from. 
+
+The village above is Сёрдла, located on Udora region of Komi Republic. I have been working there during multiple summers. The map is exact enough that, for example, photograph below is taken from the small road that goes to the forest in the southern part of the picture.
+
+![](https://imgur.com/k3ibUz6.png)
+
+If the cameras we use allow GPS tagging, this also opens very interesting approaches to manage and use this kind of data.
 
 ## Contemporarity of OSM
 

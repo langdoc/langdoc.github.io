@@ -62,7 +62,7 @@ In this tutorial I use ELAN file called `kpv_izva20140404IgusevJA.eaf`, which is
 
     test_file <- "kpv_izva20140404IgusevJA.eaf"
 
-```{r, echo=FALSE}
+```{r read_test_file, echo=FALSE}
 test_file <- "~/langdoc/kpv/kpv_izva20140404IgusevJA/kpv_izva20140404IgusevJA.eaf"
 ```
 
@@ -108,7 +108,7 @@ However, this is what makes parsing ELAN files to R particularly rewarding as we
 
 I go first through how to set up a function to read one tier, since in principle the rest is combining this in different ways. In principle one could take this function and combine it in smart ways to read the complete file.
 
-```{r, eval=T}
+```{r read_tiers, eval=T}
 
 FRelan::read_tier(eaf_file = test_file, linguistic_type = "wordT") %>% 
         dplyr::slice(1:15) %>% # This slices 15 rows
@@ -143,7 +143,7 @@ I usually find it easiest to start from the smallest possible unit, which in thi
 
 The `annot_id` of transcription tier is the `ref_id` of the token level tier.
 
-```{r}
+```{r read_whole_file}
 
 elan_file <- FRelan::read_tier(eaf_file = test_file, linguistic_type = "wordT") %>%
         dplyr::select(content, ref_id, participant) %>%
@@ -165,7 +165,7 @@ elan_file %>% dplyr::slice(1:15) %>% knitr::kable()
 
 After this it is already very simple to grab the time slot values and associate them with this data frame. And in this point we can even throw away the time slot id's, as those really do not give us very much information about anything outside ELAN XML file. This join is little bit strange because the same information has to be joined twice -- each row has start and end time associated with it.
 
-```{r}
+```{r get_timecodes}
 
 elan_file %>% dplyr::left_join(FRelan::read_timeslots(eaf_file = test_file), 
                                by = c("time_slot_1" = "time_slot_id")) %>%
