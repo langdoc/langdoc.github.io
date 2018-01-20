@@ -73,7 +73,7 @@ leaflet(data = settlement_data) %>%
         setView(53, 62, 6) %>%
         addTiles() %>%
         addCircleMarkers(radius = 1.7, stroke = 0, color = "black", popup = ~name) %>%
-        addPolygons(data = komi_area, stroke = 0, opacity = .7, fill = "blue")
+        addPolygons(data = komi_area, stroke = 0, opacity = .7, fillColor = "blue")
 
 ```
 
