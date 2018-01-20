@@ -58,6 +58,6 @@ blog_list_short <- paste0("<ul>", blog_list_short, "</ul>")
 
 ```
 
-Here the newest post in our blog:
+The newest post in our blog:
 
 `r blog_list_short`
