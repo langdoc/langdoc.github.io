@@ -13,7 +13,7 @@
 
 </br>
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 library(plyr)
 library(dplyr)
