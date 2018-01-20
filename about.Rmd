@@ -22,7 +22,7 @@ The main project the work has been taking place are [Iźva Komi Documentation Pr
 
 Another collaborating project is [Syntactic patterns in Pite Saami](http://saami.uni-freiburg.de/psdp/syntax/) led by Joshua Wilbur. Some results of Wilbur's ongoing work can be seen on [Pitesamiska stavningsregler website](http://saami.uni-freiburg.de/psdp/stavningsregler/main.php) and in [this dictionary](http://saami.uni-freiburg.de/psdp/pite-lex/simple_search.php?searchMode=off&lang=Swe). In the long term the intention is to move larger part of our research infrastructure into open GitHub repositories.
 
-[Ob-Ugric Database](http://www.babel.gwi.uni-muenchen.de/) is another collaboration partner, which continues a longer work done with Ob-Ugric languages. The project is led from universities of Munchen and Vienna.
+[Ob-Ugric Database](http://www.babel.gwi.uni-muenchen.de/) is another collaboration partner within [langdoc](https://github.com/langdoc) GitHub repository. The project continues a longer work done with Ob-Ugric languages. The project is led from universities of Munchen and Vienna.
 
 However, since posts related to other projects carried out at institutions elsewhere are also published, our website is not strictly connected to any specific project or institution.
 

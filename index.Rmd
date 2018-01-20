@@ -27,7 +27,7 @@ rmd_df <- dplyr::data_frame(name = rmd_name,
                   date = rmd_date,
                   file = rmd_files)
 
-library(yaml)
+suppressPackageStartupMessages(library(yaml))
 
 get_header_attr <- function(rmd_file){
 
