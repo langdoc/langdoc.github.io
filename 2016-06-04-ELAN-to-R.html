@@ -38,7 +38,7 @@ if (window.hljs) {
   hljs.configure({languages: []});
   hljs.initHighlightingOnLoad();
   if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
   }
 }
 </script>
@@ -310,14 +310,6 @@ div.tocify {
 </div>
 
 
-<pre><code>## ── Attaching packages ───────────────────────────────────────── tidyverse 1.2.0 ──</code></pre>
-<pre><code>## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
-## ✔ tibble  1.3.4          ✔ dplyr   0.7.4     
-## ✔ tidyr   0.7.2          ✔ stringr 1.2.0     
-## ✔ readr   1.1.1          ✔ forcats 0.2.0</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <section id="what-this-is-about" class="level3">
 <h3>What this is about</h3>
 <p>Update from May 2017: Lots of things have changed, for example, at the moment I would prefer doing things with <code>purrr::map</code> instead of <code>plyr</code>, on the other hand this would leave complete rewrite of many functions and the <code>purrr</code> approach just is so convenient. Even more, the list columns in dataframes have been gaining popularity lately, and that may be very convenient for language documentation data as well, which doesn’t necessarily fit so neatly into a tabular representation.</p>
