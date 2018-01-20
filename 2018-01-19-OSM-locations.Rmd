@@ -1,7 +1,7 @@
 ---
 title: "OpenStreetMap and linguistic data"
 author: "Niko Partanen"
-date: "11/28/2017"
+date: "19/01/2018"
 output:
   html_document:
     toc: true
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-**This is a draft that is currently being written!**
+**This is a draft that may still overgo small changes!**
 
 During the last four years [IKDP project](langdoc.github.io/IKDP) has been managing spatial data in different ways, and this blog post opens a small serie of texts that open and explore different approaches. We are currently restructuring our project metadata, and finding some good solutions in this domain is also highly needed. As far as we see, connecting the language documentation spatial data into OpenStreetMap is very promising and interesting possibility, but we are also currently in process of figuring out how this exactly should work.
 
@@ -89,6 +89,7 @@ Benefit of this approach is that instead of endlessly complex geographical infor
     - We may need to add those into OpenStreetMap
 - We don't need to store information about administrative units
 - Data we use and produce is more clearly connected to real world locations
+
 
 Of course the exactness in OpenStreetMap goes further than into individual villages. For example, it is possible to find locations of individual houses (example taken from [here](https://rpubs.com/hrbrmstr/overpass), there are maybe easier ways to add these on leaflet map at the moment):
 
